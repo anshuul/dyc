@@ -18,103 +18,18 @@ const getAppItems = [
   },
 ];
 
-// const curItems = [
-//   {
-//     key: "1",
-//     label: (
-//       <div className="category-box">
-//         <h3>Choose currency</h3>
-//         <ul>
-//           <li>
-//             <div className="left-col">
-//               <div className="cur-icon">
-//                 <img src={aedIcon} alt="" />
-//               </div>{" "}
-//               AED
-//             </div>
-//             <div className="right-col">
-//               <span>Dirham</span> - AED
-//             </div>
-//           </li>
-//           <li>
-//             <div className="left-col">
-//               <div className="cur-icon">
-//                 <img src={usdIcon} alt="" />
-//               </div>{" "}
-//               USD
-//             </div>
-//             <div className="right-col">
-//               <span>Dollar </span> - $
-//             </div>
-//           </li>
-//           <li>
-//             <div className="left-col">
-//               <div className="cur-icon">
-//                 <img src={gbpIcon} alt="" />
-//               </div>{" "}
-//               GBP
-//             </div>
-//             <div className="right-col">
-//               <span>Pound </span> - £
-//             </div>
-//           </li>
-//           <li>
-//             <div className="left-col">
-//               <div className="cur-icon">
-//                 <img src={inrIcon} alt="" />
-//               </div>{" "}
-//               INR
-//             </div>
-//             <div className="right-col">
-//               <span>Rupee </span> - ₹
-//             </div>
-//           </li>
-//           <li>
-//             <div className="left-col">
-//               <div className="cur-icon">
-//                 <img src={eurIcon} alt="" />
-//               </div>{" "}
-//               EUR
-//             </div>
-//             <div className="right-col">
-//               <span>Euro </span> - €
-//             </div>
-//           </li>
-//         </ul>
-//       </div>
-//     ),
-//   },
-// ];
-
-// menu={{
-// items: currencies.map((currency) => ({
-//   key: currency.id,
-//     label: (
-//       <div
-//         key={currency.id}
-//         className={`category-box ${
-//           selectedCurrencyKey === currency.id ? "selected" : ""
-//         }`}
-//         onClick={() => handleCurrencySelect(currency.id)}
-//       >
-//         <div className="left-col">
-//           <div className="cur-icon">
-//             <img src={currency.icon} alt="" />
-//           </div>{" "}
-//           {currency.name}
-//         </div>
-//         <div className="right-col">
-//           <span>{currency.symbol}</span> - {currency.name}
-//         </div>
-//       </div>
-//     ),
-//   })),
-// }}
+const currencies = [
+  { id: "1", name: "AED", symbol: "Dirham", icon: aedIcon },
+  { id: "2", name: "USD", symbol: "Dollar", icon: usdIcon },
+  { id: "3", name: "GBP", symbol: "Pound", icon: gbpIcon },
+  { id: "4", name: "INR", symbol: "Rupee", icon: inrIcon },
+  { id: "5", name: "EUR", symbol: "Euro", icon: eurIcon },
+];
 
 const NavbarLanding = () => {
   const [searchInput, setSearchInput] = useState("");
   const [visibleDropDown, setVisibleDropDown] = useState(false);
-  const [selectedCurrencyKey, setSelectedCurrencyKey] = useState(null);
+  const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
 
   const handleClick = () => {
     setVisibleDropDown(false);
@@ -134,95 +49,17 @@ const NavbarLanding = () => {
   };
 
   const handleCurrencySelect = (currencyKey) => {
-    setSelectedCurrencyKey((prevKey) =>
-      prevKey === currencyKey ? null : currencyKey
-    );
+    setSelectedCurrencyKey(currencyKey);
   };
 
   const handleReset = () => {
-    setSelectedCurrencyKey(null);
+    setSelectedCurrencyKey("1");
   };
 
   const handleSearch = (inputValue) => {
     setSearchInput(inputValue);
   };
 
-  const currencies = [
-    { id: "1", name: "AED", symbol: "Dirham", icon: aedIcon },
-    { id: "2", name: "USD", symbol: "Dollar", icon: usdIcon },
-    { id: "3", name: "GBP", symbol: "Pound", icon: gbpIcon },
-    { id: "4", name: "INR", symbol: "Rupee", icon: inrIcon },
-    { id: "5", name: "EUR", symbol: "Euro", icon: eurIcon },
-  ];
-
-  const curItems = [
-    {
-      label: (
-        <div className="category-box">
-          <h3>Choose currency</h3>
-          <ul>
-            {currencies.map((currency) => (
-              <li
-                key={currency.id}
-                className={
-                  selectedCurrencyKey === currency.id ? "selected" : ""
-                }
-                onClick={() => handleCurrencySelect(currency.id)}
-              >
-                <div className="left-col">
-                  <div className="cur-icon">
-                    <img src={currency.icon} alt="" />
-                  </div>{" "}
-                  {currency.name}
-                </div>
-                <div className="right-col">
-                  <span>{currency.symbol}</span> - {currency.name}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ),
-    },
-  ];
-
-  // Add the dynamic keys based on selectedCurrencyKey
-  const dynamicCurItems = curItems.map((item) => ({
-    ...item,
-    key: selectedCurrencyKey || "3",
-  }));
-
-  //     label: (
-  //       <div className="category-box">
-  //         <h3>Choose currency</h3>
-  //         <ul>
-  //           {[aedIcon, usdIcon, gbpIcon, inrIcon, eurIcon].map(
-  //             (icon, index) => (
-  //               <li
-  //                 key={index + 1}
-  //                 className={
-  //                   selectedCurrencyKey.includes(`${index + 1}`)
-  //                     ? "selected"
-  //                     : ""
-  //                 }
-  //               >
-  //                 <div className="left-col">
-  //                   <div className="cur-icon">
-  //                     <img src={icon} alt="" />
-  //                   </div>{" "}
-  //                   Currency {index + 1}
-  //                 </div>
-  //                 <div className="right-col">
-  //                   <span>Dirham</span> - AED
-  //                 </div>
-  //               </li>
-  //             )
-  //           )}
-  //         </ul>
-  //       </div>
-  //     ),
-  //   },
-  // ];
 
   return (
     <header
@@ -344,23 +181,33 @@ const NavbarLanding = () => {
               </div>
             </Dropdown>
             <Dropdown
-              menu={{
-                items: dynamicCurItems.map((item) => ({
-                  ...item,
-                  label: (
-                    <div
-                      key={item.key}
-                      className={`category-box ${
-                        selectedCurrencyKey === item.key ? "selected" : ""
-                      }`}
-                      onClick={() => handleCurrencySelect(item.key)}
-                    >
-                      <p>{item.key}</p>
-                      {item.label.props.children}
-                    </div>
-                  ),
-                })),
-              }}
+              overlay={
+                <div className="category-box">
+                  <h3>Choose currency</h3>
+                  <ul>
+                    {currencies.map((currency) => (
+                      <li
+                        key={currency.id}
+                        className={
+                          selectedCurrencyKey === currency.id ? "selected" : ""
+                        }
+                        onClick={() => handleCurrencySelect(currency.id)}
+                      >
+                        <div className="left-col">
+                          <div className="cur-icon">
+                            <img src={currency.icon} alt="" />
+                          </div>{" "}
+                          {currency.name}
+                        </div>
+                        <div className="right-col">
+                          <span>{currency.symbol}</span> - {currency.name}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              }
+              trigger={["click"]}
               visible={visibleDropDown}
               onVisibleChange={(flag) => setVisibleDropDown(flag)}
               placement="bottom"
@@ -381,9 +228,20 @@ const NavbarLanding = () => {
             >
               <div className="currency-col" onClick={(e) => e.preventDefault()}>
                 <div className="falg-img">
-                  <img src={aedIcon} alt="" />
+                  <img
+                    src={
+                      currencies.find(
+                        (currency) => currency.id === selectedCurrencyKey
+                      )?.icon
+                    }
+                    alt=""
+                  />
                 </div>
-                AED
+                {
+                  currencies.find(
+                    (currency) => currency.id === selectedCurrencyKey
+                  )?.name
+                }
               </div>
             </Dropdown>
 
