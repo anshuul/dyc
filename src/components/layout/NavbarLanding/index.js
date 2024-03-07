@@ -26,8 +26,68 @@ const currencies = [
   { id: "5", name: "EUR", symbol: "Euro", icon: eurIcon },
 ];
 
+const initialOptions = [
+  {
+    value: "v1",
+    label: (
+      <div className="drop-item">
+        <div className="city-icon">
+          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
+        </div>{" "}
+        London - United Kingdom
+      </div>
+    ),
+  },
+  {
+    value: "v2",
+    label: (
+      <div className="drop-item">
+        <div className="city-icon">
+          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
+        </div>{" "}
+        Louvre Museum - Paris, France
+      </div>
+    ),
+  },
+  {
+    value: "v3",
+    label: (
+      <div className="drop-item">
+        <div className="city-icon">
+          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
+        </div>{" "}
+        Los Angeles - United States
+      </div>
+    ),
+  },
+  {
+    value: "v4",
+    label: (
+      <div className="drop-item">
+        <div className="city-icon">
+          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
+        </div>{" "}
+        Lucerne - Switzerland
+      </div>
+    ),
+  },
+  {
+    value: "v5",
+    label: (
+      <div className="drop-item">
+        <div className="city-icon">
+          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
+        </div>{" "}
+        London Eye - United Kingdom
+      </div>
+    ),
+  },
+];
+
 const NavbarLanding = () => {
   const [searchInput, setSearchInput] = useState("");
+  const [options, setOptions] = useState(initialOptions);
+
   const [visibleDropDown, setVisibleDropDown] = useState(false);
   const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
 
@@ -60,6 +120,29 @@ const NavbarLanding = () => {
     setSearchInput(inputValue);
   };
 
+  const handleEnter = () => {
+    if (searchInput.trim() !== "") {
+      const newOption = {
+        value: `v${options.length + 1}`,
+        label: (
+          <div className="drop-item">
+            <div className="city-icon">
+              <SvgIcon name="map-marker" viewbox="0 0 34 48" />
+            </div>{" "}
+            {searchInput}
+          </div>
+        ),
+      };
+
+      setOptions([newOption, ...options]);
+      setSearchInput(""); // Clear the search input after adding a new option
+    }
+  };
+
+  const handleSelectChange = (selectedValue) => {
+    // Handle the selection change, update searchInput if needed
+    setSearchInput(selectedValue);
+  };
 
   return (
     <header
@@ -104,67 +187,13 @@ const NavbarLanding = () => {
                         className="ant-select-search__field"
                         value={searchInput}
                         onChange={(e) => handleSearch(e.target.value)}
+                        onPressEnter={handleEnter}
                       />
                       {menu}
                     </>
                   )}
-                  options={[
-                    {
-                      value: "v1",
-                      label: (
-                        <div className="drop-item">
-                          <div className="city-icon">
-                            <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-                          </div>{" "}
-                          London - United Kingdom
-                        </div>
-                      ),
-                    },
-                    {
-                      value: "v2",
-                      label: (
-                        <div className="drop-item">
-                          <div className="city-icon">
-                            <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-                          </div>{" "}
-                          Louvre Museum - Paris, France
-                        </div>
-                      ),
-                    },
-                    {
-                      value: "v3",
-                      label: (
-                        <div className="drop-item">
-                          <div className="city-icon">
-                            <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-                          </div>{" "}
-                          Los Angeles - United States
-                        </div>
-                      ),
-                    },
-                    {
-                      value: "v4",
-                      label: (
-                        <div className="drop-item">
-                          <div className="city-icon">
-                            <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-                          </div>{" "}
-                          Lucerne - Switzerland
-                        </div>
-                      ),
-                    },
-                    {
-                      value: "v5",
-                      label: (
-                        <div className="drop-item">
-                          <div className="city-icon">
-                            <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-                          </div>{" "}
-                          London Eye - United Kingdom
-                        </div>
-                      ),
-                    },
-                  ]}
+                  options={options}
+                  onChange={handleSelectChange} // Handle option selection
                 />
               </div>
             </div>
