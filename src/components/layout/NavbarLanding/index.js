@@ -140,7 +140,7 @@ const NavbarLanding = () => {
   };
 
   const handleReset = () => {
-    setSelectedCurrencyKey([]);
+    setSelectedCurrencyKey(null);
   };
 
   const handleSearch = (inputValue) => {
@@ -157,20 +157,19 @@ const NavbarLanding = () => {
 
   const curItems = [
     {
-      key: "5",
       label: (
         <div className="category-box">
           <h3>Choose currency</h3>
           <ul>
-            {currencies.map((currency, index) => (
+            {currencies.map((currency) => (
               <li
-                key={index.id}
+                key={currency.id}
                 className={
                   selectedCurrencyKey === currency.id ? "selected" : ""
                 }
+                onClick={() => handleCurrencySelect(currency.id)}
               >
                 <div className="left-col">
-                  <p>{index + 1}</p>
                   <div className="cur-icon">
                     <img src={currency.icon} alt="" />
                   </div>{" "}
@@ -186,6 +185,12 @@ const NavbarLanding = () => {
       ),
     },
   ];
+
+  // Add the dynamic keys based on selectedCurrencyKey
+  const dynamicCurItems = curItems.map((item) => ({
+    ...item,
+    key: selectedCurrencyKey || "3",
+  }));
 
   //     label: (
   //       <div className="category-box">
@@ -340,16 +345,17 @@ const NavbarLanding = () => {
             </Dropdown>
             <Dropdown
               menu={{
-                items: curItems.map((item, index) => ({
+                items: dynamicCurItems.map((item) => ({
                   ...item,
                   label: (
                     <div
-                      key={index + 1}
+                      key={item.key}
                       className={`category-box ${
-                        selectedCurrencyKey === `${index + 1}` ? "selected" : ""
+                        selectedCurrencyKey === item.key ? "selected" : ""
                       }`}
-                      onClick={() => handleCurrencySelect(`${index + 1}`)}
+                      onClick={() => handleCurrencySelect(item.key)}
                     >
+                      <p>{item.key}</p>
                       {item.label.props.children}
                     </div>
                   ),
