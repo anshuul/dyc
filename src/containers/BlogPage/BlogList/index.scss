@@ -1,0 +1,161 @@
+@import '../../../assets/scss/variables.scss';
+
+.twl-blog-wrapper {
+    .blog-banner-list {
+        padding: 3rem 0;
+    }
+
+    .blog-upper-list {
+        .backbtn-row {
+            margin-bottom: 2.8rem;
+
+            @media screen and (max-width:767px) {
+                margin-bottom: 1rem;
+            }
+
+            a {
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                color: $primary-color;
+
+                .icon {
+                    width: 7px;
+                    margin-right: 8px;
+                    fill: $primary-color;
+                }
+
+                &:hover {
+                    color: $secondary-color;
+
+                    .icon {
+                        fill: $secondary-color;
+                    }
+                }
+            }
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1.8rem;
+            line-height: 1.1;
+
+            @media screen and (max-width:991px) {
+                font-size: 3.5rem;
+            }
+
+            @media screen and (max-width:767px) {
+                margin-bottom: 1.5rem;
+            }
+
+            @media screen and (max-width:576px) {
+                font-size: 2.2rem;
+            }
+        }
+    }
+
+    .blog-section {
+        .blogcategorylist-row {
+            margin-bottom: 1.2rem;
+
+            .left-col {
+                .blog-category-list {
+                    list-style-type: none;
+                    padding-left: 0;
+                    display: flex;
+
+                    li {
+                        margin-right: 35px;
+                        width: 50px;
+                        text-align: center;
+
+                        @media screen and (max-width:640px) {
+                            width: 40px;
+                            margin-right: 20px;
+                        }
+
+                        .ant-btn {
+                            background: none;
+                            padding: 0;
+                            height: auto;
+                            position: relative;
+                            box-shadow: none !important;
+                            outline: none !important;
+
+                            &::after {
+                                display: none;
+                            }
+
+                            &.active {
+                                &::before {
+                                    content: ' ';
+                                    position: absolute;
+                                    bottom: 0;
+                                    width: 40px;
+                                    height: 1px;
+                                    background: $primary-color;
+                                    display: block;
+                                    margin: auto;
+                                    left: 0;
+                                    right: 0;
+                                }
+                            }
+                        }
+
+                        .icons {
+                            height: 65px;
+
+                            @media screen and (max-width:640px) {
+                                height: 40px;
+                            }
+
+                            .icon {
+                                max-width: 45px;
+                                height: 40px;
+                                width: 100%;
+                                fill: $primary-color;
+
+                                @media screen and (max-width:640px) {
+                                    max-width: 30px;
+                                    height: 25px;
+                                }
+                            }
+                        }
+
+                        h4 {
+                            font-weight: normal;
+                            font-size: 15px;
+                            color: $primary-color;
+
+                            @media screen and (max-width:640px) {
+                                font-size: 13px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .right-col {
+                text-align: right;
+
+                .ant-btn-primary {
+                    min-width: 88px;
+                    height: 40px;
+                    border-radius: 40px;
+                    padding: 0 16px;
+                    font-size: 13px;
+                    margin-top: 30px;
+
+                    @media screen and (max-width:567px) {
+                        margin-top: 15px;
+                    }
+
+                    .icon {
+                        width: 12px;
+                        margin-left: 6px;
+                    }
+                }
+            }
+        }
+    }
+}

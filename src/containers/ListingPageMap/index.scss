@@ -1,0 +1,261 @@
+@import '../../assets/scss/variables.scss';
+
+.twl-listing-wrapper {
+    .banner-section {
+        background: #F5FCFC;
+        padding-top: 8rem;
+    }
+
+    .globalsearch-section {
+        margin-top: -3rem;
+    }
+
+    .map-section {
+        background: #fff;
+        padding-top: 6.5rem;
+
+        .map-row {
+            position: relative;
+            max-height: calc(100vh - 205px);
+            min-height: calc(100vh - 205px);
+            overflow: hidden;
+            margin-top: 20px;
+
+            @media screen and (max-width:767px) {
+                max-height: calc(100vh - 210px);
+                min-height: calc(100vh - 210px);
+                margin-top: 30px;
+            }
+
+            .map-img {
+                max-width: 100%;
+                height: 100%;
+                object-fit: cover;
+                margin: auto;
+            }
+
+            .map-area {
+                iframe {
+                    max-height: calc(100vh - 190px);
+                    min-height: calc(100vh - 190px);
+                    width: 100%;
+
+                    @media screen and (max-width:767px) {
+                        max-height: calc(100vh - 210px);
+                        min-height: calc(100vh - 210px);
+                    }
+                }
+            }
+
+            .map-lists {
+                position: absolute;
+                bottom: 95px;
+                width: 100%;
+                z-index: 1;
+
+                @media screen and (max-width:767px) {
+                    position: inherit;
+                }
+
+                .map-slider {
+                    width: 100%;
+
+                    .slick-arrow {
+                        color: $primary-color;
+                        font-size: 1.25rem;
+                        z-index: 2;
+                        position: absolute;
+                        opacity: 1;
+                        border: 1px solid $border-secondary;
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 25px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 1;
+                        background: $white;
+
+                        &:hover {
+                            border-color: $secondary-color;
+
+                            .icon {
+                                fill: $secondary-color;
+                            }
+                        }
+
+                        .icon {
+                            fill: $primary-color;
+                            width: 6px;
+                        }
+
+                        &::before {
+                            display: none;
+                        }
+
+                        &.slick-next {
+                            bottom: auto;
+                            top: -25px;
+                            right: 0;
+                        }
+
+                        &.slick-prev {
+                            top: -25px;
+                            bottom: auto;
+                            right: 36px;
+                            left: auto;
+                        }
+
+                        &.slick-disabled {
+                            opacity: 0.5;
+                            cursor: inherit;
+                            pointer-events: none;
+                        }
+                    }
+
+                    .slick-list {
+                        margin: 0 -15px;
+
+                        .slick-slide {
+                            padding: 0 15px;
+                        }
+                    }
+
+                    .map-card {
+                        background: $white;
+                        box-shadow: 0px 13px 36px #0000000A;
+                        border-radius: 8px;
+                        padding: 15px;
+                        display: flex;
+                        border: 1px solid $white;
+                        position: relative;
+                        cursor: pointer;
+                        transition: all ease 0.1s;
+
+                        &:hover {
+                            border-color: $secondary-color;
+                        }
+
+                        .card-img {
+                            width: 105px;
+                            height: 105px;
+                            border-radius: 8px;
+                            overflow: hidden;
+                            margin-right: 15px;
+
+                            img {
+                                width: 100%;
+                            }
+                        }
+
+                        .map-card-right {
+                            display: flex;
+                            flex-direction: column;
+
+                            .upper-col {
+                                h3 {
+                                    font-size: 18px;
+                                    font-weight: 600;
+                                    margin-bottom: 8px;
+                                }
+
+                                p {
+                                    font-size: 14px;
+                                    color: $label-color;
+                                    display: flex;
+                                    margin-bottom: 0;
+
+                                    .icon {
+                                        width: 9px;
+                                        fill: $primary-color;
+                                        margin-right: 10px;
+                                    }
+                                }
+                            }
+
+                            .bottom-col {
+                                margin-top: auto;
+                                padding-bottom: 5px;
+                                font-size: 14px;
+                                font-weight: 600;
+                            }
+
+                            .ant-btn {
+                                position: absolute;
+                                right: 15px;
+                                top: 15px;
+                                border: 1px solid $border-primary;
+                                padding: 0;
+                                width: 30px;
+                                height: 30px;
+                                border-radius: 30px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+
+                                .icon {
+                                    fill: $primary-color;
+                                    width: 10.50px;
+                                }
+
+                                &:hover {
+                                    border-color: $primary-color;
+
+                                    .icon {
+                                        fill: $white;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .list-btn {
+                height: 50px;
+                line-height: 50px;
+                border-radius: 50px;
+                padding: 0 36px;
+                margin: 2rem auto auto auto;
+                box-shadow: 0px 8px 13px #0A131F29;
+                background: $white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: fixed;
+                bottom: 70px;
+                left: 0;
+                right: 0;
+                max-width: 125px;
+                z-index: 9;
+
+                @media screen and (max-width:991px) {
+                    bottom: 60px;
+                    height: 40px;
+                    line-height: 40px;
+                    max-width: 90px;
+                    padding: 0 20px;
+                }
+
+                .icon {
+                    fill: $primary-color;
+                    margin-left: 10px;
+
+                    @media screen and (max-width:991px) {
+                        width: 12px;
+                        height: 8px;
+                        margin-left: 5px;
+                    }
+                }
+
+                &:hover {
+                    color: $secondary-color;
+
+                    .icon {
+                        fill: $secondary-color;
+                    }
+                }
+            }
+        }
+    }
+}

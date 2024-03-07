@@ -1,0 +1,131 @@
+@import '../../../assets/scss/variables.scss';
+
+.footer {
+    margin-top: auto;
+    background: $body-background-light;
+
+    .upper-footer {
+        padding: 3.5rem 0;
+
+        .footer-col1 {
+            @media screen and (max-width:992px) {
+                text-align: left;
+            }
+
+            .logo {
+                max-width: 130px;
+            }
+        }
+
+        .social-btn {
+            display: flex;
+            grid-gap: 10px;
+            margin-top: 1.5rem;
+
+            @media screen and (max-width:992px) {
+                margin-left: 0;
+                margin-bottom: 1.5rem;
+            }
+
+            .ant-btn {
+                width: 30px;
+                height: 30px;
+                min-height: 30px;
+                border-radius: 30px;
+                display: flex;
+                padding: 0;
+                align-items: center;
+                justify-content: center;
+                background: none;
+                border: 1px solid $border-secondary;
+
+                .icon {
+                    width: 12px;
+                    height: 12px;
+                    fill: $primary-color;
+                }
+            }
+        }
+
+        .download-btns {
+            display: flex;
+            grid-gap: 1rem;
+            max-width: 330px;
+            margin-top: 0.5rem;
+
+            @media screen and (max-width:992px) {
+                margin-left: 0;
+                margin-bottom: 2rem;
+            }
+
+            a {
+                border: 1px solid $border-secondary;
+                height: 40px;
+                line-height: 40px;
+                width: 40px;
+                color: $white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 5px;
+                color: $primary-color;
+                transition: all ease-in 0.1s;
+
+                .icon {
+                    fill: $primary-color;
+                    height: 16px;
+                    width: 16px;
+                    transition: all ease-in 0.1s;
+                }
+
+                &:hover {
+                    background: $primary-color;
+                    border-color: $primary-color;
+                    color: $white;
+                    transform: translateY(-4px);
+
+                    .icon {
+                        fill: $white;
+                    }
+                }
+            }
+        }
+
+        h4 {
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+
+            li {
+                padding: 10px 0;
+
+                a {
+                    color: $text-primary;
+                    font-size: 1rem;
+
+                    &:hover {
+                        color: $secondary-color;
+                    }
+                }
+            }
+        }
+    }
+
+    .bottom-footer {
+        text-align: center;
+        padding: 1.2rem 0;
+
+        p {
+            font-size: 0.75rem;
+            color: $primary-color;
+            margin: 0;
+        }
+    }
+}

@@ -1,0 +1,63 @@
+@import '../../../assets/scss/variables.scss';
+
+.checkout-discover-wrapper {
+    .checkout-discover-success {
+        .error-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 100px;
+            border: 1px solid $error-color;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto auto 1.8rem auto;
+
+            .icon {
+                width: 40px;
+                fill: $error-color;
+            }
+        }
+
+        .card-bottom {
+            border-top: 1px solid $border-primary;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.2rem;
+
+            .ant-btn {
+                height: 28px;
+                line-height: 28px;
+                border-radius: 28px;
+                padding: 0 12px;
+                font-size: 12px;
+                display: flex;
+                align-items: center;
+                margin-top: 15px;
+                .icon {
+                    background: $primary-color;
+                    fill: $white;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 12px;
+                    padding: 3px;
+                    margin-right: 3px;
+                }
+            }
+
+            .ant-btn.not-cfm {
+                background: #FFF1EB;
+                color: $primary-color;
+
+                .icon {
+                    background: $primary-color;
+                    fill: $white;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 12px;
+                    padding: 3px;
+                    margin-right: 3px;
+                }
+            }
+        }
+    }
+}

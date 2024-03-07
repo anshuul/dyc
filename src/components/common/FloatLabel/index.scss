@@ -1,0 +1,26 @@
+.float-label {
+  position: relative;
+}
+
+.label {
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 40px;
+  top: 13px;
+  transition: 0.2s ease all;
+  z-index: 2;
+}
+
+.label-float {
+  top: -10px;
+  font-size: 12px;
+  left: 14px;
+  background: #ffffff;
+}
+
+.icon-less {
+  .label {
+    left: 15px;
+  }
+}
