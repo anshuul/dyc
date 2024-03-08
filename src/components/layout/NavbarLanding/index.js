@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Dropdown, Select, Input } from "antd";
 import { Container, SvgIcon, DownloadAppModal } from "../../common";
 import "./index.scss";
-
+import data from "../../../data/data.json";
 import logoImage from "../../../assets/images/logo-light.svg";
 import aedIcon from "../../../assets/images/aed.png";
 import usdIcon from "../../../assets/images/usd.png";
@@ -79,10 +79,24 @@ const initialOptions = [
 
 const NavbarLanding = () => {
   const [searchInput, setSearchInput] = useState("");
-  const [options, setOptions] = useState(initialOptions);
-
+  const [options, setOptions] = useState([]);
   const [visibleDropDown, setVisibleDropDown] = useState(false);
   const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
+
+  useEffect(() => {
+    const allCitiesAndCountries = data.DATA.reduce((acc, country) => {
+      const cities = country.cityList.map((city) => ({
+        value: city.iCityID,
+        label: `${city.vCityName} - ${country.vCountryName}`, // Combine city and country names
+        iCountryID: country.iCountryID,
+        vCountryName: country.vCountryName,
+        vCityName: city.vCityName,
+      }));
+      return [...acc, ...cities];
+    }, []);
+
+    setOptions(allCitiesAndCountries);
+  }, []);
 
   const handleClick = () => {
     setVisibleDropDown(false);
@@ -111,7 +125,7 @@ const NavbarLanding = () => {
 
   const filteredOptions = options.filter((option) =>
     option.label.toLowerCase().includes(searchInput.toLowerCase())
-  ).slice(0, 10);
+  );
 
   const handleSearch = (inputValue) => {
     setSearchInput(inputValue);
@@ -120,6 +134,7 @@ const NavbarLanding = () => {
   const handleSelectChange = () => {
     setSearchInput("");
   };
+  const defaultOptionValue = options.length > 0 ? options[0].value : "UAE";
 
   return (
     <header
@@ -150,7 +165,7 @@ const NavbarLanding = () => {
               <div className="landing-search-right">
                 <label className="select-label">Where to?</label>
                 <Select
-                  defaultValue="v1"
+                  defaultValue={defaultOptionValue}
                   popupClassName="country-drop-search"
                   listHeight={420}
                   suffixIcon={

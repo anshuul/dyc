@@ -1,0 +1,331 @@
+{
+    "DATA": [
+        {
+            "iCountryID": "10",
+            "vCountryName": "UAE",
+            "vMobileCountryCode": "+971",
+            "country_banner": "https://travellerpassapp.com/images/citybanner/countrybanner167955994787211026.png",
+            "countryId": "13063",
+            "gCountryId": "15",
+            "cityList": [
+                {
+                    "iCityID": "8",
+                    "rCityID": "13668",
+                    "vCityName": "Dubai",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner16784526811083874723.webp",
+                    "iCountryID": "10",
+                    "gCityID": "89",
+                    "isExperiences": "Yes",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "Yes",
+                    "isGlobaltix": "No",
+                    "vCountryName": "UAE"
+                },
+                {
+                    "iCityID": "9",
+                    "rCityID": "13236",
+                    "vCityName": "Abu Dhabi",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner16784526931589431898.webp",
+                    "iCountryID": "10",
+                    "gCityID": "0",
+                    "isExperiences": "Yes",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "Yes",
+                    "isGlobaltix": "No",
+                    "vCountryName": "UAE"
+                },
+                {
+                    "iCityID": "15",
+                    "rCityID": "14777,14644,13765,13160",
+                    "vCityName": "Northern Emirates",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner16784528171998569129.webp",
+                    "iCountryID": "10",
+                    "gCityID": "0",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "Yes",
+                    "isGlobaltix": "No",
+                    "vCountryName": "UAE"
+                }
+            ]
+        },
+        {
+            "iCountryID": "143",
+            "vCountryName": "Malaysia",
+            "vMobileCountryCode": "",
+            "country_banner": "https://travellerpassapp.com/images/citybanner/countrybanner1708418977991558188.webp",
+            "countryId": "0",
+            "gCountryId": "6",
+            "cityList": [
+                {
+                    "iCityID": "50",
+                    "rCityID": "",
+                    "vCityName": "Penang",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17066190271846714664.jpg",
+                    "iCountryID": "143",
+                    "gCityID": "32",
+                    "isExperiences": "No",
+                    "isLifestyle": "No",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                },
+                {
+                    "iCityID": "259",
+                    "rCityID": "",
+                    "vCityName": "Kuala Lumpur",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17080649851254613891.webp",
+                    "iCountryID": "143",
+                    "gCityID": "33",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                },
+                {
+                    "iCityID": "260",
+                    "rCityID": "",
+                    "vCityName": "Ipoh",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17080650611870108470.webp",
+                    "iCountryID": "143",
+                    "gCityID": "31",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                },
+                {
+                    "iCityID": "261",
+                    "rCityID": "",
+                    "vCityName": "Johor",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17080653861602571172.webp",
+                    "iCountryID": "143",
+                    "gCityID": "34",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                },
+                {
+                    "iCityID": "262",
+                    "rCityID": "",
+                    "vCityName": "Kota Kinabalu",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17080656862069684373.webp",
+                    "iCountryID": "143",
+                    "gCityID": "29",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                },
+                {
+                    "iCityID": "263",
+                    "rCityID": "",
+                    "vCityName": "Langkawi",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner170806580720876078.webp",
+                    "iCountryID": "143",
+                    "gCityID": "35",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                },
+                {
+                    "iCityID": "264",
+                    "rCityID": "",
+                    "vCityName": "Genting Highlands",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17080659671806078763.webp",
+                    "iCountryID": "143",
+                    "gCityID": "5249",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                },
+                {
+                    "iCityID": "265",
+                    "rCityID": "",
+                    "vCityName": "Melaka",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner1708066136671822198.webp",
+                    "iCountryID": "143",
+                    "gCityID": "123",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                },
+                {
+                    "iCityID": "266",
+                    "rCityID": "",
+                    "vCityName": "Sabah",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17080668162116547791.webp",
+                    "iCountryID": "143",
+                    "gCityID": "5251",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                },
+                {
+                    "iCityID": "269",
+                    "rCityID": "",
+                    "vCityName": "Selangor",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17080669361364757701.webp",
+                    "iCountryID": "143",
+                    "gCityID": "5254",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Malaysia"
+                }
+            ]
+        },
+        {
+            "iCountryID": "202",
+            "vCountryName": "Singapore",
+            "vMobileCountryCode": "",
+            "country_banner": "https://travellerpassapp.com/images/citybanner/countrybanner1708418712666874958.webp",
+            "countryId": "15474",
+            "gCountryId": "1",
+            "cityList": [
+                {
+                    "iCityID": "47",
+                    "rCityID": "23726",
+                    "vCityName": "Singapore",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner1707894108134320533.webp",
+                    "iCountryID": "202",
+                    "gCityID": "1",
+                    "isExperiences": "No",
+                    "isLifestyle": "No",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Singapore"
+                }
+            ]
+        },
+        {
+            "iCountryID": "220",
+            "vCountryName": "Taiwan",
+            "vMobileCountryCode": "",
+            "country_banner": "https://travellerpassapp.com/images/citybanner/countrybanner17084080801824022315.webp",
+            "countryId": "0",
+            "gCountryId": "7",
+            "cityList": [
+                {
+                    "iCityID": "270",
+                    "rCityID": "",
+                    "vCityName": "Taipei",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner1708519498339710991.webp",
+                    "iCountryID": "220",
+                    "gCityID": "36",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Taiwan"
+                },
+                {
+                    "iCityID": "278",
+                    "rCityID": "",
+                    "vCityName": "Kaohsiung",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17086018952007980607.webp",
+                    "iCountryID": "220",
+                    "gCityID": "37",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Taiwan"
+                },
+                {
+                    "iCityID": "279",
+                    "rCityID": "",
+                    "vCityName": "Taichung",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner1708602019561578699.webp",
+                    "iCountryID": "220",
+                    "gCityID": "38",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Taiwan"
+                },
+                {
+                    "iCityID": "280",
+                    "rCityID": "",
+                    "vCityName": "Hualien",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17086018131308627439.webp",
+                    "iCountryID": "220",
+                    "gCityID": "39",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Taiwan"
+                },
+                {
+                    "iCityID": "281",
+                    "rCityID": "",
+                    "vCityName": "Tainan",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17086021031961537426.webp",
+                    "iCountryID": "220",
+                    "gCityID": "40",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Taiwan"
+                },
+                {
+                    "iCityID": "282",
+                    "rCityID": "",
+                    "vCityName": "Yilan",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17086021741138940987.webp",
+                    "iCountryID": "220",
+                    "gCityID": "41",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Taiwan"
+                },
+                {
+                    "iCityID": "283",
+                    "rCityID": "",
+                    "vCityName": "Kenting",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17086019581507959632.webp",
+                    "iCountryID": "220",
+                    "gCityID": "44",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Taiwan"
+                },
+                {
+                    "iCityID": "284",
+                    "rCityID": "",
+                    "vCityName": "Chiayi",
+                    "city_banner": "https://travellerpassapp.com/images/citybanner/citybanner17086017451553150685.webp",
+                    "iCountryID": "220",
+                    "gCityID": "43",
+                    "isExperiences": "No",
+                    "isLifestyle": "Yes",
+                    "isDiscover": "No",
+                    "isGlobaltix": "Yes",
+                    "vCountryName": "Taiwan"
+                }
+            ]
+        }
+    ],
+    "status": 1
+}
