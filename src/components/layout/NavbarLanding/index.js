@@ -29,58 +29,51 @@ const currencies = [
 const initialOptions = [
   {
     value: "v1",
-    label: (
-      <div className="drop-item">
-        <div className="city-icon">
-          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-        </div>{" "}
-        London - United Kingdom
-      </div>
-    ),
+    label: "London - United Kingdom",
   },
   {
     value: "v2",
-    label: (
-      <div className="drop-item">
-        <div className="city-icon">
-          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-        </div>{" "}
-        Louvre Museum - Paris, France
-      </div>
-    ),
+    label: "Louvre Museum - Paris, France",
   },
   {
     value: "v3",
-    label: (
-      <div className="drop-item">
-        <div className="city-icon">
-          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-        </div>{" "}
-        Los Angeles - United States
-      </div>
-    ),
+    label: "Los Angeles - United States",
   },
   {
     value: "v4",
-    label: (
-      <div className="drop-item">
-        <div className="city-icon">
-          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-        </div>{" "}
-        Lucerne - Switzerland
-      </div>
-    ),
+    label: "Lucerne - Switzerland",
   },
   {
     value: "v5",
-    label: (
-      <div className="drop-item">
-        <div className="city-icon">
-          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-        </div>{" "}
-        London Eye - United Kingdom
-      </div>
-    ),
+    label: "London Eye1 - United Kingdom",
+  },
+  {
+    value: "v6",
+    label: "London Eye2 - United Kingdom",
+  },
+  {
+    value: "v7",
+    label: "London Eye3 - United Kingdom",
+  },
+  {
+    value: "v8",
+    label: "London Eye4 - United Kingdom",
+  },
+  {
+    value: "v9",
+    label: "London Eye5 - United Kingdom",
+  },
+  {
+    value: "v10",
+    label: "London Eye6 - United Kingdom",
+  },
+  {
+    value: "v11",
+    label: "London Eye7 - United Kingdom",
+  },
+  {
+    value: "v12",
+    label: "London Eye8 - United Kingdom",
   },
 ];
 
@@ -116,32 +109,16 @@ const NavbarLanding = () => {
     setSelectedCurrencyKey("1");
   };
 
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(searchInput.toLowerCase())
+  ).slice(0, 10);
+
   const handleSearch = (inputValue) => {
     setSearchInput(inputValue);
   };
 
-  const handleEnter = () => {
-    if (searchInput.trim() !== "") {
-      const newOption = {
-        value: `v${options.length + 1}`,
-        label: (
-          <div className="drop-item">
-            <div className="city-icon">
-              <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-            </div>{" "}
-            {searchInput}
-          </div>
-        ),
-      };
-
-      setOptions([newOption, ...options]);
-      setSearchInput(""); // Clear the search input after adding a new option
-    }
-  };
-
-  const handleSelectChange = (selectedValue) => {
-    // Handle the selection change, update searchInput if needed
-    setSearchInput(selectedValue);
+  const handleSelectChange = () => {
+    setSearchInput("");
   };
 
   return (
@@ -187,12 +164,21 @@ const NavbarLanding = () => {
                         className="ant-select-search__field"
                         value={searchInput}
                         onChange={(e) => handleSearch(e.target.value)}
-                        onPressEnter={handleEnter}
                       />
                       {menu}
                     </>
                   )}
-                  options={options}
+                  options={filteredOptions.map((option) => ({
+                    value: option.value,
+                    label: (
+                      <div className="drop-item">
+                        <div className="city-icon">
+                          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
+                        </div>{" "}
+                        {option.label}
+                      </div>
+                    ),
+                  }))}
                   onChange={handleSelectChange} // Handle option selection
                 />
               </div>
