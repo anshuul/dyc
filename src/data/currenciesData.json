@@ -1,0 +1,89 @@
+{
+    "DATA": [
+        {
+            "uCurrencyID": "1",
+            "uCurrency": "AED",
+            "uCurrencyName": "Dirham",
+            "uCurrencySymbol": "AED"
+        },
+        {
+            "uCurrencyID": "13",
+            "uCurrency": "AUD",
+            "uCurrencyName": "Australian Dollar",
+            "uCurrencySymbol": "$"
+        },
+        {
+            "uCurrencyID": "6",
+            "uCurrency": "BHD",
+            "uCurrencyName": "Bahraini Dinar",
+            "uCurrencySymbol": ".د.ب,"
+        },
+        {
+            "uCurrencyID": "7",
+            "uCurrency": "EGP",
+            "uCurrencyName": "Egyptian Pound",
+            "uCurrencySymbol": "ج.م"
+        },
+        {
+            "uCurrencyID": "4",
+            "uCurrency": "EUR",
+            "uCurrencyName": "Euro",
+            "uCurrencySymbol": "€"
+        },
+        {
+            "uCurrencyID": "3",
+            "uCurrency": "GBP",
+            "uCurrencyName": "Pound",
+            "uCurrencySymbol": "£"
+        },
+        {
+            "uCurrencyID": "14",
+            "uCurrency": "INR",
+            "uCurrencyName": "Indian Rupee",
+            "uCurrencySymbol": "₹"
+        },
+        {
+            "uCurrencyID": "9",
+            "uCurrency": "JOD",
+            "uCurrencyName": "Jordanian Dinar",
+            "uCurrencySymbol": "د.ا"
+        },
+        {
+            "uCurrencyID": "11",
+            "uCurrency": "KWD",
+            "uCurrencyName": "Kuwaiti Dinar",
+            "uCurrencySymbol": "د.ك"
+        },
+        {
+            "uCurrencyID": "5",
+            "uCurrency": "OMR",
+            "uCurrencyName": "Omani Rial",
+            "uCurrencySymbol": "ر.ع."
+        },
+        {
+            "uCurrencyID": "8",
+            "uCurrency": "QAR",
+            "uCurrencyName": "Qatari Riyal",
+            "uCurrencySymbol": "ر.ق"
+        },
+        {
+            "uCurrencyID": "10",
+            "uCurrency": "SAR",
+            "uCurrencyName": "Saudi Riyal",
+            "uCurrencySymbol": "﷼."
+        },
+        {
+            "uCurrencyID": "12",
+            "uCurrency": "SGD",
+            "uCurrencyName": "Singapore Dollar",
+            "uCurrencySymbol": "$"
+        },
+        {
+            "uCurrencyID": "2",
+            "uCurrency": "USD",
+            "uCurrencyName": "Dollar",
+            "uCurrencySymbol": "$"
+        }
+    ],
+    "status": 1
+}
