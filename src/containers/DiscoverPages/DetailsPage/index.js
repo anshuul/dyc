@@ -343,40 +343,6 @@ const DetailsPage = () => {
     const [open, setOpen] = useState(false);
     const [dropdownVisible, setDropdownVisible] = useState(false);
 
-    // const [adultCount, setAdultCount] = useState(1);
-    // const [childCount, setChildCount] = useState(0);
-    // const [infantCount, setInfantCount] = useState(0);
-
-    // const handleAdultIncrement = () => {
-    //     setAdultCount(adultCount + 1);
-    // };
-
-    // const handleAdultDecrement = () => {
-    //     if (adultCount > 1) {
-    //         setAdultCount(adultCount - 1);
-    //     }
-    // };
-
-    // const handleChildIncrement = () => {
-    //     setChildCount(childCount + 1);
-    // };
-
-    // const handleChildDecrement = () => {
-    //     if (childCount > 1) {
-    //         setChildCount(childCount - 1);
-    //     }
-    // };
-
-    // const handleInfantIncrement = () => {
-    //     setInfantCount(infantCount + 1);
-    // };
-
-    // const handleInfantDecrement = () => {
-    //     if (infantCount > 1) {
-    //         setInfantCount(infantCount - 1);
-    //     }
-    // };
-
     const [counts, setCounts] = useState({
         adult: 1,
         child: 0,
