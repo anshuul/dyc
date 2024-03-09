@@ -428,11 +428,7 @@ const DetailsPage = () => {
     {
       key: "1",
       label: (
-        <div
-          className="participants-select"
-          onMouseEnter={() => setDropdownVisible(true)}
-          onMouseLeave={() => setDropdownVisible(false)}
-        >
+        <div className="participants-select">
           <h3>Participants</h3>
           {/* Your other components */}
           <div className="participants-row">
@@ -485,11 +481,22 @@ const DetailsPage = () => {
     },
   ];
 
+  const handleDateChange = (date, dateString) => {
+    console.log("Selected Date:", dateString);
+  };
+
+  const handlePromoCodeChange = (e) => {
+    const promoCodeValue = e.target.value;
+    console.log("Entered Promo Code:", promoCodeValue);
+  };
+
   const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
     counts.child
   } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
     counts.infant > 1 ? "s" : ""
   }`;
+
+  console.log("Selected Data:", selectedData);
 
   return (
     <div className="twl-details-wrapper">
@@ -750,15 +757,10 @@ const DetailsPage = () => {
                           <Form.Item name="date" label="DATE">
                             <DatePicker
                               popupClassName="pickdate-drop"
+                              onChange={handleDateChange}
                               icon={false}
                               suffixIcon={false}
                               placeholder="DD / MM / YYYY"
-                              // renderExtraFooter={() => <div>
-                              //     <h3>Pick the Date</h3>
-                              //     <ul>
-                              //         <li></li>
-                              //     </ul>
-                              // </div>}
                             />
                           </Form.Item>
                         </Col>
@@ -844,7 +846,11 @@ const DetailsPage = () => {
                         </Col>
                         <Col>
                           <Form.Item name="pcode" label="PROMO CODE">
-                            <Input value="" placeholder="Enter" />
+                            <Input
+                              value=""
+                              placeholder="Enter"
+                              onChange={handlePromoCodeChange}
+                            />
                           </Form.Item>
                         </Col>
                       </Row>
