@@ -286,50 +286,7 @@ const QaModal2 = () => {
     )
 }
 
-const items = [
-    {
-        key: '1',
-        label: (
-            <div className='participants-select'>
-                <h3>Participants</h3>
-                <QaModal />
-                <div className='participants-row'>
-                    <div className='left-col'>
-                        <h4>Adults</h4>
-                        <label>Age 13+</label>
-                    </div>
-                    <div className='plusminus'>
-                        <Button><SvgIcon name="minus" viewbox="0 0 16.638 2.405" /></Button>
-                        <div className='counts'>1</div>
-                        <Button><SvgIcon name="plus" viewbox="0 0 16.638 17.53" /></Button>
-                    </div>
-                </div>
-                <div className='participants-row'>
-                    <div className='left-col'>
-                        <h4>Children</h4>
-                        <label>Ages 2-12</label>
-                    </div>
-                    <div className='plusminus'>
-                        <Button><SvgIcon name="minus" viewbox="0 0 16.638 2.405" /></Button>
-                        <div className='counts'>1</div>
-                        <Button><SvgIcon name="plus" viewbox="0 0 16.638 17.53" /></Button>
-                    </div>
-                </div>
-                <div className='participants-row'>
-                    <div className='left-col'>
-                        <h4>Infants</h4>
-                        <label>Under 2</label>
-                    </div>
-                    <div className='plusminus'>
-                        <Button><SvgIcon name="minus" viewbox="0 0 16.638 2.405" /></Button>
-                        <div className='counts'>1</div>
-                        <Button><SvgIcon name="plus" viewbox="0 0 16.638 17.53" /></Button>
-                    </div>
-                </div>
-            </div>
-        ),
-    }
-];
+
 
 const reviewerData = [
     {
@@ -384,6 +341,62 @@ const reviewerData = [
 
 const DetailsPage = () => {
     const [open, setOpen] = useState(false);
+    const [dropdownVisible, setDropdownVisible] = useState(false);
+
+    // const [adultCount, setAdultCount] = useState(1);
+    // const [childCount, setChildCount] = useState(0);
+    // const [infantCount, setInfantCount] = useState(0);
+
+    // const handleAdultIncrement = () => {
+    //     setAdultCount(adultCount + 1);
+    // };
+
+    // const handleAdultDecrement = () => {
+    //     if (adultCount > 1) {
+    //         setAdultCount(adultCount - 1);
+    //     }
+    // };
+
+    // const handleChildIncrement = () => {
+    //     setChildCount(childCount + 1);
+    // };
+
+    // const handleChildDecrement = () => {
+    //     if (childCount > 1) {
+    //         setChildCount(childCount - 1);
+    //     }
+    // };
+
+    // const handleInfantIncrement = () => {
+    //     setInfantCount(infantCount + 1);
+    // };
+
+    // const handleInfantDecrement = () => {
+    //     if (infantCount > 1) {
+    //         setInfantCount(infantCount - 1);
+    //     }
+    // };
+
+    const [counts, setCounts] = useState({
+        adult: 1,
+        child: 0,
+        infant: 0
+    });
+
+    const handleIncrement = (type) => {
+        setCounts(prevCounts => ({
+            ...prevCounts,
+            [type]: prevCounts[type] + 1
+        }));
+    };
+
+    const handleDecrement = (type) => {
+        setCounts(prevCounts => ({
+            ...prevCounts,
+            [type]: Math.max(prevCounts[type] - 1, 0)
+        }));
+    };
+
 
     const showDrawer = () => {
         setOpen(true);
@@ -391,7 +404,8 @@ const DetailsPage = () => {
 
     const onClose = () => {
         setOpen(false);
-    };
+    }
+
 
     const detailSlider = {
         dots: false,
@@ -400,6 +414,51 @@ const DetailsPage = () => {
         slidesToShow: 1,
         slidesToScroll: 1,
     };
+
+    const items = [
+        {
+            key: '1',
+            label: (
+                <div className='participants-select' onMouseEnter={() => setDropdownVisible(true)} onMouseLeave={() => setDropdownVisible(false)}>
+                    <h3>Participants</h3>
+                    {/* Your other components */}
+                    <div className='participants-row'>
+                        <div className='left-col'>
+                            <h4>Adults</h4>
+                            <label>Age 13+</label>
+                        </div>
+                        <div className='plusminus'>
+                            <Button onClick={() => handleDecrement('adult')}><SvgIcon name="minus" viewbox="0 0 16.638 2.405" /></Button>
+                            <div className='counts'>{counts.adult}</div>
+                            <Button onClick={() => handleIncrement('adult')}><SvgIcon name="plus" viewbox="0 0 16.638 17.53" /></Button>
+                        </div>
+                    </div>
+                    <div className='participants-row'>
+                        <div className='left-col'>
+                            <h4>Children</h4>
+                            <label>Ages 2-12</label>
+                        </div>
+                        <div className='plusminus'>
+                            <Button onClick={() => handleDecrement('child')}><SvgIcon name="minus" viewbox="0 0 16.638 2.405" /></Button>
+                            <div className='counts'>{counts.child}</div>
+                            <Button onClick={() => handleIncrement('child')}><SvgIcon name="plus" viewbox="0 0 16.638 17.53" /></Button>
+                        </div>
+                    </div>
+                    <div className='participants-row'>
+                        <div className='left-col'>
+                            <h4>Infants</h4>
+                            <label>Under 2</label>
+                        </div>
+                        <div className='plusminus'>
+                            <Button onClick={() => handleDecrement('infant')}><SvgIcon name="minus" viewbox="0 0 16.638 2.405" /></Button>
+                            <div className='counts'>{counts.infant}</div>
+                            <Button onClick={() => handleIncrement('infant')}><SvgIcon name="plus" viewbox="0 0 16.638 17.53" /></Button>
+                        </div>
+                    </div>
+                </div>
+            ),
+        }
+    ];
     return (
         <div className='twl-details-wrapper'>
             <MediaQuery maxWidth={767}>
@@ -629,7 +688,15 @@ const DetailsPage = () => {
                                             <Row>
                                                 <Col>
                                                     <Form.Item name="person" label='PERSON'>
-                                                        <Dropdown menu={{ items }} overlayClassName='participants-drop' trigger={['click']}>
+                                                        <Dropdown
+                                                            menu={{ items }}
+                                                            overlayClassName='participants-drop'
+                                                            trigger={['click']}
+                                                            // onClick={toggleDropdown}
+                                                            visible={dropdownVisible}
+                                                            onVisibleChange={(flag) => setDropdownVisible(flag)}
+
+                                                        >
                                                             <Input suffix={<SvgIcon name='down-arrow' viewbox='0 0 18 9' />} />
                                                         </Dropdown>
                                                     </Form.Item>
@@ -681,7 +748,7 @@ const DetailsPage = () => {
                                 <div className='showphotos-btn' onClick={showDrawer}><span>10</span> SHOW PHOTOS</div>
                                 <div className='left-image'>
                                     <button className='play-btn' onClick={showDrawer}>
-                                        <SvgIcon name='play-icon' viewbox="0 0 48 61"/>
+                                        <SvgIcon name='play-icon' viewbox="0 0 48 61" />
                                     </button>
                                     <img src={DetailsImg1} alt="Experience London skyline" />
                                 </div>
