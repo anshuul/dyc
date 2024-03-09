@@ -1,0 +1,486 @@
+@import '../../../assets/scss/variables.scss';
+
+.mybookingdetails-wrapper {
+    background: $white;
+    min-height: 100vh;
+    padding-top: 60px;
+
+    .mybookingdetails-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+
+        @media screen and (max-width:991px) {
+            flex-direction: column;
+        }
+
+        .mybookingdetails-left {
+            width: 100%;
+
+            .twl-header {
+                h2 {
+                    font-size: 1.875rem;
+                    font-weight: 600;
+                }
+            }
+
+            .twlcontent-inner {
+                padding: 0;
+                width: 98%;
+
+                h3 {
+                    font-size: 20px;
+                    font-weight: 600;
+                    margin-bottom: 15px;
+                }
+            }
+
+            .cancelpolicy-info {
+                padding-bottom: 3rem;
+
+                h3 {
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    font-size: 14px;
+                }
+
+                ul {
+                    list-style-type: none;
+                    padding-left: 0;
+                    margin-bottom: 2rem;
+
+                    li {
+                        font-size: 15px;
+                        padding: 5px 0 5px 30px;
+                        margin-bottom: 0.6rem;
+                        background: url('../../../assets/images/check.svg');
+                        background-repeat: no-repeat;
+                        background-size: 20px;
+                        background-position: 0 4px;
+                    }
+                }
+
+                .needhelp-btn{
+                    font-size: 13px;
+                    height: 35px;
+                    padding: 0 25px;
+                    border-radius: 35px;
+                    display: flex;
+                    align-items: center;
+                    border-color: #D5D5D5;
+                    .icon {
+                        margin-right: 5px;
+                        width: 15px;
+                    }
+                }
+
+                .ant-collapse {
+                    background: none;
+                    border: 0;
+
+                    .ant-collapse-item {
+                        border: 0;
+                        margin-bottom: 0.4rem;
+
+                        .ant-collapse-header {
+                            background: none;
+                            border: 0;
+                            padding: 10px 0;
+                            font-size: 15px;
+
+                            &:hover {
+                                color: $secondary-color;
+                            }
+
+                            .ant-collapse-expand-icon {
+                                height: 20px;
+                                display: flex;
+                                align-items: center;
+                                margin-right: 8px;
+
+                                .icon {
+                                    width: 10px;
+                                    height: 10px;
+
+                                }
+                            }
+                        }
+
+                        &.ant-collapse-item-active {
+                            .ant-collapse-header {
+                                font-weight: 600;
+                            }
+                        }
+
+                        .ant-collapse-content {
+                            border: 0;
+
+
+                            p {
+                                font-size: 14px;
+                            }
+
+                            .ant-collapse-content-box {
+                                padding: 0 0 0 58px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .confirm-details {
+                border-bottom: 1px solid $border-secondary;
+                padding-bottom: 10px;
+                margin-bottom: 1.5rem;
+
+                .dtl-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 1rem;
+
+                    .dtl-left {
+                        p {
+                            margin-bottom: 0;
+                            color: $primary-color;
+                            font-size: 16px;
+                        }
+
+                        label {
+                            color: $text-secondary;
+                            font-size: 14px;
+                        }
+                    }
+
+                    .dtl-right {
+                        font-size: 1rem;
+                        font-weight: 600;
+                        color: $primary-color;
+
+                        .card-icon {
+                            width: 46px;
+                            height: 46px;
+                            border-radius: 46px;
+                            border: 1px solid $border-primary;
+                            margin-left: 6px;
+
+                            img {
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        .mybookingdetails-right {
+            width: 100%;
+            max-width: 372px;
+            margin-left: 1.8rem;
+            box-shadow: 0px 8px 30px #00000007;
+            background: $white;
+            border-radius: 5px;
+
+            @media screen and (max-width:1100px) {
+                max-width: 320px;
+                margin-left: 1rem;
+            }
+
+            @media screen and (max-width:991px) {
+                max-width: 100%;
+                margin-left: 0;
+                margin-top: 1.5rem;
+            }
+
+            .twlcontent-inner {
+                padding: 0.5rem 1.8rem 3rem 1.8rem;
+
+                @media screen and (max-width:400px) {
+                    padding: 0.5rem 1.2rem 3rem 1.2rem;
+                }
+
+                ul.summary-list {
+                    padding-left: 0;
+                    list-style-type: none;
+                    position: relative;
+
+                    .right-tag {
+                        position: absolute;
+                        top: 0;
+                        right: 15px;
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 0 0 5px 5px;
+                        line-height: 1.1;
+                        background: $secondary-color;
+                        text-align: center;
+                        color: $white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-direction: column;
+
+                        p {
+                            margin: 0;
+                            font-size: 14px;
+                        }
+
+                        small {
+                            font-size: 9px;
+                        }
+                    }
+
+                    li {
+                        border-bottom: 1px solid $border-primary;
+                        padding: 1rem 0;
+
+                        &:first-child {
+                            padding-top: 0;
+                        }
+
+                        .image-col {
+                            width: 100%;
+                            height: 145px;
+                            border-radius: 10px;
+                            overflow: hidden;
+                            margin-right: 12px;
+                            margin-bottom: 18px;
+                            overflow: hidden;
+
+                            img {
+                                width: 100%;
+                                min-height: 100%;
+                                object-fit: cover;
+                            }
+
+                        }
+
+                        .list-left {
+                            h3 {
+                                font-size: 1.45rem;
+                                font-weight: 600;
+                                margin-bottom: 10px;
+
+                                @media screen and (max-width:400px) {
+                                    font-size: 1rem;
+                                }
+                            }
+
+                            p {
+                                margin-bottom: 0;
+                                font-size: 0.875rem;
+                                display: flex;
+                                color: $primary-color;
+
+                                .icon {
+                                    width: 8px;
+                                    margin-right: 4px;
+                                    fill: $text-secondary;
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                .payment-details {
+                    margin-bottom: 1.5rem;
+
+                    .discount-row {
+                        font-size: 14px;
+                        margin-bottom: 0.8rem;
+                        line-height: 1.4;
+
+                        b {
+                            display: block;
+                            font-weight: 600;
+                            color: $primary-color;
+                            font-size: 16px;
+                        }
+
+                        label {
+                            color: $text-secondary;
+                            font-size: 14px;
+                            font-weight: normal;
+                        }
+
+                        .text-right {
+                            font-weight: 600;
+                        }
+                    }
+
+                    .bottom-details {
+                        border-top: 1px dashed $border-primary;
+                        margin-top: 1.5rem;
+                        padding-top: 1.5rem;
+                        
+                        @media screen and (max-width:991px) {
+                            margin-bottom: 2rem;
+                        }
+
+                        .barcode-row {
+                            text-align: center;
+
+                            img {
+                                width: 100%;
+                                max-width: 110px;
+                            }
+
+                            h3 {
+                                font-size: 19px;
+                                font-weight: 600;
+                                margin-top: 5px;
+                                margin-bottom: 0;
+                            }
+
+                            p {
+                                color: $text-secondary;
+                                font-size: 12px;
+                                margin-bottom: 0;
+                            }
+                        }
+                        .applewallet-btn {
+                            font-size: 15px;
+                            height: 38px;
+                            padding: 0 25px;
+                            border-radius: 35px;
+                            display: flex;
+                            align-items: center;
+                            border-color: #D5D5D5;
+                            justify-content: center;
+                            margin: auto;
+                        }
+                    }
+
+                }
+
+                .download-row {
+                    display: flex;
+                    grid-gap: 10px;
+
+                    @media screen and (max-width:991px) {
+                        position: fixed;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        width: 100%;
+                        background: #F7F7F7;
+                        padding: 15px;
+                    }
+
+                    .pay-btn {
+                        font-size: 14px;
+                        .icon {
+                            fill: $white;
+                            margin-left: 8px;
+                            width: 13px;
+                        }
+                    }
+
+                    .cancel-btn {
+                        border-color: $border-primary;
+                        font-size: 14px;
+                    }
+
+                    .share-btn {
+                        width: 60px;
+                        padding: 0;
+                        min-width: 60px;
+                        border-color: $border-primary;
+
+                        .icon {
+                            width: 20px;
+                            fill: $primary-color;
+                        }
+
+                        &:hover {
+                            .icon {
+                                fill: $white;
+                            }
+                        }
+                    }
+                }
+
+                .learn-btn {
+                    font-weight: normal;
+                    font-size: 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: auto;
+                    margin-top: 10px;
+
+                    span {
+                        text-decoration: underline;
+                    }
+
+                    .icon {
+                        margin-right: 4px;
+                        fill: $secondary-color;
+                    }
+                }
+
+                .coupon-wrapper {
+                    display: flex;
+                    width: 100%;
+                    margin-top: 30px;
+
+                    .float-label {
+                        width: 100%;
+                        color: $primary-color;
+                    }
+
+                    .ant-input-affix-wrapper {
+                        border-radius: 6px 0 0 6px;
+                    }
+
+                    .ant-input {
+                        margin: 0;
+                        width: 100%;
+                        color: $primary-color;
+                    }
+
+                    .ant-btn {
+                        height: 50px;
+                        line-height: 50px;
+                        border-radius: 0 6px 6px 0;
+                        width: 50px;
+                        font-size: 12px;
+                        min-width: 50px;
+                        padding: 0;
+                    }
+                }
+
+                .success-msg {
+                    font-size: 11px;
+                    display: flex;
+                    align-items: center;
+                    margin-top: 2px;
+
+                    .icon {
+                        width: 12px;
+                        margin-right: 4px;
+                    }
+                }
+
+                .error-msg {
+                    font-size: 11px;
+                    display: flex;
+                    align-items: center;
+                    margin-top: 2px;
+
+                    .icon {
+                        width: 12px;
+                        margin-right: 4px;
+                    }
+                }
+            }
+        }
+    }
+
+}

@@ -1,0 +1,316 @@
+@import '../../assets/scss/variables.scss';
+
+.auth-wrapper {
+    display: flex;
+    max-width: 100vw;
+    width: 100%;
+
+    @media screen and (max-width:767px) {
+        flex-direction: column-reverse;
+    }
+
+    .auth-left {
+        width: 50%;
+        object-fit: fill;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        background: $primary-color;
+
+        @media screen and (max-width:767px) {
+            width: 100%;
+        }
+
+        .dextop-logo {
+            img {
+                max-width: 120px;
+            }
+
+            @media screen and (max-width:767px) {
+                display: none;
+            }
+        }
+
+        .auth-bg {
+            max-height: 100vh;
+            width: 100%;
+        }
+
+        .banner-video {
+            min-height: 100vh;
+            max-height: 100vh;
+            width: 100%;
+            margin: auto;
+            left: 0;
+            right: 0;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+
+        .authleft-inner {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: absolute;
+            width: 100%;
+            padding: 5% 8%;
+            z-index: 1;
+
+            h1 {
+                color: $white;
+                line-height: 1;
+                margin-top: 3rem;
+                font-size: 5rem;
+            }
+
+            .awse-img {
+                width: 70px;
+                height: 70px;
+                border-radius: 18px;
+                object-fit: cover;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1.4rem;
+
+                img {
+                    height: 100%;
+                }
+            }
+
+            h3 {
+                font-size: 1.8rem;
+                font-weight: 600;
+                font-style: italic;
+                margin-bottom: 8px;
+                color: $white;
+                margin-top: 0;
+            }
+
+            p {
+                font-size: 1.8rem;
+                font-style: italic;
+                line-height: 1.4;
+                max-width: 400px;
+                color: $white;
+                margin-bottom: 0;
+                margin-top: 0;
+            }
+
+            .left-name {
+                font-family: 'Ephesis', cursive;
+                color: $white;
+                font-size: 3.5rem;
+                line-height: 1;
+                margin-top: 20px;
+            }
+        }
+    }
+
+    .auth-right {
+        width: 50%;
+        min-height: 100vh;
+        text-align: center;
+        display: flex;
+        align-items: center;
+
+        @media screen and (max-width:767px) {
+            width: 100%;
+            min-height: 80vh;
+        }
+
+        .authright-inner {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            max-width: 700px;
+            margin: auto;
+            width: 100%;
+            padding: 5vh 3vw;
+            min-height: 100vh;
+
+            @media screen and (max-width:1500px) {
+                padding: 5vh 6vw;
+            }
+
+            @media screen and (max-width:767px) {
+                min-height: 80vh;
+            }
+
+            .right-upper {
+                .mobile-logo {
+                    display: none;
+                    text-align: left;
+                    margin-bottom: 2rem;
+
+                    img {
+                        max-width: 120px;
+                    }
+
+                    @media screen and (max-width:767px) {
+                        display: block;
+                    }
+                }
+
+                .upper-inner {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    width: 100%;
+
+                    h2 {
+                        font-size: 2rem;
+                        font-weight: 600;
+                        margin: 0;
+                    }
+
+                    span {
+                        color: #718092;
+                        font-size: 13px;
+                    }
+
+                    .right-head {
+                        text-align: right;
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .auth-upper-btn {
+                        border: 1px solid $border-primary;
+                        height: 30px;
+                        line-height: 28px;
+                        padding: 0 12px;
+                        border-radius: 30px;
+                        font-size: 12px;
+                        font-weight: normal;
+                        margin-left: 10px;
+                        color: $text-primary;
+                        min-width: 64px;
+                        display: inline-block;
+                        text-decoration: none;
+                        text-align: center;
+
+                        &:hover,
+                        &:focus {
+                            color: $secondary-color;
+                            border-color: $secondary-color;
+                        }
+                    }
+                }
+            }
+
+            .right-form {
+                .ant-form-item {
+                    .ant-form-item-label {
+                        margin-bottom: 5px;
+                        padding-left: 0;
+                        font-size: $font-size-base;
+
+                        label {
+                            color: $primary-color;
+                        }
+                    }
+
+                    .ant-input-affix-wrapper {
+                        .ant-input-prefix {
+                            .icon {
+                                width: 20px;
+                                border-radius: 20px;
+                                fill: $primary-color;
+                            }
+
+                            .ccode {
+                                font-weight: 600;
+                                color: $primary-color;
+                                font-size: 1rem;
+                                margin-left: 4px;
+                            }
+                        }
+
+                        .ant-input {
+                            font-size: 1rem;
+
+                            &::placeholder {
+                                font-weight: 600;
+                                color: $primary-color;
+                            }
+                        }
+                    }
+                }
+
+                .agree-check {
+                    text-align: left;
+
+                    label {
+                        font-weight: 500;
+                        align-items: center;
+                        line-height: 1;
+                    }
+
+                    .ant-checkbox {
+                        top: 0;
+                    }
+
+                    .terms-link {
+                        color: $secondary-color;
+                    }
+                }
+            }
+
+            .auth-right-footer {
+                .ant-divider {
+                    color: $primary-color;
+                    font-size: $font-size-base;
+
+                    &::before {
+                        border-top: 1px dashed $border-primary;
+                    }
+
+                    &::after {
+                        border-top: 1px dashed $border-primary;
+                    }
+                }
+
+                ul {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    list-style-type: none;
+                    padding-left: 0;
+                    margin-top: 18px;
+                    margin-bottom: 0;
+
+                    li {
+                        margin: 10px 18px;
+
+                        .ant-btn {
+                            border: 1px solid $border-primary;
+                            padding: 0 5px;
+                            width: 50px;
+                            height: 50px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            .icon {
+                                fill: $primary-color;
+                                margin: auto;
+                                width: 20px;
+                                height: 20px;
+                            }
+
+                            &:hover {
+                                .icon {
+                                    fill: $white;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

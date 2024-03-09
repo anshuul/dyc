@@ -1,0 +1,33 @@
+@import '../../../assets/scss/variables.scss';
+
+.applepay-section{
+    text-align: center;
+    padding: 2rem 0;
+    .upper-icon{
+        background: $body-background-light;
+        width: 133px;
+        height: 133px;
+        border-radius: 133px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        transition: all ease-in 0.1s;
+        .icon{
+            width: 75px;
+            max-height: 60px;
+        }
+        &:hover, &:focus{
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transform: translateY(-10px);
+            background: $body-background-light;
+        }
+    }
+    p{
+        max-width: 280px;
+        margin: auto;
+        font-size: 1rem;
+        font-style: italic;
+        color: $primary-color;
+    }
+}

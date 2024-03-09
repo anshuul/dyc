@@ -1,0 +1,28 @@
+@import '../../../assets/scss/variables.scss';
+
+.footer {
+    margin-top: auto;
+    background: $footer-bg;
+
+    &.small-footer {
+        border-top: 1px solid $border-primary;
+        position: fixed;
+        bottom: 0;
+        width: 100vw;
+        z-index: 9;
+        background: $white;
+    }
+
+    .bottom-footer {
+        text-align: center;
+        padding: 1rem 0;
+        border: 0;
+        border-top: 1px solid $border-primary;
+
+        p {
+            font-size: 0.75rem;
+            color: $primary-color;
+            margin: 0;
+        }
+    }
+}
