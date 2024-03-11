@@ -24,6 +24,7 @@ import "react-calendar/dist/Calendar.css";
 import "../../assets/scss/plugins/slick-slider/slick.min.scss";
 import "../../assets/scss/plugins/slick-slider/slick-theme.min.scss";
 import "./index.scss";
+import { useDispatch, useSelector } from "react-redux";
 
 import BannerImg from "../../assets/images/landing.jpg";
 import testimonialImg from "../../assets/images/testimonial.png";
@@ -49,6 +50,7 @@ import tourImg4 from "../../assets/images/tour4.jpg";
 import howitworkImg from "../../assets/images/howitwork.png";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
+import { selectCheckedItems, setCheckedItems } from "../../slice/categorySlice";
 
 function NextArrow(props) {
   const { className, onClick } = props;
@@ -86,25 +88,26 @@ function PrevArrowClients(props) {
   );
 }
 const LandingPage = () => {
-  const [featuredOfferList, setfeaturedOfferList] = useState([])
+  const [featuredOfferList, setfeaturedOfferList] = useState([]);
   useEffect(() => {
-    apiClient.post(Apis('discoverFeaturedOfferList', 'others', 'guest'), {
-      'iCountryID': '10',
-      'dCurrentLat': '25.2048',
-      'dCurrentLong': '55.2708',
-      'vCityName': 'Dubai',
-      'iCityID': '8'
-    }).then(res => {
-      let FD = res.data.DATA.find((e) => {
-        return e.type === 'Group Banner'
-      }).DATA.discoverbanner
-      setfeaturedOfferList(FD)
-    }).catch(err => console.log(err))
+    apiClient
+      .post(Apis("discoverFeaturedOfferList", "others", "guest"), {
+        iCountryID: "10",
+        dCurrentLat: "25.2048",
+        dCurrentLong: "55.2708",
+        vCityName: "Dubai",
+        iCityID: "8",
+      })
+      .then((res) => {
+        let FD = res.data.DATA.find((e) => {
+          return e.type === "Group Banner";
+        }).DATA.discoverbanner;
+        setfeaturedOfferList(FD);
+      })
+      .catch((err) => console.log(err));
 
-    return () => {
-
-    }
-  }, [])
+    return () => {};
+  }, []);
 
   const Blogdata = [
     {
@@ -194,38 +197,25 @@ const LandingPage = () => {
 
   const isMobile = useMediaQuery({ query: `(max-width: 767px)` });
 
+  const dispatch = useDispatch();
   const [checkedItems, setCheckedItems] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
 
-  const items = [
-    {
-      key: "1",
-      label: (
-        <div className="category-box" key="category-box">
-          <h3>Category</h3>
-          <ul>
-            {[
-              "City Tour",
-              "Attractions",
-              "Water Sport",
-              "Art and culture",
-              "Heritage",
-              "Food and Drinks",
-              "Wellness",
-              "Entertainment",
-            ].map((item, index) => (
-              <li key={index + 1}>
-                {item}{" "}
-                <Checkbox
-                  checked={checkedItems.includes(index + 1)}
-                  onChange={() => handleCheckboxChange(index + 1)}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-      ),
-    },
-  ];
+  useEffect(() => {
+    apiClient
+      .post(Apis("categoryListDiscover", "others", "guest"), {
+        iCountryID: "10",
+        iCityID: "8",
+      })
+      .then((res) => {
+        const categoryListData = res.data?.DATA || [];
+        console.log("Category List:", categoryListData);
+        setCategoryList(categoryListData);
+      })
+      .catch((err) => {
+        console.error("Error fetching category list:", err);
+      });
+  }, []);
 
   const [visible, setVisible] = useState(false);
   const [visibleDate, setVisibleDate] = useState(false);
@@ -233,12 +223,12 @@ const LandingPage = () => {
 
   const [visiblePrice, setVisiblePrice] = useState(false);
 
-  const handleCheckboxChange = (value) => {
+  const handleCheckboxChange = (categoryId) => {
     setCheckedItems((prevItems) => {
-      if (prevItems.includes(value)) {
-        return prevItems.filter((item) => item !== value);
+      if (prevItems.includes(categoryId)) {
+        return prevItems.filter((item) => item !== categoryId);
       } else {
-        return [...prevItems, value];
+        return [...prevItems, categoryId];
       }
     });
   };
@@ -249,7 +239,6 @@ const LandingPage = () => {
 
   const handleShowResultsClick = () => {
     setVisible(false);
-    console.log("Checked items:", checkedItems);
   };
 
   const handleShowDateClick = () => {
@@ -340,13 +329,39 @@ const LandingPage = () => {
         <Container>
           <div className="upperfilters-row">
             <Dropdown
-              menu={{ items }}
+              menu={{
+                items: [
+                  {
+                    key: "1",
+                    label: (
+                      <div className="category-box" key="category-box">
+                        <h3>Category</h3>
+                        <ul>
+                          {categoryList.length > 0 ? (
+                            categoryList.map((category) => (
+                              <li key={category.rCategoryID}>
+                                {category.rCategoryName}{" "}
+                                <Checkbox
+                                  checked={checkedItems.includes(
+                                    category.rCategoryID
+                                  )}
+                                  onChange={() =>
+                                    handleCheckboxChange(category.rCategoryID)
+                                  }
+                                />
+                              </li>
+                            ))
+                          ) : (
+                            <li>No categories found</li>
+                          )}
+                        </ul>
+                      </div>
+                    ),
+                  },
+                ],
+              }}
               visible={visible}
               onVisibleChange={(flag) => setVisible(flag)}
-              overlay={{
-                items,
-                onClick: () => setVisible(false),
-              }}
               overlayClassName="filter-drop"
               trigger={["click"]}
               dropdownRender={(menu) => (
@@ -367,6 +382,7 @@ const LandingPage = () => {
                 Category <SvgIcon name="chevron-bottom" viewbox="0 0 13 8" />
               </button>
             </Dropdown>
+
             <Dropdown
               menu={{ items: dateItems }}
               visible={visibleDate}
@@ -486,33 +502,34 @@ const LandingPage = () => {
                     </div>
                   </Card>
                 </div> */}
-                {featuredOfferList.map((e,i) => {
-                  return  <div key={i}>
-                  <Card
-                    cover={<img alt="example" src={e.discoverBannerImage} />}
-                    data-aos="fade-in"
-                    data-aos-duration="1000"
-                  >
-                    <div className="meta-row">
-                      <div className="meta-left">
-                        <h2>
-                          {e.rgroup_title}
-                        </h2>
-                      </div>
-                      <Button
-                        onClick={() =>
-                          window.open("/group-listing-page", "_self")
+                {featuredOfferList.map((e, i) => {
+                  return (
+                    <div key={i}>
+                      <Card
+                        cover={
+                          <img alt="example" src={e.discoverBannerImage} />
                         }
+                        data-aos="fade-in"
+                        data-aos-duration="1000"
                       >
-                        {" "}
-                        Explore{" "}
-                        <SvgIcon name="arrow-right" viewbox="0 0 14 9" />
-                      </Button>
+                        <div className="meta-row">
+                          <div className="meta-left">
+                            <h2>{e.rgroup_title}</h2>
+                          </div>
+                          <Button
+                            onClick={() =>
+                              window.open("/group-listing-page", "_self")
+                            }
+                          >
+                            {" "}
+                            Explore{" "}
+                            <SvgIcon name="arrow-right" viewbox="0 0 14 9" />
+                          </Button>
+                        </div>
+                      </Card>
                     </div>
-                  </Card>
-                </div>
+                  );
                 })}
-          
               </Sliders>
             </Col>
           </Row>
@@ -612,54 +629,61 @@ const LandingPage = () => {
         </Container>
       </section> */}
 
-      { [1,1,1].map((e)=>{
-        return <section className="tour-section">
-        <Container>
-          <Row className="align-items-center mb-2">
-            <Col>
-              <h1>City Tour</h1>
-            </Col>
-            <Col className="text-right">
-              <Link to="/listing-page">
-                <Button className="more-btn" size="small">
-                  More
-                </Button>
-              </Link>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Sliders className="tour-slider" {...settingsTourSlider}>
-                {TourData.map((item) => (
-                  <div key={item.key}>
-                    <Card
-                      className="tp-item-card"
-                      cover={<img alt="TP List" src={item.image} />}
-                      extra={
-                        <Button>
-                          <SvgIcon name="heart" viewbox="0 0 10.238 9.131" />
-                        </Button>
-                      }
-                      onClick={() => window.open("/details", "_self")}
-                    >
-                      <div className="bottom-row">
-                        <div className="left-col">
-                          <h3>{item.name}</h3>
-                          <div className="price-col">
-                            From <span className="bottomprice">AED 340</span> /
-                            person <span className="off-price">AED 523</span>
+      {[1, 1, 1].map((e) => {
+        return (
+          <section className="tour-section">
+            <Container>
+              <Row className="align-items-center mb-2">
+                <Col>
+                  <h1>City Tour</h1>
+                </Col>
+                <Col className="text-right">
+                  <Link to="/listing-page">
+                    <Button className="more-btn" size="small">
+                      More
+                    </Button>
+                  </Link>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <Sliders className="tour-slider" {...settingsTourSlider}>
+                    {TourData.map((item) => (
+                      <div key={item.key}>
+                        <Card
+                          className="tp-item-card"
+                          cover={<img alt="TP List" src={item.image} />}
+                          extra={
+                            <Button>
+                              <SvgIcon
+                                name="heart"
+                                viewbox="0 0 10.238 9.131"
+                              />
+                            </Button>
+                          }
+                          onClick={() => window.open("/details", "_self")}
+                        >
+                          <div className="bottom-row">
+                            <div className="left-col">
+                              <h3>{item.name}</h3>
+                              <div className="price-col">
+                                From{" "}
+                                <span className="bottomprice">AED 340</span> /
+                                person{" "}
+                                <span className="off-price">AED 523</span>
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        </Card>
                       </div>
-                    </Card>
-                  </div>
-                ))}
-              </Sliders>
-            </Col>
-          </Row>
-        </Container>
-      </section>
-      }) }
+                    ))}
+                  </Sliders>
+                </Col>
+              </Row>
+            </Container>
+          </section>
+        );
+      })}
 
       <section className="howitwork-section">
         <Container>

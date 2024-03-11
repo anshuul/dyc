@@ -13,7 +13,11 @@ import inrIcon from "../../../assets/images/inr.png";
 import eurIcon from "../../../assets/images/eur.png";
 import apiClient from "../../../apiConfig";
 import Apis from "../../../utility/apis";
-import { setSearchInput } from "../../../slice/citySearchSlice";
+import {
+  setSearchInput,
+  setSelectedCity,
+  setCountryCityList,
+} from "../../../slice/citySearchSlice";
 
 const getAppItems = [
   {
@@ -84,8 +88,12 @@ const initialOptions = [
 const NavbarLanding = () => {
   const dispatch = useDispatch();
   const searchInput = useSelector((state) => state.citySearch.searchInput);
-  const [countryCityList, setCountryCityList] = useState([]);
+  const selectedCity = useSelector((state) => state.citySearch.selectedCity);
+  const countryCityList = useSelector(
+    (state) => state.citySearch.countryCityList
+  );
   const [filteredCityList, setFilteredCityList] = useState([]);
+
   const [visibleDropDown, setVisibleDropDown] = useState(false);
   const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
 
@@ -93,16 +101,15 @@ const NavbarLanding = () => {
     apiClient
       .post(Apis("countryCityList", "others", "guest"))
       .then((res) => {
-        let countryCityListData = res.data.DATA;
-        setCountryCityList(countryCityListData);
-        setFilteredCityList(
-          countryCityListData.flatMap((country) => country.cityList)
-        );
+        const data = res.data?.DATA || [];
+        dispatch(setCountryCityList(data)); // Store the entire country city list in Redux state
+        const allCities = data.flatMap((country) => country.cityList);
+        setFilteredCityList(allCities);
       })
       .catch((err) => {
         console.error("Error fetching country city list:", err);
       });
-  }, []);
+  }, [dispatch]);
 
   // Update the filtered city list based on search input
   useEffect(() => {
@@ -149,12 +156,20 @@ const NavbarLanding = () => {
     }
   };
 
-  const handleSelectChange = () => {
-    dispatch(setSearchInput(""));
+  const handleSelectChange = (value, option) => {
+    const cityData = option?.data; // Extract city data from option object
+    if (cityData) {
+      dispatch(setSelectedCity(cityData)); // Dispatch the entire city data object
+      dispatch(setSearchInput(""));
+      console.log("Selected City Object:", cityData);
+    }
   };
-  const defaultOptionValue =
-    filteredCityList.length > 0 ? filteredCityList[0].value : "UAE";
 
+  const defaultOptionValue = selectedCity
+    ? `${selectedCity.vCityName}, ${selectedCity.vCountryName}`
+    : "UAE";
+  // console.log("Search Input:", searchInput);
+  // console.log("Selected City:", selectedCity);
   return (
     <header
       className="landing-main-header"
@@ -210,11 +225,12 @@ const NavbarLanding = () => {
                         <div className="city-icon">
                           <SvgIcon name="map-marker" viewbox="0 0 34 48" />
                         </div>{" "}
-                        {city.vCityName}
+                        {`${city.vCityName}, ${city.vCountryName}`}
                       </div>
                     ),
+                    data: city, // Pass the entire city object as data
                   }))}
-                  onChange={handleSelectChange} // Handle option selection
+                  onChange={handleSelectChange}
                 />
               </div>
             </div>
