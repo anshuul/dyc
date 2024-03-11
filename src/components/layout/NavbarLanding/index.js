@@ -228,7 +228,7 @@ const NavbarLanding = () => {
                         {`${city.vCityName}, ${city.vCountryName}`}
                       </div>
                     ),
-                    data: city, // Pass the entire city object as data
+                    data: city,
                   }))}
                   onChange={handleSelectChange}
                 />
