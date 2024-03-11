@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { SvgIcon } from "../../components/common";
 import { Link, useHistory } from "react-router-dom";
 import { Button, Divider, Checkbox } from "antd";
-import { Form, Input } from "antd";
+import { Form, Input, Select } from "antd";
 import "./index.scss";
 
 import logoImage from "../../assets/images/logo-light.svg";
@@ -11,6 +11,9 @@ import AwesomeImg from "../../assets/images/tp-left.png";
 import VideoOne from "../../assets/video/bg_auth.mp4";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
+import currenciesData from "../../data/currenciesData.json";
+
+const { Option } = Select;
 
 const Signup = () => {
   const history = useHistory();
@@ -24,7 +27,15 @@ const Signup = () => {
 
   const handleInputChange = (e) => {
     const { name, value, checked, type } = e.target;
-    const inputValue = type === "checkbox" ? checked : value;
+    let inputValue = value;
+
+    // Handle select input separately
+    if (type === "checkbox") {
+      inputValue = checked;
+    } else if (type === "select-one") {
+      inputValue = e;
+    }
+
     setFormData({ ...formData, [name]: inputValue });
   };
 
@@ -64,7 +75,8 @@ const Signup = () => {
       const body = {
         vEmail: email,
         vUserName: firstName,
-        appOTP: "bee36616acba2fbf75913601e0f2b69c4e6b4eca836304e60c1faca32a1d36e2",
+        appOTP:
+          "bee36616acba2fbf75913601e0f2b69c4e6b4eca836304e60c1faca32a1d36e2",
         UDID: generateRandomID().toString(),
         eDeviceType: "web",
         vMobileCountryCode: "+971",
@@ -174,11 +186,25 @@ const Signup = () => {
                   name="mobile"
                   value={formData.mobile}
                   onChange={handleInputChange}
-                  prefix={
-                    <>
-                      <SvgIcon name="dubai-flag" viewbox="0 0 42 42" />{" "}
-                      <span className="ccode">+971</span>
-                    </>
+                  addonBefore={
+                    <Select
+                      defaultValue="+971"
+                      onChange={(value) => {
+                        // Update formData or perform other actions based on the selected value
+                        console.log(value);
+                      }}
+                    >
+                      {currenciesData.DATA.map((currency) => (
+                        <Option key={currency.code} value={currency.dial_code}>
+                          <img
+                            src={currency.image}
+                            alt={currency.name}
+                            style={{ width: "20px", marginRight: "5px" }}
+                          />
+                          {currency.dial_code}
+                        </Option>
+                      ))}
+                    </Select>
                   }
                 />
               </Form.Item>
