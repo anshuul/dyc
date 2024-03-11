@@ -17,10 +17,10 @@ const LandingLayout = ({ children, navbar, footer }) => {
         console.log("Start heat api");
         const response = await apiClient.post(Apis("key", "others", "guest"));
         const data = response.data;
-        console.log("Fetched data:", data);
+        console.log("Fetched datass:", data);
         // Dispatch action to store data in Redux
         dispatch(setResponseData(data));
-        localStorage.setItem("responseData", JSON.stringify(data));
+        localStorage.setItem("xApiKey", JSON.stringify(data));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
