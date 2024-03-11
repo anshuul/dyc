@@ -3,13 +3,17 @@ import { Link } from "react-router-dom";
 import { Button, Dropdown, Select, Input } from "antd";
 import { Container, SvgIcon, DownloadAppModal } from "../../common";
 import "./index.scss";
-import data from "../../../data/data.json";
+import { useDispatch, useSelector } from "react-redux";
+
 import logoImage from "../../../assets/images/logo-light.svg";
 import aedIcon from "../../../assets/images/aed.png";
 import usdIcon from "../../../assets/images/usd.png";
 import gbpIcon from "../../../assets/images/gbp.png";
 import inrIcon from "../../../assets/images/inr.png";
 import eurIcon from "../../../assets/images/eur.png";
+import apiClient from "../../../apiConfig";
+import Apis from "../../../utility/apis";
+import { setSearchInput } from "../../../slice/citySearchSlice";
 
 const getAppItems = [
   {
@@ -78,25 +82,37 @@ const initialOptions = [
 ];
 
 const NavbarLanding = () => {
-  const [searchInput, setSearchInput] = useState("");
-  const [options, setOptions] = useState([]);
+  const dispatch = useDispatch();
+  const searchInput = useSelector((state) => state.citySearch.searchInput);
+  const [countryCityList, setCountryCityList] = useState([]);
+  const [filteredCityList, setFilteredCityList] = useState([]);
   const [visibleDropDown, setVisibleDropDown] = useState(false);
   const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
 
   useEffect(() => {
-    const allCitiesAndCountries = data.DATA.reduce((acc, country) => {
-      const cities = country.cityList.map((city) => ({
-        value: city.iCityID,
-        label: `${city.vCityName} - ${country.vCountryName}`, // Combine city and country names
-        iCountryID: country.iCountryID,
-        vCountryName: country.vCountryName,
-        vCityName: city.vCityName,
-      }));
-      return [...acc, ...cities];
-    }, []);
-
-    setOptions(allCitiesAndCountries);
+    apiClient
+      .post(Apis("countryCityList", "others", "guest"))
+      .then((res) => {
+        let countryCityListData = res.data.DATA;
+        setCountryCityList(countryCityListData);
+        setFilteredCityList(
+          countryCityListData.flatMap((country) => country.cityList)
+        );
+      })
+      .catch((err) => {
+        console.error("Error fetching country city list:", err);
+      });
   }, []);
+
+  // Update the filtered city list based on search input
+  useEffect(() => {
+    const filteredList = countryCityList.flatMap((country) =>
+      country.cityList.filter((city) =>
+        city.vCityName.toLowerCase().includes(searchInput.toLowerCase())
+      )
+    );
+    setFilteredCityList(filteredList);
+  }, [countryCityList, searchInput]);
 
   const handleClick = () => {
     setVisibleDropDown(false);
@@ -123,18 +139,21 @@ const NavbarLanding = () => {
     setSelectedCurrencyKey("1");
   };
 
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchInput.toLowerCase())
-  );
-
   const handleSearch = (inputValue) => {
-    setSearchInput(inputValue);
+    dispatch(setSearchInput(inputValue));
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      dispatch(setSearchInput(searchInput));
+    }
   };
 
   const handleSelectChange = () => {
-    setSearchInput("");
+    dispatch(setSearchInput(""));
   };
-  const defaultOptionValue = options.length > 0 ? options[0].value : "UAE";
+  const defaultOptionValue =
+    filteredCityList.length > 0 ? filteredCityList[0].value : "UAE";
 
   return (
     <header
@@ -179,18 +198,19 @@ const NavbarLanding = () => {
                         className="ant-select-search__field"
                         value={searchInput}
                         onChange={(e) => handleSearch(e.target.value)}
+                        onKeyPress={handleKeyPress}
                       />
                       {menu}
                     </>
                   )}
-                  options={filteredOptions.map((option) => ({
-                    value: option.value,
+                  options={filteredCityList.map((city) => ({
+                    value: city.iCityID,
                     label: (
                       <div className="drop-item">
                         <div className="city-icon">
                           <SvgIcon name="map-marker" viewbox="0 0 34 48" />
                         </div>{" "}
-                        {option.label}
+                        {city.vCityName}
                       </div>
                     ),
                   }))}

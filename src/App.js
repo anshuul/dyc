@@ -7,9 +7,11 @@ import AOS from "aos";
 import ScrollToTop from './ScrollToTop';
 import "antd/dist/reset.css";
 import 'aos/dist/aos.css';
+import { Provider } from 'react-redux'
 
 //Svg Sprite
 import svgFile from "./assets/images/svg/svg-sprite.svg";
+import store from "./store";
 
 function App() {
   // AOS.init();
@@ -21,9 +23,8 @@ function App() {
       window.scrollTo(0, 0)
     }, [])
   return (
-    <>
+    <Provider store={store}>
       <SvgSprite url={svgFile} />
-      
       <Router
         history={history}
         basename={process.env.REACT_APP_BASENAME || ""}
@@ -47,7 +48,7 @@ function App() {
           );
         })}
       </Router>
-    </>
+    </Provider>
   );
 }
 

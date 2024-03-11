@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@reduxjs/toolkit": "^2.2.1",
     "@restart/context": "^2.1.4",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
@@ -23,6 +24,7 @@
     "react-lottie": "^1.2.3",
     "react-otp-input": "^2.4.0",
     "react-parallax-tilt": "^1.7.68",
+    "react-redux": "^9.1.0",
     "react-responsive": "^9.0.0-beta.10",
     "react-router-dom": "^5.3.2",
     "react-scripts": "5.0.1",
