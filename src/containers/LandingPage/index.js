@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Row,
@@ -47,6 +47,8 @@ import tourImg2 from "../../assets/images/tour2.jpg";
 import tourImg3 from "../../assets/images/tour3.jpg";
 import tourImg4 from "../../assets/images/tour4.jpg";
 import howitworkImg from "../../assets/images/howitwork.png";
+import apiClient from "../../apiConfig";
+import Apis from "../../utility/apis";
 
 function NextArrow(props) {
   const { className, onClick } = props;
@@ -83,8 +85,27 @@ function PrevArrowClients(props) {
     </div>
   );
 }
-
 const LandingPage = () => {
+  const [featuredOfferList, setfeaturedOfferList] = useState([])
+  useEffect(() => {
+    apiClient.post(Apis('discoverFeaturedOfferList', 'others', 'guest'), {
+      'iCountryID': '10',
+      'dCurrentLat': '25.2048',
+      'dCurrentLong': '55.2708',
+      'vCityName': 'Dubai',
+      'iCityID': '8'
+    }).then(res => {
+      let FD = res.data.DATA.find((e) => {
+        return e.type === 'Group Banner'
+      }).DATA.discoverbanner
+      setfeaturedOfferList(FD)
+    }).catch(err => console.log(err))
+
+    return () => {
+
+    }
+  }, [])
+
   const Blogdata = [
     {
       title: "The Ultimate Children’s Playground",
@@ -417,7 +438,7 @@ const LandingPage = () => {
                 className="handpicks-collection-slider"
                 {...settingsHandpickedCollections}
               >
-                <div>
+                {/* <div>
                   <Card
                     cover={<img alt="example" src={somethingImg1} />}
                     data-aos="fade-in"
@@ -464,17 +485,18 @@ const LandingPage = () => {
                       </Button>
                     </div>
                   </Card>
-                </div>
-                <div>
+                </div> */}
+                {featuredOfferList.map((e,i) => {
+                  return  <div key={i}>
                   <Card
-                    cover={<img alt="example" src={somethingImg3} />}
+                    cover={<img alt="example" src={e.discoverBannerImage} />}
                     data-aos="fade-in"
                     data-aos-duration="1000"
                   >
                     <div className="meta-row">
                       <div className="meta-left">
                         <h2>
-                          Best deals <br /> for you
+                          {e.rgroup_title}
                         </h2>
                       </div>
                       <Button
@@ -489,12 +511,15 @@ const LandingPage = () => {
                     </div>
                   </Card>
                 </div>
+                })}
+          
               </Sliders>
             </Col>
           </Row>
         </Container>
       </section>
-      <section className="tour-section">
+
+      {/* <section className="tour-section">
         <Container>
           <Row className="align-items-center mb-2">
             <Col>
@@ -585,8 +610,10 @@ const LandingPage = () => {
             </Col>
           </Row>
         </Container>
-      </section>
-      <section className="tour-section">
+      </section> */}
+
+      { [1,1,1].map((e)=>{
+        return <section className="tour-section">
         <Container>
           <Row className="align-items-center mb-2">
             <Col>
@@ -632,6 +659,8 @@ const LandingPage = () => {
           </Row>
         </Container>
       </section>
+      }) }
+
       <section className="howitwork-section">
         <Container>
           <Row className="align-items-center">
