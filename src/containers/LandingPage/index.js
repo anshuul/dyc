@@ -372,7 +372,7 @@ const LandingPage = () => {
                       Reset all
                     </Button>
                     <Button type="primary" onClick={handleShowResultsClick}>
-                      Show result
+                      Show results
                     </Button>
                   </div>
                 </div>
