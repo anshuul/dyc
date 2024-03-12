@@ -36,15 +36,7 @@ const EnterOTP = () => {
       };
       console.log("headers here: ", headers);
 
-      const { firstName, email, mobile, agree } = formData;
-
-      // Validate form data
-      if (!firstName || !email || !mobile || !agree) {
-        console.error(
-          "Please fill in all required fields and agree to the terms."
-        );
-        return;
-      }
+      const { firstName, email, mobile } = formData;
 
       // Hash the appOTP using SHA256
       const hashedAppOTP = SHA256(OTP + "Imc@$01tma$sa1@").toString();
@@ -56,6 +48,7 @@ const EnterOTP = () => {
         appOTP: hashedAppOTP,
         UDID: generateRandomID().toString(),
         eDeviceType: "web",
+        vDeviceToken: "",
         vMobileCountryCode: "+971",
         vMobileNo: mobile,
       };

@@ -2,9 +2,10 @@ const guestDiscoverApis = {
   discoverFeaturedOfferList: "/deal/discoverFeaturedOfferList",
   countryCityList: "/deal/countryCityList",
   categoryListDiscover: "/deal/categoryListDiscover",
-  key: "/key" ,
-  signUp: "/admin/prelogin1" ,
-  checkEmail: "/admin/checkEmail" ,
+  key: "/key",
+  signUp: "/admin/prelogin1",
+  checkEmail: "/admin/checkEmailLogin",
+  // checkEmail: "/admin/checkEmail",
   currency: "/discover/currencyList",
 };
 const Apis = (api, type, userType) => {
