@@ -44,7 +44,6 @@ const Signup = () => {
     localStorage.setItem("formData", JSON.stringify(updatedFormData));
   };
 
-
   const handleCheckEmail = async () => {
     try {
       const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
@@ -76,8 +75,18 @@ const Signup = () => {
           JSON.stringify(response.data)
         );
         console.log("first: ", response.data);
-        // Navigate to enter-otp screen
-        history.push("/enter-otp");
+        // Check the MESSAGE and status conditions
+        if (
+          response.data.MESSAGE ===
+            "Looks like you have registered with us already, please login with your email." ||
+          response.data.status === 0
+        ) {
+          // Navigate to login screen
+          history.push("/login");
+        } else {
+          // Navigate to enter-otp screen
+          history.push("/enter-otp");
+        }
       } else {
         console.error("Check email failed: DATA not found in response");
       }

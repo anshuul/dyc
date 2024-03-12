@@ -9,9 +9,16 @@ import userImg from "../../assets/images/top-creator4.png";
 const dateFormat = "YYYY/MM/DD";
 
 const ProfileSettingTab = () => {
-  const [name, setName] = useState("Aryaa Patel");
-  const [email, setEmail] = useState("akp.arvindpatel@gmail.com");
-  const [mobile, setMobile] = useState("+971 525511634");
+  const storedFormData = JSON.parse(localStorage.getItem("formData"));
+
+  const [name, setName] = useState(storedFormData?.firstName || "Aryaa Patel");
+  const [email, setEmail] = useState(
+    storedFormData?.email || "akp.arvindpatel@gmail.com"
+  );
+  const [mobile, setMobile] = useState(
+    storedFormData?.mobile || "+971 525511634"
+  );
+
   const [dob, setDob] = useState("Shivani Patel");
   const [gender, setGender] = useState("male");
   const [maritalStatus, setmaritalStatus] = useState("Marital Status");

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { SvgIcon } from "../../components/common";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Button, Divider } from "antd";
 import { Form, Input } from "antd";
 import "./index.scss";
@@ -9,8 +9,55 @@ import logoImage from "../../assets/images/logo-light.svg";
 import logoImage1 from "../../assets/images/logo.svg";
 import AwesomeImg from "../../assets/images/tp-left.png";
 import VideoOne from "../../assets/video/bg_auth.mp4";
+import { SHA256 } from "crypto-js";
+import Apis from "../../utility/apis";
+import apiClient from "../../apiConfig";
 
 const Login = () => {
+  const history = useHistory();
+  const [email, setEmail] = useState();
+
+  const handleCheckEmail = async () => {
+    try {
+      const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
+
+      // Set the X-API-KEY header using the xApiKey key
+      const headers = {
+        "X-API-KEY": xApiKey?.key || "",
+      };
+      // Validate form data
+
+      if (!email) {
+        console.error("Please provide an email address.");
+        return;
+      }
+
+      console.log("Start heating");
+      // Send checkEmail request
+      const response = await apiClient.post(
+        Apis("checkEmailLogin", "others", "guest"),
+        { vEmail: email },
+        { headers: headers }
+      );
+
+      // Handle the response and proceed accordingly
+      if (response.data) {
+        // Store necessary information for OTP verification
+        // localStorage.setItem(
+        //   "otpVerificationData",
+        //   JSON.stringify(response.data)
+        // );
+        console.log("first: ", response.data);
+        // Navigate to enter-otp screen
+        history.push("/enter-otp");
+      } else {
+        console.error("Check email failed: DATA not found in response");
+      }
+    } catch (error) {
+      console.error("Error checking email:", error);
+    }
+  };
+
   return (
     <div className="auth-wrapper">
       <div className="auth-left">
@@ -66,11 +113,17 @@ const Login = () => {
                 <Input
                   prefix={<SvgIcon name="email-icon" viewbox="0 0 30 30" />}
                   placeholder="Enter"
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </Form.Item>
               <Form.Item className="m-0 py-3">
                 <Link to="/enter-otp">
-                  <Button type="primary" htmlType="submit" block>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    block
+                    onClick={handleCheckEmail}
+                  >
                     Log In
                   </Button>
                 </Link>
