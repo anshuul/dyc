@@ -36,79 +36,53 @@ const Signup = () => {
       inputValue = e;
     }
 
-    setFormData({ ...formData, [name]: inputValue });
+    // Update form data and store in localStorage
+    const updatedFormData = { ...formData, [name]: inputValue };
+    setFormData(updatedFormData);
+
+    // Store in localStorage
+    localStorage.setItem("formData", JSON.stringify(updatedFormData));
   };
 
-  const generateRandomID = () => {
-    // Generate a random number between 100000 and 999999 (inclusive)
-    return Math.floor(Math.random() * 900000) + 100000;
-  };
 
-  const handleSignup = async (values) => {
+  const handleCheckEmail = async () => {
     try {
-      console.log("Start heat sign api");
-
-      // Get the xApiKey from localStorage
       const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
 
       // Set the X-API-KEY header using the xApiKey key
       const headers = {
         "X-API-KEY": xApiKey?.key || "",
       };
-      console.log("headers here: ", headers);
-
-      const { firstName, email, mobile, agree } = formData;
-
       // Validate form data
-      if (!firstName || !email || !mobile || !agree) {
-        console.error(
-          "Please fill in all required fields and agree to the terms."
-        );
+      const { email } = formData;
+      if (!email) {
+        console.error("Please provide an email address.");
         return;
       }
 
-      // Concatenate appOTP with the key
-      const appOTP =
-        "bee36616acba2fbf75913601e0f2b69c4e6b4eca836304e60c1faca32a1d36e2" +
-        "Imc@$01tma$sa1@";
-
-      const body = {
-        vEmail: email,
-        vUserName: firstName,
-        appOTP:
-          "bee36616acba2fbf75913601e0f2b69c4e6b4eca836304e60c1faca32a1d36e2",
-        UDID: generateRandomID().toString(),
-        eDeviceType: "web",
-        vMobileCountryCode: "+971",
-        vMobileNo: mobile,
-      };
-
-      // Send the signup request
+      console.log("Start heating");
+      // Send checkEmail request
       const response = await apiClient.post(
-        Apis("signUp", "others", "guest"),
-        body,
-        { headers }
+        Apis("checkEmail", "others", "guest"),
+        { vEmail: email },
+        { headers: headers }
       );
 
-      //   Check if the response contains DATA property
+      // Handle the response and proceed accordingly
       if (response.data) {
-        localStorage.setItem("signUpData", JSON.stringify(response.data));
-        console.log("Signup successful DATA:", response.data);
+        // Store necessary information for OTP verification
+        localStorage.setItem(
+          "otpVerificationData",
+          JSON.stringify(response.data)
+        );
+        console.log("first: ", response.data);
+        // Navigate to enter-otp screen
         history.push("/enter-otp");
       } else {
-        console.error("Signup failed: DATA not found in response");
+        console.error("Check email failed: DATA not found in response");
       }
-
-      // Call the otpSend API
-      // const otpResponse = await apiClient.post(
-      //   Apis("otpSend", "others", "guest"),
-      //   { vEmail: email },
-      //   { headers }
-      // );
-
-      //   console.log("OTP sent successfully:", otpResponse.data);
     } catch (error) {
-      console.error("Error signing up:", error);
+      console.error("Error checking email:", error);
     }
   };
 
@@ -223,7 +197,7 @@ const Signup = () => {
                   type="primary"
                   htmlType="button"
                   block
-                  onClick={handleSignup}
+                  onClick={handleCheckEmail}
                   disabled={
                     !formData.firstName ||
                     !formData.email ||

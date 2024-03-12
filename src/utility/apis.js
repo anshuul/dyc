@@ -4,8 +4,8 @@ const guestDiscoverApis = {
   categoryListDiscover: "/deal/categoryListDiscover",
   key: "/key" ,
   signUp: "/admin/prelogin1" ,
+  checkEmail: "/admin/checkEmail" ,
   currency: "/discover/currencyList",
-  otpSend: "/admin/checkEmail",
 };
 const Apis = (api, type, userType) => {
   if (type === "others" && userType === "guest") {
