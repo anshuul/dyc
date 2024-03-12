@@ -71,7 +71,7 @@ const EnterOTP = () => {
       if (response.data) {
         localStorage.setItem("signUpData", JSON.stringify(response.data));
         console.log("Signup successful DATA:", response.data);
-        history.push("/enter-otp");
+        history.push("/profile-setting");
       } else {
         console.error("Signup failed: DATA not found in response");
       }
