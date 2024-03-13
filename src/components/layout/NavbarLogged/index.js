@@ -243,15 +243,35 @@ const NavbarLogged = () => {
               placement="bottomRight"
             >
               <Button className="user-right-btn">
-                {userData && (
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
+                {userData ? (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        color: "#333",
+                      }}
+                    >
                       {userData.DATA.vUserName}
                     </p>
-                    <div className="user-rightbtn-img" style={{ marginLeft: '8px' }}>
-                      <img src={userImage} alt="Amelia" style={{ borderRadius: '50%', width: '30px', height: '30px' }} />
+                    <div
+                      className="user-rightbtn-img"
+                      style={{ marginLeft: "8px" }}
+                    >
+                      <img
+                        src={userImg}
+                        alt="Amelia"
+                        style={{
+                          borderRadius: "50%",
+                          width: "30px",
+                          height: "30px",
+                        }}
+                      />
                     </div>
                   </div>
+                ) : (
+                  "Sign in"
                 )}
               </Button>
             </Dropdown>

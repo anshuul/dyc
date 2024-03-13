@@ -386,11 +386,24 @@ const NavbarInner = () => {
               >
                 <Button className="user-right-btn">
                   {userData ? (
-                    <>
-                      <div className="user-rightbtn-img">
-                        <img src={userImg} alt={userData.firstName} />
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          color: "#333",
+                        }}
+                      >
+                        {userData.DATA.vUserName}
+                      </p>
+                      <div
+                        className="user-rightbtn-img"
+                        style={{ marginLeft: "8px" }}
+                      >
+                        <img src={userImg} alt="img" />
                       </div>
-                    </>
+                    </div>
                   ) : (
                     "Sign in"
                   )}
