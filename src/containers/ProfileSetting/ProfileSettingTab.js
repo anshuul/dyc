@@ -9,20 +9,37 @@ import userImg from "../../assets/images/top-creator4.png";
 const dateFormat = "YYYY/MM/DD";
 
 const ProfileSettingTab = () => {
-  const storedFormData = JSON.parse(localStorage.getItem("formData"));
+  const storedFormData = JSON.parse(localStorage.getItem("userData"));
+  console.log("storedFormData: ", storedFormData);
+  const userData = storedFormData.DATA;
 
-  const [name, setName] = useState(storedFormData?.firstName || "Aryaa Patel");
-  const [email, setEmail] = useState(
-    storedFormData?.email || "akp.arvindpatel@gmail.com"
+  const generateNameFromEmail = (email) => {
+    const parts = email?.split("@");
+    if (!parts || parts.length < 2) {
+      return ""; // or any default value you prefer
+    }
+    const username = parts[0];
+    // Capitalize the first letter of each word
+    return username
+      .split(".")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+  };
+
+  const [name, setName] = useState(
+    userData?.vUserName
+      ? userData.vUserName
+      : generateNameFromEmail(userData?.vEmail)
   );
+  const [email, setEmail] = useState(userData?.vEmail);
   const [mobile, setMobile] = useState(
-    storedFormData?.mobile || "+971 525511634"
+    `${userData?.vMobileCountryCode} ${userData?.vMobileNo}`
   );
 
-  const [dob, setDob] = useState("Shivani Patel");
-  const [gender, setGender] = useState("male");
-  const [maritalStatus, setmaritalStatus] = useState("Marital Status");
-  const [minimumSpend, setminimumSpend] = useState("54 AED");
+  const [dob, setDob] = useState(userData?.dBirthdate);
+  const [gender, setGender] = useState(userData?.eGender);
+  const [maritalStatus, setmaritalStatus] = useState(userData?.eMaritalStatus);
+  const [minimumSpend, setminimumSpend] = useState(userData?.tCurrency);
   return (
     <div className="right-tab-inner">
       <h1 className="tab-heading">Profile Setting</h1>
@@ -68,7 +85,6 @@ const ProfileSettingTab = () => {
           <Form.Item className="icon-less">
             <FloatLabel label="Gender" name="gender" value={gender}>
               <Select
-                defaultValue="male"
                 suffixIcon={false}
                 options={[
                   { value: "male", label: "Male" },

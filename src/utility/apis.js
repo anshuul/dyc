@@ -4,6 +4,7 @@ const guestDiscoverApis = {
   categoryListDiscover: "/deal/categoryListDiscover",
   key: "/key",
   signUp: "/admin/prelogin1",
+  login: "/admin/doLogin",
   checkEmailLogin: "/admin/checkEmailLogin",
   checkEmail: "/admin/checkEmail",
   currency: "/discover/currencyList",

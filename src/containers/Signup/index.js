@@ -69,11 +69,7 @@ const Signup = () => {
 
       // Handle the response and proceed accordingly
       if (response.data) {
-        // Store necessary information for OTP verification
-        localStorage.setItem(
-          "otpVerificationData",
-          JSON.stringify(response.data)
-        );
+        
         console.log("first: ", response.data);
         // Check the MESSAGE and status conditions
         if (
@@ -82,10 +78,10 @@ const Signup = () => {
           response.data.status === 0
         ) {
           // Navigate to login screen
-          history.push("/login");
+          history.replace("/login");
         } else {
           // Navigate to enter-otp screen
-          history.push("/enter-otp");
+          history.replace("/enter-otp");
         }
       } else {
         console.error("Check email failed: DATA not found in response");

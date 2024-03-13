@@ -12,10 +12,13 @@ import VideoOne from "../../assets/video/bg_auth.mp4";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
 import { SHA256 } from "crypto-js";
+import { useSelector } from "react-redux";
 
-const EnterOTP = () => {
+const EnterOTPLogin = () => {
   const history = useHistory();
+  const emailFromRedux = useSelector((state) => state.auth.email); 
   const [OTP, setOTP] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const generateRandomID = () => {
     // Generate a random number between 100000 and 999999 (inclusive)
@@ -28,7 +31,6 @@ const EnterOTP = () => {
 
       // Get the xApiKey from localStorage
       const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
-      const formData = JSON.parse(localStorage.getItem("formData"));
 
       // Set the X-API-KEY header using the xApiKey key
       const headers = {
@@ -36,35 +38,36 @@ const EnterOTP = () => {
       };
       console.log("headers here: ", headers);
 
-      const { firstName, email, mobile } = formData;
-
       // Hash the appOTP using SHA256
       const hashedAppOTP = SHA256(OTP + "Imc@$01tma$sa1@").toString();
       console.log("hashedAppOTP: ", hashedAppOTP);
 
       const body = {
-        vEmail: email,
-        vUserName: firstName,
+        vEmail: emailFromRedux,
         appOTP: hashedAppOTP,
         UDID: generateRandomID().toString(),
         eDeviceType: "web",
         vDeviceToken: "",
-        vMobileCountryCode: "+971",
-        vMobileNo: mobile,
       };
 
       // Send the signup request
       const response = await apiClient.post(
-        Apis("signUp", "others", "guest"),
+        Apis("login", "others", "guest"),
         body,
         { headers }
       );
 
-      //   Check if the response contains DATA property
+      // Check if the response contains DATA property
       if (response.data) {
-        localStorage.setItem("userData", JSON.stringify(response.data));
-        console.log("Signup successful DATA:", response.data);
-        history.replace("/");
+        if (response.data.status === 1) {
+          console.log("Signup successful DATA:", response.data);
+          localStorage.setItem("userData", JSON.stringify(response.data));
+          history.replace("/");
+        } else if (response.data.status === 0) {
+          setErrorMessage(response.data.MESSAGE); // Set error message
+        } else {
+          console.error("Unknown status:", response.data.status);
+        }
       } else {
         console.error("Signup failed: DATA not found in response");
       }
@@ -139,15 +142,20 @@ const EnterOTP = () => {
                   </div>
                 </div>
                 <div className="mt-auto">
+                  {errorMessage && (
+                    <p style={{ color: "red", marginTop: "10px" }}>
+                      {errorMessage}
+                    </p>
+                  )}
                   <Form.Item className="m-0 py-3">
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        onClick={handleDoneClick}
-                        block
-                      >
-                        Done
-                      </Button>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      onClick={handleDoneClick}
+                      block
+                    >
+                      Done
+                    </Button>
                   </Form.Item>
                 </div>
               </div>
@@ -159,4 +167,4 @@ const EnterOTP = () => {
   );
 };
 
-export default EnterOTP;
+export default EnterOTPLogin;

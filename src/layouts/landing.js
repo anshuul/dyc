@@ -1,16 +1,11 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Footer, NavbarLanding } from "../components/layout";
-import { useDispatch, useSelector } from "react-redux";
+import { Footer, NavbarLanding, NavbarLogged } from "../components/layout";
 import Apis from "../utility/apis";
 import apiClient from "../apiConfig";
-import { selectResponseData, setResponseData } from "../slice/responseSlice";
 
 const LandingLayout = ({ children, navbar, footer }) => {
-  const dispatch = useDispatch();
-  const responseData = useSelector(selectResponseData);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -19,8 +14,7 @@ const LandingLayout = ({ children, navbar, footer }) => {
         const data = response.data;
         console.log("Fetched datass:", data);
         // Dispatch action to store data in Redux
-        dispatch(setResponseData(data));
-        localStorage.setItem("xApiKey", JSON.stringify(data));
+        localStorage.setItem("xApiKey", JSON.stringify(data.key));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -28,12 +22,14 @@ const LandingLayout = ({ children, navbar, footer }) => {
 
     fetchData();
   }, []);
-  console.log("Redux store response data:", responseData);
+
+  // Check if userData is present in localStorage
+  const userData = JSON.parse(localStorage.getItem("userData"));
 
   return (
     <React.Fragment>
       <div className="landing-wrapper">
-        {!navbar && <NavbarLanding />}
+        {userData ? <NavbarLogged /> : <NavbarLanding />}
         <main>{children}</main>
         {!footer && <Footer />}
       </div>

@@ -9,13 +9,19 @@ import logoImage from "../../assets/images/logo-light.svg";
 import logoImage1 from "../../assets/images/logo.svg";
 import AwesomeImg from "../../assets/images/tp-left.png";
 import VideoOne from "../../assets/video/bg_auth.mp4";
-import { SHA256 } from "crypto-js";
 import Apis from "../../utility/apis";
 import apiClient from "../../apiConfig";
+import { useDispatch, useSelector } from "react-redux";
+import { setEmail as setEmailAction } from "../../slice/authSlice";
 
 const Login = () => {
   const history = useHistory();
-  const [email, setEmail] = useState();
+  const dispatch = useDispatch();
+  const emailFromRedux = useSelector((state) => state.auth.email);
+  console.log("Hello");
+  console.log("emailFromRedux: ", emailFromRedux);
+  const [email, setEmail] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleCheckEmail = async () => {
     try {
@@ -27,7 +33,7 @@ const Login = () => {
       };
       // Validate form data
 
-      if (!email) {
+      if (!emailFromRedux) {
         console.error("Please provide an email address.");
         return;
       }
@@ -36,22 +42,24 @@ const Login = () => {
       // Send checkEmail request
       const response = await apiClient.post(
         Apis("checkEmailLogin", "others", "guest"),
-        { vEmail: email },
+        { vEmail: emailFromRedux },
         { headers: headers }
       );
 
       // Handle the response and proceed accordingly
       if (response.data) {
-        // Store necessary information for OTP verification
-        // localStorage.setItem(
-        //   "otpVerificationData",
-        //   JSON.stringify(response.data)
-        // );
         console.log("first: ", response.data);
-        // Navigate to enter-otp screen
-        history.push("/enter-otp");
-      } else {
-        console.error("Check email failed: DATA not found in response");
+        if (response.data.status === 1) {
+          // Email is registered, navigate to enter-otp screen
+          dispatch(setEmailAction(emailFromRedux));
+
+          history.replace("/enter-otp-login");
+        } else if (response.data.status === 0) {
+          // Email is not registered, set error message
+          setErrorMessage(response.data.MESSAGE);
+        } else {
+          console.error("Unknown status:", response.data.status);
+        }
       }
     } catch (error) {
       console.error("Error checking email:", error);
@@ -113,20 +121,22 @@ const Login = () => {
                 <Input
                   prefix={<SvgIcon name="email-icon" viewbox="0 0 30 30" />}
                   placeholder="Enter"
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={emailFromRedux || ""}
+                  onChange={(e) => dispatch(setEmailAction(e.target.value))}
                 />
               </Form.Item>
+              {/* Display error message if present */}
+              {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
               <Form.Item className="m-0 py-3">
-                <Link to="/enter-otp">
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    block
-                    onClick={handleCheckEmail}
-                  >
-                    Log In
-                  </Button>
-                </Link>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  onClick={handleCheckEmail}
+                  disabled={!emailFromRedux}
+                >
+                  Log In
+                </Button>
               </Form.Item>
             </Form>
           </div>

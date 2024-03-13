@@ -32,6 +32,7 @@ import EnterOTP from "./containers/EnterOTP";
 import GroupListingPage from "./containers/GroupListingPage";
 import RaynaDetailsPage from "./containers/DiscoverPages/RaynaDetailsPage";
 import MyBookingDetailsNoQr from "./containers/ProfileSetting/MyBookingDetailsNoQr";
+import EnterOTPLogin from "./containers/EnterOTP-Login";
 
 export const rotues = [
   {
@@ -55,6 +56,11 @@ export const rotues = [
     path: "/enter-otp",
     layout: authLayout,
     component: () => <EnterOTP />,
+  },
+  {
+    path: "/enter-otp-login",
+    layout: authLayout,
+    component: () => <EnterOTPLogin />,
   },
   {
     path: "/signup",
