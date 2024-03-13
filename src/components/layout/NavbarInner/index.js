@@ -369,13 +369,6 @@ const NavbarInner = () => {
                 AED
               </div>
             </Dropdown>
-            {/* <Button
-              onClick={() => window.open("/login", "_self")}
-              className="login-btn"
-              size="small"
-            >
-              Sign in <SvgIcon name="user-alt" viewbox="0 0 8 9" />
-            </Button> */}
             {!userData && (
               <Button
                 onClick={() => window.open("/login", "_self")}

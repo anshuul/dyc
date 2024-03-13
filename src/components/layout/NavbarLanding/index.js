@@ -262,7 +262,7 @@ const NavbarLanding = () => {
     }
   };
 
-  const handleSelectChange = (value, option) => {
+  const handleSelectChange = (option) => {
     const cityData = option?.data; // Extract city data from option object
     if (cityData) {
       dispatch(setSelectedCity(cityData)); // Dispatch the entire city data object
