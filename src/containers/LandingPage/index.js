@@ -109,6 +109,32 @@ const LandingPage = () => {
     return () => {};
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Check if xApiKey already exists in localStorage
+        const existingApiKey = localStorage.getItem("xApiKey");
+        if (existingApiKey) {
+          console.log("xApiKey already exists:", existingApiKey);
+          return; // If xApiKey exists, exit the function
+        }
+
+        // If xApiKey doesn't exist, fetch it
+        console.log("Start heating api");
+        const response = await apiClient.post(Apis("key", "others", "guest"));
+        const data = response.data;
+        console.log("Fetched data:", data);
+
+        // Dispatch action to store data in Redux
+        localStorage.setItem("xApiKey", JSON.stringify(data.key));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const Blogdata = [
     {
       title: "The Ultimate Children’s Playground",
@@ -197,10 +223,9 @@ const LandingPage = () => {
 
   const isMobile = useMediaQuery({ query: `(max-width: 767px)` });
 
-  const dispatch = useDispatch();
   const [checkedItems, setCheckedItems] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-
+  console.log("categoryListDiscover");
   useEffect(() => {
     apiClient
       .post(Apis("categoryListDiscover", "others", "guest"), {

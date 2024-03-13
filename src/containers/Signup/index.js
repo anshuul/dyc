@@ -46,12 +46,11 @@ const Signup = () => {
 
   const handleCheckEmail = async () => {
     try {
-      const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
-
       // Set the X-API-KEY header using the xApiKey key
-      const headers = {
-        "X-API-KEY": xApiKey?.key || "",
-      };
+      // const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
+      // const headers = {
+      //   "X-API-KEY": xApiKey?.key || "",
+      // };
       // Validate form data
       const { email } = formData;
       if (!email) {
@@ -59,18 +58,15 @@ const Signup = () => {
         return;
       }
 
-      console.log("Start heating");
       // Send checkEmail request
       const response = await apiClient.post(
         Apis("checkEmail", "others", "guest"),
         { vEmail: email },
-        { headers: headers }
+        // { headers: headers }
       );
 
       // Handle the response and proceed accordingly
       if (response.data) {
-        
-        console.log("first: ", response.data);
         // Check the MESSAGE and status conditions
         if (
           response.data.MESSAGE ===
@@ -78,10 +74,10 @@ const Signup = () => {
           response.data.status === 0
         ) {
           // Navigate to login screen
-          history.replace("/login");
+          history.push("/login");
         } else {
           // Navigate to enter-otp screen
-          history.replace("/enter-otp");
+          history.push("/enter-otp");
         }
       } else {
         console.error("Check email failed: DATA not found in response");

@@ -24,23 +24,19 @@ const EnterOTP = () => {
 
   const handleDoneClick = async () => {
     try {
-      console.log("Start heat sign api");
-
       // Get the xApiKey from localStorage
-      const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
       const formData = JSON.parse(localStorage.getItem("formData"));
-
+      
       // Set the X-API-KEY header using the xApiKey key
-      const headers = {
-        "X-API-KEY": xApiKey?.key || "",
-      };
-      console.log("headers here: ", headers);
+      // const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
+      // const headers = {
+      //   "X-API-KEY": xApiKey || "",
+      // };
 
       const { firstName, email, mobile } = formData;
 
       // Hash the appOTP using SHA256
       const hashedAppOTP = SHA256(OTP + "Imc@$01tma$sa1@").toString();
-      console.log("hashedAppOTP: ", hashedAppOTP);
 
       const body = {
         vEmail: email,
@@ -57,7 +53,7 @@ const EnterOTP = () => {
       const response = await apiClient.post(
         Apis("signUp", "others", "guest"),
         body,
-        { headers }
+        // { headers }
       );
 
       //   Check if the response contains DATA property
@@ -140,14 +136,14 @@ const EnterOTP = () => {
                 </div>
                 <div className="mt-auto">
                   <Form.Item className="m-0 py-3">
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        onClick={handleDoneClick}
-                        block
-                      >
-                        Done
-                      </Button>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      onClick={handleDoneClick}
+                      block
+                    >
+                      Done
+                    </Button>
                   </Form.Item>
                 </div>
               </div>

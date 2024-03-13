@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 
 const EnterOTPLogin = () => {
   const history = useHistory();
-  const emailFromRedux = useSelector((state) => state.auth.email); 
+  const emailFromRedux = useSelector((state) => state.auth.email);
   const [OTP, setOTP] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -27,17 +27,13 @@ const EnterOTPLogin = () => {
 
   const handleDoneClick = async () => {
     try {
-      console.log("Start heat sign api");
-
       // Get the xApiKey from localStorage
       const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
 
       // Set the X-API-KEY header using the xApiKey key
-      const headers = {
-        "X-API-KEY": xApiKey?.key || "",
-      };
-      console.log("headers here: ", headers);
-
+      //   const headers = {
+      //     "X-API-KEY": xApiKey || "",
+      //   };
       // Hash the appOTP using SHA256
       const hashedAppOTP = SHA256(OTP + "Imc@$01tma$sa1@").toString();
       console.log("hashedAppOTP: ", hashedAppOTP);
@@ -53,8 +49,8 @@ const EnterOTPLogin = () => {
       // Send the signup request
       const response = await apiClient.post(
         Apis("login", "others", "guest"),
-        body,
-        { headers }
+        body
+        // { headers }
       );
 
       // Check if the response contains DATA property

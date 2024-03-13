@@ -6,4 +6,12 @@ import defaultDetailsLayout from "./defaultdetails";
 import defaultPagesLayout from "./defaultpages";
 import profileLayout from "./profile";
 
-export { defaultLayout, authLayout, landingLayout, defaultListingLayout, defaultDetailsLayout, defaultPagesLayout, profileLayout };
+export {
+  defaultLayout,
+  authLayout,
+  landingLayout,
+  defaultListingLayout,
+  defaultDetailsLayout,
+  defaultPagesLayout,
+  profileLayout,
+};

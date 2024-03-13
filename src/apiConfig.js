@@ -1,18 +1,16 @@
 import axios from "axios";
 
 const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
-const signUpData = JSON.parse(localStorage.getItem("signUpData"));
-const accessToken = signUpData?.accesstoken;
-const uCurrency = signUpData?.tCurrency;
-const iUserId = signUpData?.iUserID;
-
-console.log("accesstoken: ", accessToken);
+const userData = JSON.parse(localStorage.getItem("userData"));
+const accessToken = userData?.accesstoken;
+const uCurrency = userData?.tCurrency;
+const iUserId = userData?.iUserID;
 
 const apiClient = axios.create({
   baseURL: "/wsDiscover1.2Test",
   headers: {
     "Content-Type": "application/json",
-    "X-API-KEY": xApiKey,
+    "X-API-KEY": xApiKey || "7t9f798b765gge89f45e5ef9150fa073f8a61b78",
     accesstoken: accessToken,
     iUserId: iUserId,
     uCurrency: uCurrency,

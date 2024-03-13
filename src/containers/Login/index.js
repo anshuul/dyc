@@ -18,21 +18,18 @@ const Login = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const emailFromRedux = useSelector((state) => state.auth.email);
-  console.log("Hello");
-  console.log("emailFromRedux: ", emailFromRedux);
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleCheckEmail = async () => {
     try {
-      const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
-
       // Set the X-API-KEY header using the xApiKey key
-      const headers = {
-        "X-API-KEY": xApiKey?.key || "",
-      };
+      // const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
+      // const headers = {
+      //   "X-API-KEY": xApiKey || "",
+      // };
+      
       // Validate form data
-
       if (!emailFromRedux) {
         console.error("Please provide an email address.");
         return;
@@ -43,7 +40,7 @@ const Login = () => {
       const response = await apiClient.post(
         Apis("checkEmailLogin", "others", "guest"),
         { vEmail: emailFromRedux },
-        { headers: headers }
+        // { headers: headers }
       );
 
       // Handle the response and proceed accordingly
