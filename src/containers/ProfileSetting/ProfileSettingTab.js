@@ -9,10 +9,6 @@ import userImg from "../../assets/images/top-creator4.png";
 const dateFormat = "YYYY/MM/DD";
 
 const ProfileSettingTab = () => {
-  const storedFormData = JSON.parse(localStorage.getItem("userData"));
-  console.log("storedFormData: ", storedFormData);
-  const userData = storedFormData.DATA;
-
   const generateNameFromEmail = (email) => {
     const parts = email?.split("@");
     if (!parts || parts.length < 2) {
@@ -25,6 +21,22 @@ const ProfileSettingTab = () => {
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" ");
   };
+
+  let storedFormData = JSON.parse(localStorage.getItem("userData"));
+  console.log("storedFormData: ", storedFormData);
+  let userData = storedFormData.DATA;
+
+  // If vUserName is empty or undefined, generate name from email and add it to userData
+  if (!userData?.vUserName) {
+    const generatedName = generateNameFromEmail(userData?.vEmail);
+    userData = {
+      ...userData,
+      vUserName: generatedName,
+    };
+    // Update the local storage with the updated userData
+    storedFormData = { DATA: userData };
+    localStorage.setItem("userData", JSON.stringify(storedFormData));
+  }
 
   const [name, setName] = useState(
     userData?.vUserName

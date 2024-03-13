@@ -91,6 +91,7 @@ const NavbarLanding = () => {
   const dispatch = useDispatch();
   // Get userData from localStorage
   const userData = JSON.parse(localStorage.getItem("userData"));
+  console.log("first name: ", userData.DATA.vUserName)
   const handleLogout = () => {
     localStorage.removeItem("userData");
     // localStorage.removeItem("xApiKey");
