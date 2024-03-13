@@ -225,7 +225,6 @@ const LandingPage = () => {
 
   const [checkedItems, setCheckedItems] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  console.log("categoryListDiscover");
   useEffect(() => {
     apiClient
       .post(Apis("categoryListDiscover", "others", "guest"), {
@@ -291,6 +290,17 @@ const LandingPage = () => {
     setVisiblePrice(false);
     console.log("Selected Price Range:", selectedPriceRange);
   };
+
+  // Save data to localStorage
+  useEffect(() => {
+    const dataToStore = {
+      checkedItems,
+      selectedDate,
+      selectedPriceRange,
+    };
+    localStorage.setItem("discoveryData", JSON.stringify(dataToStore));
+  }, [checkedItems, selectedDate, selectedPriceRange]);
+
   const marks = {
     0: "0",
     5: "5",
