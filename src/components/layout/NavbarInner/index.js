@@ -117,7 +117,7 @@ const NavbarInner = () => {
                 {" "}
                 <img src={userImg} alt="" />{" "}
               </div>
-              <h4>Hi, {`${userData.vEmail}`}👋</h4>
+              <h4>Hi, {`${userData.DATA.vUserName}`}👋</h4>
             </div>
           ),
         },

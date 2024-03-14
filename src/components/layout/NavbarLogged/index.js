@@ -6,14 +6,13 @@ import DeleteAccountModal from "../../../containers/ProfileSetting/DeleteAccount
 import "./index.scss";
 
 import logoImage from "../../../assets/images/logo.svg";
-import userImage from "../../../assets/images/user.png";
 import aedIcon from "../../../assets/images/aed.png";
 import usdIcon from "../../../assets/images/usd.png";
 import gbpIcon from "../../../assets/images/gbp.png";
 import inrIcon from "../../../assets/images/inr.png";
 import eurIcon from "../../../assets/images/eur.png";
 import userImg from "../../../assets/images/top-creator4.png";
-
+const userData = JSON.parse(localStorage.getItem("userData"));
 const handleLogout = () => {
   localStorage.removeItem("userData");
 };
@@ -27,7 +26,7 @@ const userItems = [
           {" "}
           <img src={userImg} alt="" />{" "}
         </div>
-        <h4>Hi, Hency👋</h4>
+        <h4>Hi, {`${userData.DATA.vUserName}`}👋</h4>
       </div>
     ),
   },
@@ -190,7 +189,6 @@ const curItems = [
 ];
 
 const NavbarLogged = () => {
-  const userData = JSON.parse(localStorage.getItem("userData"));
   return (
     <header
       className="landing-main-header-light"

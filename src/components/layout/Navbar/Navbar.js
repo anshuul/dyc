@@ -118,7 +118,7 @@ const Navbar = () => {
                 {" "}
                 <img src={userImg} alt="" />{" "}
               </div>
-              <h4>Hi, {`${userData.vEmail}`}👋</h4>
+              <h4>Hi, {`${userData.DATA.vUserName}`}👋</h4>
             </div>
           ),
         },
@@ -280,10 +280,7 @@ const Navbar = () => {
                         className="user-rightbtn-img"
                         style={{ marginLeft: "8px" }}
                       >
-                        <img
-                          src={userImg}
-                          alt="img"
-                        />
+                        <img src={userImg} alt="img" />
                       </div>
                     </div>
                   ) : (
