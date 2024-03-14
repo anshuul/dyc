@@ -106,7 +106,7 @@ const userItems = [
   {
     key: "10",
     label: <Link to="/login">Logout</Link>,
-    onClick: handleLogout, 
+    onClick: handleLogout,
   },
   {
     key: "11",
@@ -190,6 +190,7 @@ const curItems = [
 ];
 
 const NavbarLogged = () => {
+  const userData = JSON.parse(localStorage.getItem("userData"));
   return (
     <header
       className="landing-main-header-light"
@@ -242,10 +243,16 @@ const NavbarLogged = () => {
               placement="bottomRight"
             >
               <Button className="user-right-btn">
-                Amelia{" "}
-                <div className="user-rightbtn-img">
-                  <img src={userImage} alt="Amelia" />
-                </div>
+                {userData && (
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <p style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
+                      {userData.DATA.vUserName}
+                    </p>
+                    <div className="user-rightbtn-img" style={{ marginLeft: '8px' }}>
+                      <img src={userImage} alt="Amelia" style={{ borderRadius: '50%', width: '30px', height: '30px' }} />
+                    </div>
+                  </div>
+                )}
               </Button>
             </Dropdown>
           </div>

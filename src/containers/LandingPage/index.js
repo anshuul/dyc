@@ -50,7 +50,6 @@ import tourImg4 from "../../assets/images/tour4.jpg";
 import howitworkImg from "../../assets/images/howitwork.png";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
-import { selectCheckedItems, setCheckedItems } from "../../slice/categorySlice";
 
 function NextArrow(props) {
   const { className, onClick } = props;
@@ -116,7 +115,7 @@ const LandingPage = () => {
         const existingApiKey = localStorage.getItem("xApiKey");
         if (existingApiKey) {
           console.log("xApiKey already exists:", existingApiKey);
-          return; // If xApiKey exists, exit the function
+          return;
         }
 
         // If xApiKey doesn't exist, fetch it
@@ -223,8 +222,8 @@ const LandingPage = () => {
 
   const isMobile = useMediaQuery({ query: `(max-width: 767px)` });
 
-  const [checkedItems, setCheckedItems] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
+  const [checkedItems, setCheckedItems] = useState([]);
   useEffect(() => {
     apiClient
       .post(Apis("categoryListDiscover", "others", "guest"), {
