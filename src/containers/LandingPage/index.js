@@ -50,8 +50,8 @@ import tourImg4 from "../../assets/images/tour4.jpg";
 import howitworkImg from "../../assets/images/howitwork.png";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
-import { selectCheckedItems, setCheckedItems } from "../../slice/categorySlice";
 import { setFeatureOfferList2 } from "../../slice/featuredOfferList2";
+import { setFeaturedOfferList } from "../../slice/featuredOfferList";
 
 function NextArrow(props) {
   const { className, onClick } = props;
@@ -89,10 +89,12 @@ function PrevArrowClients(props) {
   );
 }
 const LandingPage = () => {
-  const dispatch =useDispatch()
-  const [featuredOfferList, setfeaturedOfferList] = useState([]);
-  const featuredOfferList2 = useSelector((state) => state.featureOfferList2State);
-  console.log(featuredOfferList2,"featuredOfferList2");
+  const dispatch = useDispatch();
+  const featuredOfferList = useSelector((state) => state.featuredOfferList);
+  const featuredOfferList2 = useSelector(
+    (state) => state.featureOfferList2State
+  );
+  console.log(featuredOfferList2, "featuredOfferList2");
   useEffect(() => {
     apiClient
       .post(Apis("featuredOfferList", "UAE", "guest"), {
@@ -106,7 +108,7 @@ const LandingPage = () => {
         let FD = res.data.DATA.find((e) => {
           return e.type === "Group Banner";
         }).DATA.discoverbanner;
-        setfeaturedOfferList(FD);
+        dispatch(setFeaturedOfferList(FD));
       })
 
       .catch((err) => console.log(err));
@@ -119,13 +121,13 @@ const LandingPage = () => {
         iCityID: "8",
       })
       .then((res) => {
-        let result = res.data.DATA
-        dispatch(setFeatureOfferList2(result))
+        let result = res.data.DATA;
+        dispatch(setFeatureOfferList2(result));
       })
       .catch((err) => console.log(err));
 
     return () => {};
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -555,34 +557,35 @@ const LandingPage = () => {
                     </div>
                   </Card>
                 </div> */}
-                {featuredOfferList.map((e, i) => {
-                  return (
-                    <div key={i}>
-                      <Card
-                        cover={
-                          <img alt="example" src={e.discoverBannerImage} />
-                        }
-                        data-aos="fade-in"
-                        data-aos-duration="1000"
-                      >
-                        <div className="meta-row">
-                          <div className="meta-left">
-                            <h2>{e.rgroup_title}</h2>
+                {featuredOfferList &&
+                  featuredOfferList.map((e, i) => {
+                    return (
+                      <div key={i}>
+                        <Card
+                          cover={
+                            <img alt="example" src={e.discoverBannerImage} />
+                          }
+                          data-aos="fade-in"
+                          data-aos-duration="1000"
+                        >
+                          <div className="meta-row">
+                            <div className="meta-left">
+                              <h2>{e.rgroup_title}</h2>
+                            </div>
+                            <Button
+                              onClick={() =>
+                                window.open("/group-listing-page", "_self")
+                              }
+                            >
+                              {" "}
+                              Explore{" "}
+                              <SvgIcon name="arrow-right" viewbox="0 0 14 9" />
+                            </Button>
                           </div>
-                          <Button
-                            onClick={() =>
-                              window.open("/group-listing-page", "_self")
-                            }
-                          >
-                            {" "}
-                            Explore{" "}
-                            <SvgIcon name="arrow-right" viewbox="0 0 14 9" />
-                          </Button>
-                        </div>
-                      </Card>
-                    </div>
-                  );
-                })}
+                        </Card>
+                      </div>
+                    );
+                  })}
               </Sliders>
             </Col>
           </Row>
@@ -682,61 +685,64 @@ const LandingPage = () => {
         </Container>
       </section> */}
 
-      {featuredOfferList2.map((e,i) => {
-        return (
-          <section className="tour-section" key={i}>
-            <Container>
-              <Row className="align-items-center mb-2">
-                <Col>
-                  <h1>{e.rCategoryName}</h1>
-                </Col>
-                <Col className="text-right">
-                  <Link to="/listing-page">
-                    <Button className="more-btn" size="small">
-                      More
-                    </Button>
-                  </Link>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Sliders className="tour-slider" {...settingsTourSlider}>
-                    {e.topTenDeals.map((item,key) => (
-                      <div key={key}>
-                        <Card
-                          className="tp-item-card"
-                          cover={<img alt="TP List" src={item.rTourImage} />}
-                          extra={
-                            <Button>
-                              <SvgIcon
-                                name="heart"
-                                viewbox="0 0 10.238 9.131"
-                              />
-                            </Button>
-                          }
-                          onClick={() => window.open("/details", "_self")}
-                        >
-                          <div className="bottom-row">
-                            <div className="left-col">
-                              <h3>{item.tourName}</h3>
-                              <div className="price-col">
-                                From{" "}
-                                <span className="bottomprice">AED {item.adultPrice}</span> /
-                                person{" "}
-                                <span className="off-price">AED 523</span>
+      {featuredOfferList2 &&
+        featuredOfferList2.map((e, i) => {
+          return (
+            <section className="tour-section" key={i}>
+              <Container>
+                <Row className="align-items-center mb-2">
+                  <Col>
+                    <h1>{e.rCategoryName}</h1>
+                  </Col>
+                  <Col className="text-right">
+                    <Link to="/listing-page">
+                      <Button className="more-btn" size="small">
+                        More
+                      </Button>
+                    </Link>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Sliders className="tour-slider" {...settingsTourSlider}>
+                      {e.topTenDeals.map((item, key) => (
+                        <div key={key}>
+                          <Card
+                            className="tp-item-card"
+                            cover={<img alt="TP List" src={item.rTourImage} />}
+                            extra={
+                              <Button>
+                                <SvgIcon
+                                  name="heart"
+                                  viewbox="0 0 10.238 9.131"
+                                />
+                              </Button>
+                            }
+                            onClick={() => window.open("/details", "_self")}
+                          >
+                            <div className="bottom-row">
+                              <div className="left-col">
+                                <h3>{item.tourName}</h3>
+                                <div className="price-col">
+                                  From{" "}
+                                  <span className="bottomprice">
+                                    AED {item.adultPrice}
+                                  </span>{" "}
+                                  / person{" "}
+                                  <span className="off-price">AED 523</span>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </Card>
-                      </div>
-                    ))}
-                  </Sliders>
-                </Col>
-              </Row>
-            </Container>
-          </section>
-        );
-      })}
+                          </Card>
+                        </div>
+                      ))}
+                    </Sliders>
+                  </Col>
+                </Row>
+              </Container>
+            </section>
+          );
+        })}
 
       <section className="howitwork-section">
         <Container>

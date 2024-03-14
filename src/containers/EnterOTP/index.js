@@ -26,7 +26,7 @@ const EnterOTP = () => {
     try {
       // Get the xApiKey from localStorage
       const formData = JSON.parse(localStorage.getItem("formData"));
-      
+
       // Set the X-API-KEY header using the xApiKey key
       // const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
       // const headers = {
@@ -51,8 +51,8 @@ const EnterOTP = () => {
 
       // Send the signup request
       const response = await apiClient.post(
-        Apis("/admin/prelogin1"),
-        body,
+        "/admin/prelogin1",
+        body
         // { headers }
       );
 

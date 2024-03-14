@@ -38,7 +38,7 @@ const Login = () => {
       console.log("Start heating");
       // Send checkEmail request
       const response = await apiClient.post(
-        Apis("/admin/checkEmailLogin"),
+        "/admin/checkEmailLogin",
         { vEmail: emailFromRedux },
         // { headers: headers }
       );

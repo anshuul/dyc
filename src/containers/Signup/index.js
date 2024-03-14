@@ -60,7 +60,7 @@ const Signup = () => {
 
       // Send checkEmail request
       const response = await apiClient.post(
-        Apis("/admin/checkEmail"),
+        "/admin/checkEmail",
         { vEmail: email },
         // { headers: headers }
       );

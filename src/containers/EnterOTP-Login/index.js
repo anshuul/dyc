@@ -27,13 +27,6 @@ const EnterOTPLogin = () => {
 
   const handleDoneClick = async () => {
     try {
-      // Get the xApiKey from localStorage
-      const xApiKey = JSON.parse(localStorage.getItem("xApiKey"));
-
-      // Set the X-API-KEY header using the xApiKey key
-      //   const headers = {
-      //     "X-API-KEY": xApiKey || "",
-      //   };
       // Hash the appOTP using SHA256
       const hashedAppOTP = SHA256(OTP + "Imc@$01tma$sa1@").toString();
       console.log("hashedAppOTP: ", hashedAppOTP);
@@ -48,7 +41,7 @@ const EnterOTPLogin = () => {
 
       // Send the signup request
       const response = await apiClient.post(
-        Apis("/admin/doLogin"),
+        "/admin/doLogin",
         body
         // { headers }
       );
