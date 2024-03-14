@@ -1,17 +1,17 @@
 const guestDiscoverApis = {
-  discoverFeaturedOfferList: "/deal/discoverFeaturedOfferList",
-  countryCityList: "/deal/countryCityList",
-  categoryListDiscover: "/deal/categoryListDiscover",
-  key: "/key",
-  signUp: "/admin/prelogin1",
-  login: "/admin/doLogin",
-  checkEmailLogin: "/admin/checkEmailLogin",
-  checkEmail: "/admin/checkEmail",
-  currency: "/discover/currencyList",
+  featuredOfferList: "/deal/discoverFeaturedOfferList",
+  featuredOfferList2: "/deal/discoverFeaturedOfferList2",
+};
+const guestGlobalApis = {
+  featuredOfferList: "/deal/productFeaturedOfferList",
+  featuredOfferList2: "/deal/productFeaturedOfferList2",
 };
 const Apis = (api, type, userType) => {
-  if (type === "others" && userType === "guest") {
+  if (type === "UAE" && userType === "guest") {
     return guestDiscoverApis[api];
+  }
+  if (type !== "UAE" && userType === "guest") {
+    return guestGlobalApis[api];
   }
 };
 

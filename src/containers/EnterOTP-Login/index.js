@@ -48,7 +48,7 @@ const EnterOTPLogin = () => {
 
       // Send the signup request
       const response = await apiClient.post(
-        Apis("login", "others", "guest"),
+        Apis("/admin/doLogin"),
         body
         // { headers }
       );
