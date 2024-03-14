@@ -17,6 +17,7 @@ import CurrenciesDropDown from "../../common/CurrenciesDropDown";
 const userData = JSON.parse(localStorage.getItem("userData"));
 const handleLogout = () => {
   localStorage.removeItem("userData");
+  localStorage.removeItem("selectedCity");
 };
 
 const currencies = [

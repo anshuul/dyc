@@ -99,6 +99,7 @@ const NavbarInner = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
   const handleLogout = () => {
     localStorage.removeItem("userData");
+    localStorage.removeItem("selectedCity");
   };
   const [isActive, setIsActive] = useState(false);
   const SearchExPand = (event) => {

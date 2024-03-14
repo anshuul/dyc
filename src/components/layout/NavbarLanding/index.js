@@ -94,6 +94,7 @@ const NavbarLanding = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
   const handleLogout = () => {
     localStorage.removeItem("userData");
+    localStorage.removeItem("selectedCity");
     // localStorage.removeItem("xApiKey");
   };
 
