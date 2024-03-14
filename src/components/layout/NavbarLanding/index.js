@@ -205,7 +205,7 @@ const NavbarLanding = () => {
 
   useEffect(() => {
     apiClient
-      .post(Apis("countryCityList", "others", "guest"))
+      .post('/deal/countryCityList')
       .then((res) => {
         const data = res.data?.DATA || [];
         dispatch(setCountryCityList(data)); // Store the entire country city list in Redux state

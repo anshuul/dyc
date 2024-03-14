@@ -51,7 +51,7 @@ const EnterOTP = () => {
 
       // Send the signup request
       const response = await apiClient.post(
-        Apis("signUp", "others", "guest"),
+        Apis("/admin/prelogin1"),
         body,
         // { headers }
       );

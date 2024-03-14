@@ -51,6 +51,7 @@ import howitworkImg from "../../assets/images/howitwork.png";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
 import { selectCheckedItems, setCheckedItems } from "../../slice/categorySlice";
+import { setFeatureOfferList2 } from "../../slice/featuredOfferList2";
 
 function NextArrow(props) {
   const { className, onClick } = props;
@@ -88,10 +89,13 @@ function PrevArrowClients(props) {
   );
 }
 const LandingPage = () => {
+  const dispatch =useDispatch()
   const [featuredOfferList, setfeaturedOfferList] = useState([]);
+  const featuredOfferList2 = useSelector((state) => state.featureOfferList2State);
+  console.log(featuredOfferList2,"featuredOfferList2");
   useEffect(() => {
     apiClient
-      .post(Apis("discoverFeaturedOfferList", "others", "guest"), {
+      .post(Apis("featuredOfferList", "UAE", "guest"), {
         iCountryID: "10",
         dCurrentLat: "25.2048",
         dCurrentLong: "55.2708",
@@ -103,6 +107,20 @@ const LandingPage = () => {
           return e.type === "Group Banner";
         }).DATA.discoverbanner;
         setfeaturedOfferList(FD);
+      })
+
+      .catch((err) => console.log(err));
+    apiClient
+      .post(Apis("featuredOfferList2", "UAE", "guest"), {
+        iCountryID: "10",
+        dCurrentLat: "25.2048",
+        dCurrentLong: "55.2708",
+        vCityName: "Dubai",
+        iCityID: "8",
+      })
+      .then((res) => {
+        let result = res.data.DATA
+        dispatch(setFeatureOfferList2(result))
       })
       .catch((err) => console.log(err));
 
@@ -121,7 +139,7 @@ const LandingPage = () => {
 
         // If xApiKey doesn't exist, fetch it
         console.log("Start heating api");
-        const response = await apiClient.post(Apis("key", "others", "guest"));
+        const response = await apiClient.post(Apis("/key"));
         const data = response.data;
         console.log("Fetched data:", data);
 
@@ -227,7 +245,7 @@ const LandingPage = () => {
   const [categoryList, setCategoryList] = useState([]);
   useEffect(() => {
     apiClient
-      .post(Apis("categoryListDiscover", "others", "guest"), {
+      .post(Apis("/deal/categoryListDiscover"), {
         iCountryID: "10",
         iCityID: "8",
       })
@@ -664,13 +682,13 @@ const LandingPage = () => {
         </Container>
       </section> */}
 
-      {[1, 1, 1].map((e) => {
+      {featuredOfferList2.map((e,i) => {
         return (
-          <section className="tour-section">
+          <section className="tour-section" key={i}>
             <Container>
               <Row className="align-items-center mb-2">
                 <Col>
-                  <h1>City Tour</h1>
+                  <h1>{e.rCategoryName}</h1>
                 </Col>
                 <Col className="text-right">
                   <Link to="/listing-page">
@@ -683,11 +701,11 @@ const LandingPage = () => {
               <Row>
                 <Col>
                   <Sliders className="tour-slider" {...settingsTourSlider}>
-                    {TourData.map((item) => (
-                      <div key={item.key}>
+                    {e.topTenDeals.map((item,key) => (
+                      <div key={key}>
                         <Card
                           className="tp-item-card"
-                          cover={<img alt="TP List" src={item.image} />}
+                          cover={<img alt="TP List" src={item.rTourImage} />}
                           extra={
                             <Button>
                               <SvgIcon
@@ -700,10 +718,10 @@ const LandingPage = () => {
                         >
                           <div className="bottom-row">
                             <div className="left-col">
-                              <h3>{item.name}</h3>
+                              <h3>{item.tourName}</h3>
                               <div className="price-col">
                                 From{" "}
-                                <span className="bottomprice">AED 340</span> /
+                                <span className="bottomprice">AED {item.adultPrice}</span> /
                                 person{" "}
                                 <span className="off-price">AED 523</span>
                               </div>
