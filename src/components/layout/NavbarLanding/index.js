@@ -197,9 +197,8 @@ const NavbarLanding = () => {
 
   const searchInput = useSelector((state) => state.citySearch.searchInput);
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
-  const countryCityList = useSelector(
-    (state) => state.citySearch.countryCityList
-  );
+
+  const [countryCityList, setCountryCityList] = useState([]);
   const [filteredCityList, setFilteredCityList] = useState([]);
 
   const [visibleDropDown, setVisibleDropDown] = useState(false);
@@ -207,19 +206,18 @@ const NavbarLanding = () => {
 
   useEffect(() => {
     apiClient
-      .post('/deal/countryCityList')
+      .post("/deal/countryCityList")
       .then((res) => {
         const data = res.data?.DATA || [];
-        dispatch(setCountryCityList(data)); // Store the entire country city list in Redux state
+        setCountryCityList(data);
         const allCities = data.flatMap((country) => country.cityList);
         setFilteredCityList(allCities);
       })
       .catch((err) => {
         console.error("Error fetching country city list:", err);
       });
-  }, [dispatch]);
+  }, []);
 
-  // Update the filtered city list based on search input
   useEffect(() => {
     const filteredList = countryCityList.flatMap((country) =>
       country.cityList.filter((city) =>
@@ -264,18 +262,15 @@ const NavbarLanding = () => {
     }
   };
 
-  const handleSelectChange = (option) => {
-    const cityData = option?.data; // Extract city data from option object
-    if (cityData) {
-      dispatch(setSelectedCity(cityData)); // Dispatch the entire city data object
-      dispatch(setSearchInput(""));
-      console.log("Selected City Object:", cityData);
-    }
+  const handleSelectChange = (value, option) => {
+    const selectedCity = `${option.data.vCityName}, ${option.data.vCountryName}`;
+    dispatch(setSelectedCity(selectedCity));
+    dispatch(setSearchInput(""));
+    console.log("selectedCity : ", selectedCity)
   };
 
-  const defaultOptionValue = selectedCity
-    ? `${selectedCity.vCityName}, ${selectedCity.vCountryName}`
-    : "UAE";
+  const defaultOptionValue = selectedCity || "UAE";
+
   return (
     <header
       className="landing-main-header"
@@ -334,7 +329,10 @@ const NavbarLanding = () => {
                         {`${city.vCityName}, ${city.vCountryName}`}
                       </div>
                     ),
-                    data: city,
+                    data: {
+                      vCityName: city.vCityName,
+                      vCountryName: city.vCountryName,
+                    },
                   }))}
                   onChange={handleSelectChange}
                 />

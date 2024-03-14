@@ -7,7 +7,7 @@ const featuredOfferListSlice = createSlice({
   initialState,
   reducers: {
     setFeaturedOfferList(state, action) {
-      return (state = action.payload);
+      return state = action.payload;
     },
   },
 });

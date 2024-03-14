@@ -90,11 +90,10 @@ function PrevArrowClients(props) {
 }
 const LandingPage = () => {
   const dispatch = useDispatch();
-  const featuredOfferList = useSelector((state) => state.featuredOfferList);
+  const featuredOfferList = useSelector((state) => state.featuredOfferListSlice);
   const featuredOfferList2 = useSelector(
     (state) => state.featureOfferList2State
   );
-  console.log(featuredOfferList2, "featuredOfferList2");
   useEffect(() => {
     apiClient
       .post(Apis("featuredOfferList", "UAE", "guest"), {
@@ -127,7 +126,7 @@ const LandingPage = () => {
       .catch((err) => console.log(err));
 
     return () => {};
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {

@@ -1,12 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { NavbarInner, FooterSmall } from "../components/layout";
+import { NavbarInner, FooterSmall, NavbarLanding } from "../components/layout";
 
 const DefaultListingLayout = ({ children, navbar, footer }) => (
   <React.Fragment>
     <div className="listing-wrapper">
-      {!navbar && <NavbarInner />}
+      {/* {!navbar && <NavbarInner />} */}
+      {!navbar && <NavbarLanding />}
       <main>
         {children}
       </main>
