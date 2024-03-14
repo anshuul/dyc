@@ -1,5 +1,9 @@
 @import "../../../assets/scss/variables.scss";
 
+.category-box.currency-item li {
+  cursor: pointer;
+}
+
 .category-box.currency-item li.selected {
   background-color: #000;
 }
@@ -197,7 +201,7 @@
         }
       }
     }
-    
+
     .user-right-btn {
       position: relative;
       // border: 1px solid $border-primary;

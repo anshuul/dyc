@@ -20,6 +20,7 @@ import {
   setCountryCityList,
 } from "../../../slice/citySearchSlice";
 import DeleteAccountModal from "../../../containers/ProfileSetting/DeleteAccountModal";
+import CurrenciesDropDown from "../../common/CurrenciesDropDown";
 
 const getAppItems = [
   {
@@ -91,7 +92,6 @@ const NavbarLanding = () => {
   const dispatch = useDispatch();
   // Get userData from localStorage
   const userData = JSON.parse(localStorage.getItem("userData"));
-  console.log("first name: ", userData.DATA.vUserName)
   const handleLogout = () => {
     localStorage.removeItem("userData");
     // localStorage.removeItem("xApiKey");
@@ -352,70 +352,8 @@ const NavbarLanding = () => {
                 <SvgIcon name="phone" viewbox="0 0 12.18 20.438" /> Get the App
               </div>
             </Dropdown>
-            <Dropdown
-              overlay={
-                <div className="category-box">
-                  <h3>Choose currency</h3>
-                  <ul>
-                    {currencies.map((currency) => (
-                      <li
-                        key={currency.id}
-                        className={
-                          selectedCurrencyKey === currency.id ? "selected" : ""
-                        }
-                        onClick={() => handleCurrencySelect(currency.id)}
-                      >
-                        <div className="left-col">
-                          <div className="cur-icon">
-                            <img src={currency.icon} alt="" />
-                          </div>{" "}
-                          {currency.name}
-                        </div>
-                        <div className="right-col">
-                          <span>{currency.symbol}</span> - {currency.name}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              }
-              trigger={["click"]}
-              visible={visibleDropDown}
-              onVisibleChange={(flag) => setVisibleDropDown(flag)}
-              placement="bottom"
-              overlayClassName="currencyheader-drop"
-              dropdownRender={(menu) => (
-                <div>
-                  {menu}
-                  <div className="drop-footer">
-                    <Button type="text" onClick={handleReset}>
-                      Reset all
-                    </Button>
-                    <Button type="primary" onClick={handleClick}>
-                      Choose
-                    </Button>
-                  </div>
-                </div>
-              )}
-            >
-              <div className="currency-col" onClick={(e) => e.preventDefault()}>
-                <div className="falg-img">
-                  <img
-                    src={
-                      currencies.find(
-                        (currency) => currency.id === selectedCurrencyKey
-                      )?.icon
-                    }
-                    alt=""
-                  />
-                </div>
-                {
-                  currencies.find(
-                    (currency) => currency.id === selectedCurrencyKey
-                  )?.name
-                }
-              </div>
-            </Dropdown>
+            {/* CurrenciesDropDown Component */}
+            <CurrenciesDropDown />
             {!userData && (
               <Button
                 onClick={() => window.open("/login", "_self")}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Dropdown } from "antd";
 import { Container, SvgIcon, DownloadAppModal } from "../../common";
@@ -12,10 +12,19 @@ import gbpIcon from "../../../assets/images/gbp.png";
 import inrIcon from "../../../assets/images/inr.png";
 import eurIcon from "../../../assets/images/eur.png";
 import userImg from "../../../assets/images/top-creator4.png";
+import CurrenciesDropDown from "../../common/CurrenciesDropDown";
 const userData = JSON.parse(localStorage.getItem("userData"));
 const handleLogout = () => {
   localStorage.removeItem("userData");
 };
+
+const currencies = [
+  { id: "1", name: "AED", symbol: "Dirham", icon: aedIcon },
+  { id: "2", name: "USD", symbol: "Dollar", icon: usdIcon },
+  { id: "3", name: "GBP", symbol: "Pound", icon: gbpIcon },
+  { id: "4", name: "INR", symbol: "Rupee", icon: inrIcon },
+  { id: "5", name: "EUR", symbol: "Euro", icon: eurIcon },
+];
 
 const userItems = [
   {
@@ -189,6 +198,33 @@ const curItems = [
 ];
 
 const NavbarLogged = () => {
+  const [visibleDropDown, setVisibleDropDown] = useState(false);
+  const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
+
+  const handleClick = () => {
+    setVisibleDropDown(false);
+
+    // Find the selected currency by its ID
+    const selectedCurrency = currencies.find(
+      (currency) => currency.id === selectedCurrencyKey
+    );
+
+    // Log the details of the selected currency
+    if (selectedCurrency) {
+      console.log("Selected Currency:", selectedCurrency.name);
+      console.log("Symbol:", selectedCurrency.symbol);
+    } else {
+      console.log("No currency selected");
+    }
+  };
+
+  const handleCurrencySelect = (currencyKey) => {
+    setSelectedCurrencyKey(currencyKey);
+  };
+
+  const handleReset = () => {
+    setSelectedCurrencyKey("1");
+  };
   return (
     <header
       className="landing-main-header-light"
@@ -214,27 +250,72 @@ const NavbarLogged = () => {
                 <SvgIcon name="phone" viewbox="0 0 12.18 20.438" /> Get the App
               </div>
             </Dropdown>
-            <Dropdown
-              menu={{ items: curItems }}
+            {/* <Dropdown
+              overlay={
+                <div className="category-box">
+                  <h3>Choose currency</h3>
+                  <ul>
+                    {currencies.map((currency) => (
+                      <li
+                        key={currency.id}
+                        className={
+                          selectedCurrencyKey === currency.id ? "selected" : ""
+                        }
+                        onClick={() => handleCurrencySelect(currency.id)}
+                      >
+                        <div className="left-col">
+                          <div className="cur-icon">
+                            <img src={currency.icon} alt="" />
+                          </div>{" "}
+                          {currency.name}
+                        </div>
+                        <div className="right-col">
+                          <span>{currency.symbol}</span> - {currency.name}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              }
+              trigger={["click"]}
+              visible={visibleDropDown}
+              onVisibleChange={(flag) => setVisibleDropDown(flag)}
               placement="bottom"
               overlayClassName="currencyheader-drop"
               dropdownRender={(menu) => (
                 <div>
                   {menu}
                   <div className="drop-footer">
-                    <Button type="text">Reset all</Button>
-                    <Button type="primary">Choose</Button>
+                    <Button type="text" onClick={handleReset}>
+                      Reset all
+                    </Button>
+                    <Button type="primary" onClick={handleClick}>
+                      Choose
+                    </Button>
                   </div>
                 </div>
               )}
             >
               <div className="currency-col" onClick={(e) => e.preventDefault()}>
                 <div className="falg-img">
-                  <img src={aedIcon} alt="" />
+                  <img
+                    src={
+                      currencies.find(
+                        (currency) => currency.id === selectedCurrencyKey
+                      )?.icon
+                    }
+                    alt=""
+                  />
                 </div>
-                AED
+                {
+                  currencies.find(
+                    (currency) => currency.id === selectedCurrencyKey
+                  )?.name
+                }
               </div>
-            </Dropdown>
+            </Dropdown> */}
+            {/* CurrenciesDropDown Component */}
+            <CurrenciesDropDown />
             <Dropdown
               overlayClassName="user-drop-menu"
               menu={{ items: userItems }}

@@ -18,6 +18,7 @@ import CityImage4 from "../../../assets/images/list-img-4.jpg";
 import CityImage5 from "../../../assets/images/list-img-5.jpg";
 import CityImage6 from "../../../assets/images/list-img-6.jpg";
 import DeleteAccountModal from "../../../containers/ProfileSetting/DeleteAccountModal";
+import CurrenciesDropDown from "../../common/CurrenciesDropDown";
 
 const getAppItems = [
   {
@@ -348,27 +349,8 @@ const NavbarInner = () => {
                 <SvgIcon name="phone" viewbox="0 0 12.18 20.438" /> Get the App
               </div>
             </Dropdown>
-            <Dropdown
-              menu={{ items: curItems }}
-              placement="bottom"
-              overlayClassName="currencyheader-drop"
-              dropdownRender={(menu) => (
-                <div>
-                  {menu}
-                  <div className="drop-footer">
-                    <Button type="text">Reset all</Button>
-                    <Button type="primary">Choose</Button>
-                  </div>
-                </div>
-              )}
-            >
-              <div className="currency-col" onClick={(e) => e.preventDefault()}>
-                <div className="falg-img">
-                  <img src={aedIcon} alt="" />
-                </div>
-                AED
-              </div>
-            </Dropdown>
+            {/* CurrenciesDropDown Component */}
+            <CurrenciesDropDown />
             {!userData && (
               <Button
                 onClick={() => window.open("/login", "_self")}

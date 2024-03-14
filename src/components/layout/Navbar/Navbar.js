@@ -11,6 +11,7 @@ import gbpIcon from "../../../assets/images/gbp.png";
 import inrIcon from "../../../assets/images/inr.png";
 import eurIcon from "../../../assets/images/eur.png";
 import DeleteAccountModal from "../../../containers/ProfileSetting/DeleteAccountModal";
+import CurrenciesDropDown from "../../common/CurrenciesDropDown";
 
 const getAppItems = [
   {
@@ -93,21 +94,6 @@ const Navbar = () => {
     localStorage.removeItem("userData");
   };
 
-  // Define default items
-  const defaultItems = [
-    {
-      key: "login",
-      label: (
-        <Button
-          onClick={() => window.open("/login", "_self")}
-          className="login-btn"
-          size="small"
-        >
-          Sign in <SvgIcon name="user-alt" viewbox="0 0 8 9" />
-        </Button>
-      ),
-    },
-  ];
   const userItems = userData
     ? [
         {
@@ -227,7 +213,7 @@ const Navbar = () => {
                 <SvgIcon name="phone" viewbox="0 0 12.18 20.438" /> Get the App
               </div>
             </Dropdown>
-            <Dropdown
+            {/* <Dropdown
               menu={{ items: curItems }}
               overlayClassName="currencyheader-drop"
               placement="bottom"
@@ -247,7 +233,9 @@ const Navbar = () => {
                 </div>
                 AED
               </div>
-            </Dropdown>
+            </Dropdown> */}
+            {/* CurrenciesDropDown Component */}
+            <CurrenciesDropDown />
             {!userData && (
               <Button
                 onClick={() => window.open("/login", "_self")}
