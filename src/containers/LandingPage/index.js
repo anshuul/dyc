@@ -96,15 +96,18 @@ const LandingPage = () => {
   const featuredOfferList2 = useSelector(
     (state) => state.featureOfferList2State
   );
+
+  console.log("featuredOfferList: ", featuredOfferList);
+  console.log("featuredOfferList2: ", featuredOfferList2);
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
 
   useEffect(() => {
     if (selectedCity) {
       apiClient
-        .post(Apis("featuredOfferList", "UAE", "guest"), {
+        .post(Apis("featuredOfferList", selectedCity.vCountryName, "guest"), {
           iCountryID: selectedCity.iCountryID,
-          dCurrentLat: "25.2048",
-          dCurrentLong: "55.2708",
+          dCurrentLat: selectedCity.vCityLatitude,
+          dCurrentLong: selectedCity.vCityLongitude,
           vCityName: selectedCity.vCityName,
           iCityID: selectedCity.iCityID,
         })
@@ -117,10 +120,10 @@ const LandingPage = () => {
 
         .catch((err) => console.log(err));
       apiClient
-        .post(Apis("featuredOfferList2", "UAE", "guest"), {
+        .post(Apis("featuredOfferList2", selectedCity.vCountryName, "guest"), {
           iCountryID: selectedCity.iCountryID,
-          dCurrentLat: "25.2048",
-          dCurrentLong: "55.2708",
+          dCurrentLat: selectedCity.vCityLatitude,
+          dCurrentLong: selectedCity.vCityLongitude,
           vCityName: selectedCity.vCityName,
           iCityID: selectedCity.iCityID,
         })
@@ -567,34 +570,31 @@ const LandingPage = () => {
                   </Card>
                 </div> */}
                 {featuredOfferList &&
-                  featuredOfferList.map((e, i) => {
-                    return (
-                      <div key={i}>
-                        <Card
-                          cover={
-                            <img alt="example" src={e.discoverBannerImage} />
-                          }
-                          data-aos="fade-in"
-                          data-aos-duration="1000"
-                        >
-                          <div className="meta-row">
-                            <div className="meta-left">
-                              <h2>{e.rgroup_title}</h2>
-                            </div>
-                            <Button
-                              onClick={() =>
-                                window.open("/group-listing-page", "_self")
-                              }
-                            >
-                              {" "}
-                              Explore{" "}
-                              <SvgIcon name="arrow-right" viewbox="0 0 14 9" />
-                            </Button>
+                  featuredOfferList.map((e, i) => (
+                    <div key={i}>
+                      <Card
+                        cover={
+                          <img alt="example" src={e.discoverBannerImage} />
+                        }
+                        data-aos="fade-in"
+                        data-aos-duration="1000"
+                      >
+                        <div className="meta-row">
+                          <div className="meta-left">
+                            <h2>{e.rgroup_title}</h2>
                           </div>
-                        </Card>
-                      </div>
-                    );
-                  })}
+                          <Button
+                            onClick={() =>
+                              window.open("/group-listing-page", "_self")
+                            }
+                          >
+                            Explore{" "}
+                            <SvgIcon name="arrow-right" viewbox="0 0 14 9" />
+                          </Button>
+                        </div>
+                      </Card>
+                    </div>
+                  ))}
               </Sliders>
             </Col>
           </Row>
@@ -695,63 +695,61 @@ const LandingPage = () => {
       </section> */}
 
       {featuredOfferList2 &&
-        featuredOfferList2.map((e, i) => {
-          return (
-            <section className="tour-section" key={i}>
-              <Container>
-                <Row className="align-items-center mb-2">
-                  <Col>
-                    <h1>{e.rCategoryName}</h1>
-                  </Col>
-                  <Col className="text-right">
-                    <Link to="/listing-page">
-                      <Button className="more-btn" size="small">
-                        More
-                      </Button>
-                    </Link>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <Sliders className="tour-slider" {...settingsTourSlider}>
-                      {e.topTenDeals.map((item, key) => (
-                        <div key={key}>
-                          <Card
-                            className="tp-item-card"
-                            cover={<img alt="TP List" src={item.rTourImage} />}
-                            extra={
-                              <Button>
-                                <SvgIcon
-                                  name="heart"
-                                  viewbox="0 0 10.238 9.131"
-                                />
-                              </Button>
-                            }
-                            onClick={() => window.open("/details", "_self")}
-                          >
-                            <div className="bottom-row">
-                              <div className="left-col">
-                                <h3>{item.tourName}</h3>
-                                <div className="price-col">
-                                  From{" "}
-                                  <span className="bottomprice">
-                                    AED {item.adultPrice}
-                                  </span>{" "}
-                                  / person{" "}
-                                  <span className="off-price">AED 523</span>
-                                </div>
+        featuredOfferList2.map((e, i) => (
+          <section className="tour-section" key={i}>
+            <Container>
+              <Row className="align-items-center mb-2">
+                <Col>
+                  <h1>{e.rCategoryName}</h1>
+                </Col>
+                <Col className="text-right">
+                  <Link to="/listing-page">
+                    <Button className="more-btn" size="small">
+                      More
+                    </Button>
+                  </Link>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <Sliders className="tour-slider" {...settingsTourSlider}>
+                    {e.topTenDeals.map((item, key) => (
+                      <div key={key}>
+                        <Card
+                          className="tp-item-card"
+                          cover={<img alt="TP List" src={item.rTourImage} />}
+                          extra={
+                            <Button>
+                              <SvgIcon
+                                name="heart"
+                                viewbox="0 0 10.238 9.131"
+                              />
+                            </Button>
+                          }
+                          onClick={() => window.open("/details", "_self")}
+                        >
+                          <div className="bottom-row">
+                            <div className="left-col">
+                              <h3>{item.tourName}</h3>
+                              <div className="price-col">
+                                From{" "}
+                                <span className="bottomprice">
+                                  AED {item.adultPrice}
+                                </span>{" "}
+                                / person{" "}
+                                <span className="off-price">AED 523</span>
                               </div>
                             </div>
-                          </Card>
-                        </div>
-                      ))}
-                    </Sliders>
-                  </Col>
-                </Row>
-              </Container>
-            </section>
-          );
-        })}
+                          </div>
+                        </Card>
+                      </div>
+                    ))}
+                  </Sliders>
+                </Col>
+              </Row>
+            </Container>
+          </section>
+        ))}
 
       <section className="howitwork-section">
         <Container>

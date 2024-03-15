@@ -270,21 +270,16 @@ const NavbarLanding = () => {
         city.vCountryName === selectedCity.vCountryName
     );
 
-    // Store the found item in Redux state and local storage
+    // Dispatch action to store the found item in Redux state and local storage
     if (foundItem) {
       dispatch(setSelectedCity(foundItem));
-      try {
-        const serializedCity = JSON.stringify(foundItem);
-        localStorage.setItem("selectedCity", serializedCity);
-      } catch (err) {
-        console.error("Error saving selectedCity to local storage:", err);
-      }
     }
   };
 
   // const defaultOptionValue = selectedCity || "UAE";
   const defaultOptionValue =
-    filteredCityList.length > 0 ? filteredCityList[0].iCityID : "Dubai, UAE";
+    selectedCity?.iCityID ||
+    (filteredCityList.length > 0 ? filteredCityList[0].iCityID : "Dubai, UAE");
 
   return (
     <header
