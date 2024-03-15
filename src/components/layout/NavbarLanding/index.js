@@ -13,12 +13,8 @@ import gbpIcon from "../../../assets/images/gbp.png";
 import inrIcon from "../../../assets/images/inr.png";
 import eurIcon from "../../../assets/images/eur.png";
 import apiClient from "../../../apiConfig";
-import Apis from "../../../utility/apis";
-import {
-  setSearchInput,
-  setSelectedCity,
-  setCountryCityList,
-} from "../../../slice/citySearchSlice";
+
+import { setSelectedCity } from "../../../slice/citySearchSlice";
 import DeleteAccountModal from "../../../containers/ProfileSetting/DeleteAccountModal";
 import CurrenciesDropDown from "../../common/CurrenciesDropDown";
 
@@ -196,7 +192,10 @@ const NavbarLanding = () => {
       ]
     : [];
 
-  const searchInput = useSelector((state) => state.citySearch.searchInput);
+  // New state to hold the selected item object for logging
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const [searchInput, setSearchInput] = useState("");
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
 
   const [countryCityList, setCountryCityList] = useState([]);
@@ -220,6 +219,7 @@ const NavbarLanding = () => {
   }, []);
 
   useEffect(() => {
+    // Filter city list based on search input
     const filteredList = countryCityList.flatMap((country) =>
       country.cityList.filter((city) =>
         city.vCityName.toLowerCase().includes(searchInput.toLowerCase())
@@ -254,23 +254,37 @@ const NavbarLanding = () => {
   };
 
   const handleSearch = (inputValue) => {
-    dispatch(setSearchInput(inputValue));
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      dispatch(setSearchInput(searchInput));
-    }
+    setSearchInput(inputValue);
   };
 
   const handleSelectChange = (value, option) => {
-    const selectedCity = `${option.data.vCityName}, ${option.data.vCountryName}`;
-    dispatch(setSelectedCity(selectedCity));
-    dispatch(setSearchInput(""));
-    console.log("selectedCity : ", selectedCity)
+    const selectedCity = option.data;
+    setSearchInput(""); // Clear search input
+    setSelectedItem(selectedCity); // Set selected item for logging
+    console.log("Selected Item:", selectedCity); // Log the selected item
+
+    // Find the selected item from allCities
+    const foundItem = filteredCityList.find(
+      (city) =>
+        city.vCityName === selectedCity.vCityName &&
+        city.vCountryName === selectedCity.vCountryName
+    );
+
+    // Store the found item in Redux state and local storage
+    if (foundItem) {
+      dispatch(setSelectedCity(foundItem));
+      try {
+        const serializedCity = JSON.stringify(foundItem);
+        localStorage.setItem("selectedCity", serializedCity);
+      } catch (err) {
+        console.error("Error saving selectedCity to local storage:", err);
+      }
+    }
   };
 
-  const defaultOptionValue = selectedCity || "UAE";
+  // const defaultOptionValue = selectedCity || "UAE";
+  const defaultOptionValue =
+    filteredCityList.length > 0 ? filteredCityList[0].iCityID : "Dubai, UAE";
 
   return (
     <header
@@ -315,7 +329,6 @@ const NavbarLanding = () => {
                         className="ant-select-search__field"
                         value={searchInput}
                         onChange={(e) => handleSearch(e.target.value)}
-                        onKeyPress={handleKeyPress}
                       />
                       {menu}
                     </>

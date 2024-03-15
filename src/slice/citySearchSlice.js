@@ -4,25 +4,21 @@ const loadSelectedCityFromLocalStorage = () => {
   try {
     const serializedCity = localStorage.getItem("selectedCity");
     if (serializedCity === null) {
-      return { vCityName: "", vCountryName: "" };
+      return null; // Return null if no city is found in local storage
     }
     return JSON.parse(serializedCity);
   } catch (err) {
     console.error("Error loading selectedCity from local storage:", err);
-    return { vCityName: "", vCountryName: "" };
+    return null; // Return null in case of error
   }
 };
 
 const citySearchSlice = createSlice({
   name: "citySearch",
   initialState: {
-    searchInput: "",
     selectedCity: loadSelectedCityFromLocalStorage(),
   },
   reducers: {
-    setSearchInput(state, action) {
-      state.searchInput = action.payload;
-    },
     setSelectedCity(state, action) {
       state.selectedCity = action.payload;
       try {
@@ -35,5 +31,5 @@ const citySearchSlice = createSlice({
   },
 });
 
-export const { setSearchInput, setSelectedCity } = citySearchSlice.actions;
+export const { setSelectedCity } = citySearchSlice.actions;
 export default citySearchSlice.reducer;

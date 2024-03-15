@@ -90,43 +90,53 @@ function PrevArrowClients(props) {
 }
 const LandingPage = () => {
   const dispatch = useDispatch();
-  const featuredOfferList = useSelector((state) => state.featuredOfferListSlice);
+  const featuredOfferList = useSelector(
+    (state) => state.featuredOfferListSlice
+  );
   const featuredOfferList2 = useSelector(
     (state) => state.featureOfferList2State
   );
+  const selectedCity = useSelector((state) => state.citySearch.selectedCity);
+
   useEffect(() => {
-    apiClient
-      .post(Apis("featuredOfferList", "UAE", "guest"), {
-        iCountryID: "10",
-        dCurrentLat: "25.2048",
-        dCurrentLong: "55.2708",
-        vCityName: "Dubai",
-        iCityID: "8",
-      })
-      .then((res) => {
-        let FD = res.data.DATA.find((e) => {
-          return e.type === "Group Banner";
-        }).DATA.discoverbanner;
-        dispatch(setFeaturedOfferList(FD));
-      })
+    if (selectedCity) {
+      apiClient
+        .post(Apis("featuredOfferList", "UAE", "guest"), {
+          iCountryID: selectedCity.iCountryID,
+          dCurrentLat: "25.2048",
+          dCurrentLong: "55.2708",
+          vCityName: selectedCity.vCityName,
+          iCityID: selectedCity.iCityID,
+        })
+        .then((res) => {
+          let FD = res.data.DATA.find((e) => {
+            return e.type === "Group Banner";
+          }).DATA.discoverbanner;
+          dispatch(setFeaturedOfferList(FD));
+        })
 
-      .catch((err) => console.log(err));
-    apiClient
-      .post(Apis("featuredOfferList2", "UAE", "guest"), {
-        iCountryID: "10",
-        dCurrentLat: "25.2048",
-        dCurrentLong: "55.2708",
-        vCityName: "Dubai",
-        iCityID: "8",
-      })
-      .then((res) => {
-        let result = res.data.DATA;
-        dispatch(setFeatureOfferList2(result));
-      })
-      .catch((err) => console.log(err));
-
+        .catch((err) => console.log(err));
+      apiClient
+        .post(Apis("featuredOfferList2", "UAE", "guest"), {
+          iCountryID: selectedCity.iCountryID,
+          dCurrentLat: "25.2048",
+          dCurrentLong: "55.2708",
+          vCityName: selectedCity.vCityName,
+          iCityID: selectedCity.iCityID,
+        })
+        .then((res) => {
+          let result = res.data.DATA;
+          dispatch(setFeatureOfferList2(result));
+        })
+        .catch((err) => console.log(err));
+      // Log selected city information
+      console.log("Selected City Information:");
+      console.log("Country ID:", selectedCity.iCountryID);
+      console.log("City Name:", selectedCity.vCityName);
+      console.log("City ID:", selectedCity.iCityID);
+    }
     return () => {};
-  }, []);
+  }, [dispatch, selectedCity]);
 
   useEffect(() => {
     const fetchData = async () => {
