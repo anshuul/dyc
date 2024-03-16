@@ -391,6 +391,9 @@ const reviewerData = [
 
 const DetailsPage = () => {
   const [tourDetails, setTourDetails] = useState(null);
+  const [showAllImages, setShowAllImages] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
   const param = searchParams.get("tourId");
@@ -427,7 +430,21 @@ const DetailsPage = () => {
     fetchData();
   }, []);
 
-  const [open, setOpen] = useState(false);
+  function parseHtmlStringToArray(htmlString) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, 'text/html');
+    const ulElement = doc.querySelector('ul');
+    if (ulElement) {
+      return Array.from(ulElement.children).map(child => child.outerHTML);
+    } else {
+      return [];
+    }
+  }
+
+  const toggleDescription = () => {
+    setShowFullDescription(!showFullDescription);
+  };
+
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const [counts, setCounts] = useState({
@@ -451,11 +468,11 @@ const DetailsPage = () => {
   };
 
   const showDrawer = () => {
-    setOpen(true);
+    setShowAllImages(true);
   };
 
   const onClose = () => {
-    setOpen(false);
+    setShowAllImages(false);
   };
 
   const detailSlider = {
@@ -592,9 +609,9 @@ const DetailsPage = () => {
               }
               closeIcon={<SvgIcon name="chevron-left" viewbox="0 0 4.029 6.932" />}
               onClose={onClose}
-              open={open}
+              open={showAllImages}
             >
-              <Gallery images={imagesArray} enableImageSelection={false} />
+              <Gallery images={tourDetails && tourDetails.rTourImageList && tourDetails.rTourImageList.map((image, index) => ({ src: image, alt: `Image ${index + 1}` }))} enableImageSelection={false} />
             </Drawer>
             <Container className="container-upper">
               {/* <MediaQuery minWidth={768}>
@@ -613,7 +630,7 @@ const DetailsPage = () => {
                   </div>
                 </div>
               </MediaQuery> */}
-              {tourDetails.rTourImageList && tourDetails.rTourImageList.length > 0 && (
+              {tourDetails && tourDetails.rTourImageList && tourDetails.rTourImageList.length > 0 && (
                 <MediaQuery minWidth={768}>
                   <div className="details-images">
                     <div className="showphotos-btn" onClick={showDrawer}>
@@ -623,15 +640,21 @@ const DetailsPage = () => {
                       <img src={tourDetails.rTourImageList[0]} alt="Tour Image 1" />
                     </div>
                     <div className="right-image">
-                      {tourDetails.rTourImageList.slice(1).map((image, index) => (
-                        <img key={index} src={image} alt={`Tour Image ${index + 2}`} />
-                      ))}
+                      {showAllImages ? (
+                        tourDetails.rTourImageList.map((image, index) => (
+                          <img key={index} src={image} alt={`Tour Image ${index + 1}`} />
+                        ))
+                      ) : (
+                        tourDetails.rTourImageList.slice(1, 6).map((image, index) => (
+                          <img key={index} src={image} alt={`Tour Image ${index + 2}`} />
+                        ))
+                      )}
                     </div>
                   </div>
                 </MediaQuery>
               )}
 
-              <MediaQuery maxWidth={767}>
+              {/* <MediaQuery maxWidth={767}>
                 <div className="mobile-details-slider">
                   <Slider {...detailSlider}>
                     <div>
@@ -651,22 +674,36 @@ const DetailsPage = () => {
                     </div>
                   </Slider>
                 </div>
+              </MediaQuery> */}
+              <MediaQuery maxWidth={767}>
+                <div className="mobile-details-slider">
+                  <Slider {...detailSlider}>
+                    {tourDetails.rTourImageList && tourDetails.rTourImageList.map((image, index) => (
+                      <div key={index}>
+                        <img src={image} alt={`Experience London skyline ${index + 1}`} />
+                      </div>
+                    ))}
+                  </Slider>
+                </div>
               </MediaQuery>
+
               <div className="details-row">
                 <div className="details-left">
                   <div className="dtl-upper">
                     <div className="dtl-upperleft">
                       <div className="rating">
-                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                        <SvgIcon name="star-outline" viewbox="0 0 15.999 16" />
+                        {/* Render stars based on tourRating */}
+                        {Array.from({ length: Math.floor(tourDetails.tourRating) }, (_, index) => (
+                          <SvgIcon key={index} name="star-filled" viewbox="0 0 15 15" />
+                        ))}
+                        {Array.from({ length: 5 - Math.floor(tourDetails.tourRating) }, (_, index) => (
+                          <SvgIcon key={index} name="star-outline" viewbox="0 0 15.999 16" />
+                        ))}
                       </div>
-                      <h1>Dubai Burj Khalifa Tour</h1>
+                      <h1>{tourDetails.tourName}</h1>
                       <div className="location">
                         <SvgIcon name="map" viewbox="0 0 8.358 12.537" />
-                        London, United Kingdom
+                        {tourDetails.cityName}, {tourDetails.countryName}
                       </div>
                     </div>
                     <MediaQuery minWidth={768}>
@@ -685,15 +722,25 @@ const DetailsPage = () => {
                       </div>
                     </MediaQuery>
                   </div>
+
                   <div className="overview-row">
                     <h2>Overview</h2>
-                    <p>
-                      War, fire, regeneration and technology in construction change
-                      the skyline of the world’s capitals. Tall buildings are an
-                      inevitable result of those changes Our accommodations are
-                      unusual ecological construction <Link to="/">read more</Link>
-                    </p>
+                    <div>
+                      <div style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: showFullDescription ? tourDetails.tourShortDescription : `${tourDetails.tourShortDescription.substring(0, 424)}...` }} />
+                      {!showFullDescription && (
+                        <span>
+                          <a
+                            onClick={toggleDescription}
+                            to="#"
+                            style={{ cursor: 'pointer' }}
+                          >
+                            Read More
+                          </a>
+                        </span>
+                      )}
+                    </div>
                   </div>
+
                   <div className="highlights-row">
                     <h2>Highlights</h2>
                     <ul>
@@ -974,22 +1021,29 @@ const DetailsPage = () => {
                   <h2>Gallery</h2>
                   <div className="details-images">
                     <div className="showphotos-btn" onClick={showDrawer}>
-                      <span>10</span> SHOW PHOTOS
+                      <span>{tourDetails.rTourImageList.length}</span> SHOW PHOTOS
                     </div>
                     <div className="left-image">
                       <button className="play-btn" onClick={showDrawer}>
                         <SvgIcon name="play-icon" viewbox="0 0 48 61" />
                       </button>
-                      <img src={DetailsImg1} alt="Experience London skyline" />
+                      <img src={tourDetails.rTourImageList[0]} alt="Tour Image 1" />
                     </div>
                     <div className="right-image">
-                      <img src={DetailsImg2} alt="Experience London skyline" />
-                      <img src={DetailsImg3} alt="Experience London skyline" />
-                      <img src={DetailsImg4} alt="Experience London skyline" />
-                      <img src={DetailsImg5} alt="Experience London skyline" />
+                      {showAllImages ? (
+                        tourDetails.rTourImageList.map((image, index) => (
+                          <img key={index} src={image} alt={`Tour Image ${index + 1}`} />
+                        ))
+                      ) : (
+                        tourDetails.rTourImageList.slice(1, 6).map((image, index) => (
+                          <img key={index} src={image} alt={`Tour Image ${index + 2}`} />
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>
+
+
                 <div className="operatinghours-row">
                   <h2>Operating Hours</h2>
                   <ul>
@@ -1047,6 +1101,25 @@ const DetailsPage = () => {
                     </li>
                   </ul>
                 </div>
+
+                {/* <div className="whatexpect-row">
+                  <h2>What to Expect</h2>
+                  <ul>
+                    {tourDetails && tourDetails.whatsInThisTour ? (
+                      parseHtmlStringToArray(tourDetails.whatsInThisTour).map((item, index) => (
+                        <li key={index}>
+                          <div className="check-circle">
+                            <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                          </div>
+                          <span dangerouslySetInnerHTML={{ __html: item }} />
+                        </li>
+                      ))
+                    ) : (
+                      <li>No information available</li>
+                    )}
+                  </ul>
+                </div> */}
+
                 <div className="whatexpect-row thing-note">
                   <h2>Things to Note</h2>
                   <ul>
@@ -1078,7 +1151,7 @@ const DetailsPage = () => {
                 </div>
                 <div className="visitorreview-row">
                   <h2>Visitor Reviews</h2>
-                  <Row className="rating-section">
+                  {/* <Row className="rating-section">
                     <Col sm="6" className="rating-left">
                       <div className="rating-row">
                         <label className="left-label">5 Stars</label>
@@ -1136,7 +1209,41 @@ const DetailsPage = () => {
                         <SvgIcon name="star-outline" viewbox="0 0 15.999 16" />
                       </div>
                     </Col>
-                  </Row>
+                  </Row> */}
+                  {tourDetails.tourRating && (
+                    <Row className="rating-section">
+                      <Col sm="6" className="rating-left">
+                        {Object.keys(tourDetails.tourRating).map((key, index) => {
+                          // Exclude the 'averageRating' key
+                          if (key !== 'averageRating') {
+                            return (
+                              <div className="rating-row" key={index}>
+                                <label className="left-label">{key.charAt(4)} Stars</label>
+                                <Progress
+                                  strokeColor="#18D39E"
+                                  trailColor="#F5FCFC"
+                                  size="small"
+                                  percent={tourDetails.tourRating[key]}
+                                />
+                              </div>
+                            );
+                          }
+                          return null; // Skip rendering if it's the 'averageRating' key
+                        })}
+                      </Col>
+                      <Col sm="6" className="rating-right">
+                        <h3>{tourDetails.tourRating.averageRating} Out of 5</h3>
+                        <div className="rating">
+                          {[...Array(Math.round(parseFloat(tourDetails.tourRating.averageRating)))].map((_, index) => (
+                            <SvgIcon key={index} name="star-filled" viewbox="0 0 15 15" />
+                          ))}
+                          {[...Array(5 - Math.round(parseFloat(tourDetails.tourRating.averageRating)))].map((_, index) => (
+                            <SvgIcon key={index} name="star-outline" viewbox="0 0 15.999 16" />
+                          ))}
+                        </div>
+                      </Col>
+                    </Row>
+                  )}
 
                   {/* Render tour reviews */}
                   {tourDetails.tourReviews && tourDetails.tourReviews.length > 0 && (
