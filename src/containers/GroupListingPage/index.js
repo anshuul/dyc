@@ -202,7 +202,7 @@ const GroupListingPage = () => {
             dCurrentLong: selectedCity.vCityLongitude,
             iCityID: selectedCity.iCityID,
             Language: "en",
-            rgroup_id: "6",
+            rgroup_id: "7",
           },
           {
             headers: {
