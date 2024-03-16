@@ -20,6 +20,7 @@ const loggedInGlobalApis = {
 };
 
 const Apis = (api, type, userType) => {
+  console.log(api,"apiss");
   if (type === "UAE" && userType === "guest") {
     return guestDiscoverApis[api];
   }

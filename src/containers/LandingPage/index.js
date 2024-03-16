@@ -156,7 +156,7 @@ const LandingPage = () => {
 
         // If xApiKey doesn't exist, fetch it
         console.log("Start heating api");
-        const response = await apiClient.post(Apis("/key"));
+        const response = await apiClient.post("/key");
         const data = response.data;
         console.log("Fetched data:", data);
 
