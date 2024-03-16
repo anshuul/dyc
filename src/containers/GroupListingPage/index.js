@@ -180,7 +180,7 @@ const GroupListingPage = () => {
       ),
     },
   ];
-  // const param = useSearchParam();
+
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
   const param = searchParams.get("rgroupId");
@@ -195,14 +195,9 @@ const GroupListingPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("selectedCity.iCountryID: ", selectedCity.iCountryID)
-        console.log("selectedCity.vCityLatitude: ", selectedCity.vCityLatitude)
-        console.log("selectedCity vCityLongitude: ", selectedCity.vCityLongitude)
-        console.log("selectedCity.iCityID: ", selectedCity.iCityID)
         const response = await apiClient.post(
           // Fetch data from API
           Apis("listByGroup", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
-          // Apis("listByGroup", selectedCity.vCountryName, "guest"),
           {
             iCountryID: selectedCity.iCountryID,
             dCurrentLat: selectedCity.vCityLatitude,

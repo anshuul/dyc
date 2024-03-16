@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Row,
@@ -15,6 +15,7 @@ import {
   Progress,
   Dropdown,
   DatePicker,
+  Card,
   Modal,
   Drawer,
   Popover,
@@ -40,6 +41,10 @@ import ReviewImg4 from "../../../assets/images/top-creator5.png";
 import ReviewImg5 from "../../../assets/images/top-creator6.png";
 import ReviewImg6 from "../../../assets/images/top-creator7.png";
 import DetailsImg6 from "../../../assets/images/privelanding-banner.jpg";
+import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
+import apiClient from "../../../apiConfig";
+import Apis from "../../../utility/apis";
+import { useSelector } from "react-redux";
 
 const imagesArray = [
   {
@@ -385,6 +390,43 @@ const reviewerData = [
 ];
 
 const DetailsPage = () => {
+  const [tourDetails, setTourDetails] = useState(null);
+  const { search } = useLocation();
+  const searchParams = new URLSearchParams(search);
+  const param = searchParams.get("tourId");
+  console.log("param: ", param)
+
+  const userData = localStorage.getItem("userData");
+  const selectedCity = useSelector((state) => state.citySearch.selectedCity);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apiClient.post(
+          // Fetch data from API
+          Apis("tourDetails", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
+          {
+            iCountryID: selectedCity.iCountryID,
+            Language: "en",
+            tourId: param,
+          },
+          {
+            headers: {
+              uCurrency: "AED",
+            },
+          }
+        );
+
+        // Set the fetched tour details to the state
+        setTourDetails(response.data?.DATA || null);
+        console.log("response tourDetails: ", response)
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const [open, setOpen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
@@ -490,649 +532,652 @@ const DetailsPage = () => {
     console.log("Entered Promo Code:", promoCodeValue);
   };
 
-  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
-    counts.child
-  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
-    counts.infant > 1 ? "s" : ""
-  }`;
+  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${counts.child
+    } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${counts.infant > 1 ? "s" : ""
+    }`;
 
   console.log("Selected Data:", selectedData);
 
   return (
     <div className="twl-details-wrapper">
-      <MediaQuery maxWidth={767}>
-        <div className="details-mobile-header">
-          <Link to="/listing-page" className="back-arrow">
-            <SvgIcon name="chevron-left" viewbox="0 0 4.029 6.932" />
-          </Link>
-          <div className="right-action">
-            <Button type="link">
-              <SvgIcon name="heart-outline" viewbox="0 0 13.269 12.168" />
-            </Button>
-          </div>
-        </div>
-      </MediaQuery>
-      <MediaQuery maxWidth={767}>
-        <div className="mobile-redeem-action">
-          <div className="left-actions">
-            <Button type="link">
-              <SvgIcon name="share-icon" viewbox="0 0 10.314 11.942" />
-            </Button>
-            <Button type="link">
-              <SvgIcon name="call-icon" viewbox="0 0 14.993 14.993" />
-            </Button>
-          </div>
-          <Button
-            type="primary"
-            onClick={() => {
-              window.location.href = "/discover/checkout";
-            }}
-          >
-            Book Now
-          </Button>
-        </div>
-      </MediaQuery>
-      <section>
-        <Drawer
-          className="moreimages-drawer"
-          height={"100vh"}
-          placement="bottom"
-          title={
-            <div className="right-action">
-              <Button type="link">
-                Favorite{" "}
-                <SvgIcon name="heart-outline" viewbox="0 0 13.269 12.168" />
-              </Button>
-              <Button type="link">
-                Share <SvgIcon name="share-icon" viewbox="0 0 10.314 11.942" />
-              </Button>
-            </div>
-          }
-          closeIcon={<SvgIcon name="chevron-left" viewbox="0 0 4.029 6.932" />}
-          onClose={onClose}
-          open={open}
-        >
-          <Gallery images={imagesArray} enableImageSelection={false} />
-        </Drawer>
-        <Container className="container-upper">
-          <MediaQuery minWidth={768}>
-            <div className="details-images">
-              <div className="showphotos-btn" onClick={showDrawer}>
-                <span>10</span> SHOW PHOTOS
-              </div>
-              <div className="left-image">
-                <img src={DetailsImg1} alt="Experience London skyline" />
-              </div>
-              <div className="right-image">
-                <img src={DetailsImg2} alt="Experience London skyline" />
-                <img src={DetailsImg3} alt="Experience London skyline" />
-                <img src={DetailsImg4} alt="Experience London skyline" />
-                <img src={DetailsImg5} alt="Experience London skyline" />
+      {tourDetails && (
+        <>
+          <MediaQuery maxWidth={767}>
+            <div className="details-mobile-header">
+              <Link to="/listing-page" className="back-arrow">
+                <SvgIcon name="chevron-left" viewbox="0 0 4.029 6.932" />
+              </Link>
+              <div className="right-action">
+                <Button type="link">
+                  <SvgIcon name="heart-outline" viewbox="0 0 13.269 12.168" />
+                </Button>
               </div>
             </div>
           </MediaQuery>
           <MediaQuery maxWidth={767}>
-            <div className="mobile-details-slider">
-              <Slider {...detailSlider}>
-                <div>
-                  <img src={DetailsImg1} alt="Experience London skyline" />
-                </div>
-                <div>
-                  <img src={DetailsImg2} alt="Experience London skyline" />
-                </div>
-                <div>
-                  <img src={DetailsImg3} alt="Experience London skyline" />
-                </div>
-                <div>
-                  <img src={DetailsImg4} alt="Experience London skyline" />
-                </div>
-                <div>
-                  <img src={DetailsImg5} alt="Experience London skyline" />
-                </div>
-              </Slider>
+            <div className="mobile-redeem-action">
+              <div className="left-actions">
+                <Button type="link">
+                  <SvgIcon name="share-icon" viewbox="0 0 10.314 11.942" />
+                </Button>
+                <Button type="link">
+                  <SvgIcon name="call-icon" viewbox="0 0 14.993 14.993" />
+                </Button>
+              </div>
+              <Button
+                type="primary"
+                onClick={() => {
+                  window.location.href = "/discover/checkout";
+                }}
+              >
+                Book Now
+              </Button>
             </div>
           </MediaQuery>
-          <div className="details-row">
-            <div className="details-left">
-              <div className="dtl-upper">
-                <div className="dtl-upperleft">
-                  <div className="rating">
-                    <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                    <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                    <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                    <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                    <SvgIcon name="star-outline" viewbox="0 0 15.999 16" />
+          <section>
+            <Drawer
+              className="moreimages-drawer"
+              height={"100vh"}
+              placement="bottom"
+              title={
+                <div className="right-action">
+                  <Button type="link">
+                    Favorite{" "}
+                    <SvgIcon name="heart-outline" viewbox="0 0 13.269 12.168" />
+                  </Button>
+                  <Button type="link">
+                    Share <SvgIcon name="share-icon" viewbox="0 0 10.314 11.942" />
+                  </Button>
+                </div>
+              }
+              closeIcon={<SvgIcon name="chevron-left" viewbox="0 0 4.029 6.932" />}
+              onClose={onClose}
+              open={open}
+            >
+              <Gallery images={imagesArray} enableImageSelection={false} />
+            </Drawer>
+            <Container className="container-upper">
+              {/* <MediaQuery minWidth={768}>
+                <div className="details-images">
+                  <div className="showphotos-btn" onClick={showDrawer}>
+                    <span>10</span> SHOW PHOTOS
                   </div>
-                  <h1>Dubai Burj Khalifa Tour</h1>
-                  <div className="location">
-                    <SvgIcon name="map" viewbox="0 0 8.358 12.537" />
-                    London, United Kingdom
+                  <div className="left-image">
+                    <img src={DetailsImg1} alt="Experience London skyline" />
+                  </div>
+                  <div className="right-image">
+                    <img src={DetailsImg2} alt="Experience London skyline" />
+                    <img src={DetailsImg3} alt="Experience London skyline" />
+                    <img src={DetailsImg4} alt="Experience London skyline" />
+                    <img src={DetailsImg5} alt="Experience London skyline" />
                   </div>
                 </div>
+              </MediaQuery> */}
+              {tourDetails.rTourImageList && tourDetails.rTourImageList.length > 0 && (
                 <MediaQuery minWidth={768}>
-                  <div className="dtl-upperright">
-                    <Button type="link">
-                      Favorite{" "}
-                      <SvgIcon
-                        name="heart-outline"
-                        viewbox="0 0 13.269 12.168"
-                      />
-                    </Button>
-                    <Button type="link">
-                      Share{" "}
-                      <SvgIcon name="share-icon" viewbox="0 0 10.314 11.942" />
-                    </Button>
+                  <div className="details-images">
+                    <div className="showphotos-btn" onClick={showDrawer}>
+                      <span>{tourDetails.rTourImageList.length}</span> SHOW PHOTOS
+                    </div>
+                    <div className="left-image">
+                      <img src={tourDetails.rTourImageList[0]} alt="Tour Image 1" />
+                    </div>
+                    <div className="right-image">
+                      {tourDetails.rTourImageList.slice(1).map((image, index) => (
+                        <img key={index} src={image} alt={`Tour Image ${index + 2}`} />
+                      ))}
+                    </div>
                   </div>
                 </MediaQuery>
-              </div>
-              <div className="overview-row">
-                <h2>Overview</h2>
-                <p>
-                  War, fire, regeneration and technology in construction change
-                  the skyline of the world’s capitals. Tall buildings are an
-                  inevitable result of those changes Our accommodations are
-                  unusual ecological construction <Link to="/">read more</Link>
-                </p>
-              </div>
-              <div className="highlights-row">
-                <h2>Highlights</h2>
-                <ul>
-                  <li>
-                    <div className="left-icon">
-                      <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+              )}
+
+              <MediaQuery maxWidth={767}>
+                <div className="mobile-details-slider">
+                  <Slider {...detailSlider}>
+                    <div>
+                      <img src={DetailsImg1} alt="Experience London skyline" />
                     </div>
                     <div>
-                      Stand above the clouds as you catch a closeup view of the
-                      pyramidal
-                    </div>
-                  </li>
-                  <li>
-                    <div className="left-icon">
-                      <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      <img src={DetailsImg2} alt="Experience London skyline" />
                     </div>
                     <div>
-                      Immerse yourself into discovery in the Observation Deck on
-                      the 86th Floor
-                    </div>
-                  </li>
-                  <li>
-                    <div className="left-icon">
-                      <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      <img src={DetailsImg3} alt="Experience London skyline" />
                     </div>
                     <div>
-                      Standing as one of best spots to view the city of Kuala
-                      Lumpur
-                    </div>
-                  </li>
-                  <li>
-                    <div className="left-icon">
-                      <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      <img src={DetailsImg4} alt="Experience London skyline" />
                     </div>
                     <div>
-                      Immerse yourself into discovery in the Observation Deck on
-                      the 86th Floor
+                      <img src={DetailsImg5} alt="Experience London skyline" />
                     </div>
-                  </li>
-                  <li>
-                    <div className="left-icon">
-                      <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                  </Slider>
+                </div>
+              </MediaQuery>
+              <div className="details-row">
+                <div className="details-left">
+                  <div className="dtl-upper">
+                    <div className="dtl-upperleft">
+                      <div className="rating">
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-outline" viewbox="0 0 15.999 16" />
+                      </div>
+                      <h1>Dubai Burj Khalifa Tour</h1>
+                      <div className="location">
+                        <SvgIcon name="map" viewbox="0 0 8.358 12.537" />
+                        London, United Kingdom
+                      </div>
                     </div>
-                    <div>
-                      Standing as one of best spots to view the city of Kuala
-                      Lumpur
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="details-right">
-              <div className="details-right-inner">
-                <Form name="basic" autoComplete="off" layout="vertical">
-                  <div className="prive-details-form">
-                    <div className="heading">
-                      <h3>
-                        <span>$50 </span>/ Person
-                      </h3>
-                    </div>
-                    <div className="options-colum">
-                      <h4>Options</h4>
-                      <ul>
-                        <li>
-                          <Popover
-                            placement="bottomLeft"
-                            arrow={false}
-                            overlayClassName="options-list-popover"
-                            content={
-                              "The Tower of London, officially His Majesty's Royal Palace and Fortress of the Tower of London, is a historic castle on the north bank of the River Thames in central London, England"
-                            }
-                            title="Explore Magic Imagica"
-                          >
-                            <Checkbox>Explore Magic Imagica</Checkbox>
-                          </Popover>
-                          <div className="right-col">
-                            <span className="off-price">AED 523</span>
-                            $50 <span>/ Person</span>
-                          </div>
-                        </li>
-                        <li>
-                          <Popover
-                            placement="bottomLeft"
-                            arrow={false}
-                            overlayClassName="options-list-popover"
-                            content={
-                              "The Tower of London, officially His Majesty's Royal Palace and Fortress of the Tower of London, is a historic castle on the north bank of the River Thames in central London, England"
-                            }
-                            title="Tower Bridge"
-                          >
-                            <Checkbox>Tower Bridge</Checkbox>
-                          </Popover>
-                          <div className="right-col">
-                            <span className="off-price">AED 523</span>
-                            $50 <span>/ Person</span>
-                          </div>
-                        </li>
-                        <li>
-                          <Popover
-                            placement="bottomLeft"
-                            arrow={false}
-                            overlayClassName="options-list-popover"
-                            content={
-                              "The Tower of London, officially His Majesty's Royal Palace and Fortress of the Tower of London, is a historic castle on the north bank of the River Thames in central London, England"
-                            }
-                            title="London Eye"
-                          >
-                            <Checkbox>London Eye</Checkbox>
-                          </Popover>
-                          <div className="right-col">
-                            <span className="off-price">AED 523</span>
-                            $50 <span>/ Person</span>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="availability-colum">
-                      <h4>Availability</h4>
-                      <Row>
-                        <Col>
-                          <Form.Item name="date" label="DATE">
-                            <DatePicker
-                              popupClassName="pickdate-drop"
-                              onChange={handleDateChange}
-                              icon={false}
-                              suffixIcon={false}
-                              placeholder="DD / MM / YYYY"
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col>
-                          <Form.Item name="time" label="TIME">
-                            <Select
-                              placement="bottomRight"
-                              defaultValue="option1"
-                              popupMatchSelectWidth={false}
-                              popupClassName="timeselect"
-                              suffixIcon={
-                                <SvgIcon name="down-arrow" viewbox="0 0 18 9" />
-                              }
-                              dropdownRender={(menu) => (
-                                <>
-                                  <h3 className="title">Pick the Time</h3>
-                                  {menu}
-                                </>
-                              )}
-                              options={[
-                                {
-                                  value: "option1",
-                                  label: (
-                                    <div className="time-row">
-                                      <div className="time-left">
-                                        12 <span>pm</span>
-                                      </div>
-                                      <div className="right-price">$50</div>
-                                    </div>
-                                  ),
-                                },
-                                {
-                                  value: "option2",
-                                  label: (
-                                    <div className="time-row">
-                                      <div className="time-left">
-                                        12 <span>pm</span>
-                                      </div>
-                                      <div className="right-price">$50</div>
-                                    </div>
-                                  ),
-                                },
-                                {
-                                  value: "option3",
-                                  label: (
-                                    <div className="time-row">
-                                      <div className="time-left">
-                                        12 <span>pm</span>
-                                      </div>
-                                      <div className="right-price">$50</div>
-                                    </div>
-                                  ),
-                                },
-                              ]}
-                            />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col>
-                          <Form.Item name="person" label="PERSON">
-                            <Dropdown
-                              menu={{ items }}
-                              overlayClassName="participants-drop"
-                              trigger={["click"]}
-                              visible={dropdownVisible}
-                              onVisibleChange={(flag) =>
-                                setDropdownVisible(flag)
-                              }
-                            >
-                              <Input
-                                value={selectedData}
-                                readOnly
-                                suffix={
-                                  <SvgIcon
-                                    name="down-arrow"
-                                    viewbox="0 0 18 9"
-                                  />
-                                }
-                              />
-                            </Dropdown>
-                          </Form.Item>
-                        </Col>
-                        <Col>
-                          <Form.Item name="pcode" label="PROMO CODE">
-                            <Input
-                              value=""
-                              placeholder="Enter"
-                              onChange={handlePromoCodeChange}
-                            />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                    </div>
-                    <div className="price-info">
-                      <Row>
-                        <Col className="price-left">Service Charge</Col>
-                        <Col className="price-right">AED 23</Col>
-                      </Row>
-                      <Row>
-                        <Col className="price-left">Tax</Col>
-                        <Col className="price-right">AED 78</Col>
-                      </Row>
-                      <Row className="total-row">
-                        <Col className="price-left">Grand Total</Col>
-                        <Col className="price-right">
-                          AED <b>101</b>
-                        </Col>
-                      </Row>
-                    </div>
-                  </div>
-                  <div className="bottom-action mt-3">
-                    <MediaQuery minWidth={767}>
-                      <Button
-                        type="primary"
-                        onClick={() => {
-                          window.location.href = "/discover/checkout";
-                        }}
-                        block
-                      >
-                        Book Now
-                      </Button>
+                    <MediaQuery minWidth={768}>
+                      <div className="dtl-upperright">
+                        <Button type="link">
+                          Favorite{" "}
+                          <SvgIcon
+                            name="heart-outline"
+                            viewbox="0 0 13.269 12.168"
+                          />
+                        </Button>
+                        <Button type="link">
+                          Share{" "}
+                          <SvgIcon name="share-icon" viewbox="0 0 10.314 11.942" />
+                        </Button>
+                      </div>
                     </MediaQuery>
-                    <Button
-                      type="link"
-                      icon={<SvgIcon name="play" viewbox="0 0 41.93 41.965" />}
-                      block
-                    >
-                      Learn How to book
-                    </Button>
                   </div>
-                  <div
-                    className="getit-touch"
-                    data-aos="fade-in"
-                    data-aos-duration="1400"
-                  >
-                    <div className="upper-row">
-                      <h3>Get in touch</h3>
-                    </div>
+                  <div className="overview-row">
+                    <h2>Overview</h2>
                     <p>
-                      If you have any doubt please reach Out us @{" "}
-                      <Link to="/">info@imcholding.com</Link>
+                      War, fire, regeneration and technology in construction change
+                      the skyline of the world’s capitals. Tall buildings are an
+                      inevitable result of those changes Our accommodations are
+                      unusual ecological construction <Link to="/">read more</Link>
                     </p>
                   </div>
-                </Form>
-              </div>
-            </div>
-          </div>
-          <div className="details-experiences">
-            <div className="gallery-row">
-              <h2>Gallery</h2>
-              <div className="details-images">
-                <div className="showphotos-btn" onClick={showDrawer}>
-                  <span>10</span> SHOW PHOTOS
-                </div>
-                <div className="left-image">
-                  <button className="play-btn" onClick={showDrawer}>
-                    <SvgIcon name="play-icon" viewbox="0 0 48 61" />
-                  </button>
-                  <img src={DetailsImg1} alt="Experience London skyline" />
-                </div>
-                <div className="right-image">
-                  <img src={DetailsImg2} alt="Experience London skyline" />
-                  <img src={DetailsImg3} alt="Experience London skyline" />
-                  <img src={DetailsImg4} alt="Experience London skyline" />
-                  <img src={DetailsImg5} alt="Experience London skyline" />
-                </div>
-              </div>
-              {/* <MediaQuery maxWidth={767}>
-                                <div className='mobile-details-slider'>
-                                    <Slider {...detailSlider}>
-                                        <div>
-                                            <img src={DetailsImg1} alt="Experience London skyline" />
-                                        </div>
-                                        <div>
-                                            <img src={DetailsImg2} alt="Experience London skyline" />
-                                        </div>
-                                        <div>
-                                            <img src={DetailsImg3} alt="Experience London skyline" />
-                                        </div>
-                                        <div>
-                                            <img src={DetailsImg4} alt="Experience London skyline" />
-                                        </div>
-                                        <div>
-                                            <img src={DetailsImg5} alt="Experience London skyline" />
-                                        </div>
-                                    </Slider>
-                                </div>
-                            </MediaQuery> */}
-            </div>
-            <div className="operatinghours-row">
-              <h2>Operating Hours</h2>
-              <ul>
-                <li>
-                  Monday <label>10:00 - 19:00</label>
-                </li>
-                <li>
-                  Tuesday <label>10:00 - 19:00</label>
-                </li>
-                <li>
-                  Wednesday <label>10:00 - 19:00</label>
-                </li>
-                <li>
-                  Thursday <label>10:00 - 19:00</label>
-                </li>
-                <li>
-                  Friday <label>10:00 - 19:00</label>
-                </li>
-                <li>
-                  Saturday <label>10:00 - 19:00</label>
-                </li>
-                <li>
-                  Sunday <label>10:00 - 19:00</label>
-                </li>
-              </ul>
-            </div>
-            <div className="whatexpect-row">
-              <h2>What to Expect</h2>
-              <ul>
-                <li>
-                  <div className="check-circle">
-                    <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
-                  </div>
-                  Chance to see the world’s tallest building up-close{" "}
-                </li>
-                <li>
-                  <div className="check-circle">
-                    <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
-                  </div>
-                  Get access to the observation decks at 124th and 125th levels{" "}
-                </li>
-                <li>
-                  <div className="check-circle">
-                    <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
-                  </div>
-                  Use the cutting-edge telescopes for closer views of Dubai’s
-                  major landmarks{" "}
-                </li>
-                <li>
-                  <div className="check-circle">
-                    <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
-                  </div>
-                  Safety Verified as it complies with all COVID-19 preventive
-                  measures imposed by both WHO and the government
-                </li>
-              </ul>
-            </div>
-            <div className="whatexpect-row thing-note">
-              <h2>Things to Note</h2>
-              <ul>
-                <li>
-                  <div className="check-circle">
-                    <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
-                  </div>
-                  Familiarize yourself with cancellation and refund policies{" "}
-                </li>
-                <li>
-                  <div className="check-circle">
-                    <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
-                  </div>
-                  Check if the package can be customized to your needs.{" "}
-                </li>
-                <li>
-                  <div className="check-circle">
-                    <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
-                  </div>
-                  Compare the bundled price with individual costs.{" "}
-                </li>
-                <li>
-                  <div className="check-circle">
-                    <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
-                  </div>
-                  Take note of the package’s usage timeframe.
-                </li>
-              </ul>
-            </div>
-            <div className="visitorreview-row">
-              <h2>Visitor Reviews</h2>
-              <Row className="rating-section">
-                <Col sm="6" className="rating-left">
-                  <div className="rating-row">
-                    <label className="left-label">5 Stars</label>
-                    <Progress
-                      strokeColor="#18D39E"
-                      trailColor="#F5FCFC"
-                      size="small"
-                      percent={84}
-                    />
-                  </div>
-                  <div className="rating-row">
-                    <label className="left-label">4 Stars</label>
-                    <Progress
-                      strokeColor="#18D39E"
-                      trailColor="#F5FCFC"
-                      size="small"
-                      percent={65}
-                    />
-                  </div>
-                  <div className="rating-row">
-                    <label className="left-label">3 Stars</label>
-                    <Progress
-                      strokeColor="#18D39E"
-                      trailColor="#F5FCFC"
-                      size="small"
-                      percent={40}
-                    />
-                  </div>
-                  <div className="rating-row">
-                    <label className="left-label">2 Stars</label>
-                    <Progress
-                      strokeColor="#18D39E"
-                      trailColor="#F5FCFC"
-                      size="small"
-                      percent={32}
-                    />
-                  </div>
-                  <div className="rating-row">
-                    <label className="left-label">1 Stars</label>
-                    <Progress
-                      strokeColor="#18D39E"
-                      trailColor="#F5FCFC"
-                      size="small"
-                      percent={11}
-                    />
-                  </div>
-                </Col>
-                <Col sm="6" className="rating-right">
-                  <h3>4.5 Out of 5</h3>
-                  <div className="rating">
-                    <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                    <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                    <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                    <SvgIcon name="star-filled" viewbox="0 0 15 15" />
-                    <SvgIcon name="star-outline" viewbox="0 0 15.999 16" />
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <ul className="reviewer-list">
-                    {reviewerData.map((item) => (
-                      <li key={item.key}>
-                        <div className="reviewer-img">
-                          <img src={item.image} alt={item.name} />
+                  <div className="highlights-row">
+                    <h2>Highlights</h2>
+                    <ul>
+                      <li>
+                        <div className="left-icon">
+                          <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
                         </div>
-                        <h3>{item.title}</h3>
-                        <p>{item.description}</p>
-                        <label>
-                          BY {item.name} / {item.date}
-                        </label>
+                        <div>
+                          Stand above the clouds as you catch a closeup view of the
+                          pyramidal
+                        </div>
                       </li>
-                    ))}
-                  </ul>
-                  <div className="allreviewbtn-row">
-                    <Button type="primary" ghost>
-                      View all Reviews
-                    </Button>
+                      <li>
+                        <div className="left-icon">
+                          <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                        </div>
+                        <div>
+                          Immerse yourself into discovery in the Observation Deck on
+                          the 86th Floor
+                        </div>
+                      </li>
+                      <li>
+                        <div className="left-icon">
+                          <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                        </div>
+                        <div>
+                          Standing as one of best spots to view the city of Kuala
+                          Lumpur
+                        </div>
+                      </li>
+                      <li>
+                        <div className="left-icon">
+                          <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                        </div>
+                        <div>
+                          Immerse yourself into discovery in the Observation Deck on
+                          the 86th Floor
+                        </div>
+                      </li>
+                      <li>
+                        <div className="left-icon">
+                          <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                        </div>
+                        <div>
+                          Standing as one of best spots to view the city of Kuala
+                          Lumpur
+                        </div>
+                      </li>
+                    </ul>
                   </div>
-                </Col>
-              </Row>
-            </div>
-            <div className="address-row">
-              <h2 className="mb-2">Address</h2>
-              <p className="mb-4 pb-2">
-                1 Sheikh Mohammed bin Rashid Blvd, Downtown Dubai, Dubai
-              </p>
-              <img className="w-100" src={MapAddress} alt="map" />
-            </div>
-          </div>
-        </Container>
-      </section>
-      <DownloadSection />
+                </div>
+                <div className="details-right">
+                  <div className="details-right-inner">
+                    <Form name="basic" autoComplete="off" layout="vertical">
+                      <div className="prive-details-form">
+                        <div className="heading">
+                          <h3>
+                            <span>$50 </span>/ Person
+                          </h3>
+                        </div>
+                        <div className="options-colum">
+                          <h4>Options</h4>
+                          <ul>
+                            <li>
+                              <Popover
+                                placement="bottomLeft"
+                                arrow={false}
+                                overlayClassName="options-list-popover"
+                                content={
+                                  "The Tower of London, officially His Majesty's Royal Palace and Fortress of the Tower of London, is a historic castle on the north bank of the River Thames in central London, England"
+                                }
+                                title="Explore Magic Imagica"
+                              >
+                                <Checkbox>Explore Magic Imagica</Checkbox>
+                              </Popover>
+                              <div className="right-col">
+                                <span className="off-price">AED 523</span>
+                                $50 <span>/ Person</span>
+                              </div>
+                            </li>
+                            <li>
+                              <Popover
+                                placement="bottomLeft"
+                                arrow={false}
+                                overlayClassName="options-list-popover"
+                                content={
+                                  "The Tower of London, officially His Majesty's Royal Palace and Fortress of the Tower of London, is a historic castle on the north bank of the River Thames in central London, England"
+                                }
+                                title="Tower Bridge"
+                              >
+                                <Checkbox>Tower Bridge</Checkbox>
+                              </Popover>
+                              <div className="right-col">
+                                <span className="off-price">AED 523</span>
+                                $50 <span>/ Person</span>
+                              </div>
+                            </li>
+                            <li>
+                              <Popover
+                                placement="bottomLeft"
+                                arrow={false}
+                                overlayClassName="options-list-popover"
+                                content={
+                                  "The Tower of London, officially His Majesty's Royal Palace and Fortress of the Tower of London, is a historic castle on the north bank of the River Thames in central London, England"
+                                }
+                                title="London Eye"
+                              >
+                                <Checkbox>London Eye</Checkbox>
+                              </Popover>
+                              <div className="right-col">
+                                <span className="off-price">AED 523</span>
+                                $50 <span>/ Person</span>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="availability-colum">
+                          <h4>Availability</h4>
+                          <Row>
+                            <Col>
+                              <Form.Item name="date" label="DATE">
+                                <DatePicker
+                                  popupClassName="pickdate-drop"
+                                  onChange={handleDateChange}
+                                  icon={false}
+                                  suffixIcon={false}
+                                  placeholder="DD / MM / YYYY"
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col>
+                              <Form.Item name="time" label="TIME">
+                                <Select
+                                  placement="bottomRight"
+                                  defaultValue="option1"
+                                  popupMatchSelectWidth={false}
+                                  popupClassName="timeselect"
+                                  suffixIcon={
+                                    <SvgIcon name="down-arrow" viewbox="0 0 18 9" />
+                                  }
+                                  dropdownRender={(menu) => (
+                                    <>
+                                      <h3 className="title">Pick the Time</h3>
+                                      {menu}
+                                    </>
+                                  )}
+                                  options={[
+                                    {
+                                      value: "option1",
+                                      label: (
+                                        <div className="time-row">
+                                          <div className="time-left">
+                                            12 <span>pm</span>
+                                          </div>
+                                          <div className="right-price">$50</div>
+                                        </div>
+                                      ),
+                                    },
+                                    {
+                                      value: "option2",
+                                      label: (
+                                        <div className="time-row">
+                                          <div className="time-left">
+                                            12 <span>pm</span>
+                                          </div>
+                                          <div className="right-price">$50</div>
+                                        </div>
+                                      ),
+                                    },
+                                    {
+                                      value: "option3",
+                                      label: (
+                                        <div className="time-row">
+                                          <div className="time-left">
+                                            12 <span>pm</span>
+                                          </div>
+                                          <div className="right-price">$50</div>
+                                        </div>
+                                      ),
+                                    },
+                                  ]}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col>
+                              <Form.Item name="person" label="PERSON">
+                                <Dropdown
+                                  menu={{ items }}
+                                  overlayClassName="participants-drop"
+                                  trigger={["click"]}
+                                  visible={dropdownVisible}
+                                  onVisibleChange={(flag) =>
+                                    setDropdownVisible(flag)
+                                  }
+                                >
+                                  <Input
+                                    value={selectedData}
+                                    readOnly
+                                    suffix={
+                                      <SvgIcon
+                                        name="down-arrow"
+                                        viewbox="0 0 18 9"
+                                      />
+                                    }
+                                  />
+                                </Dropdown>
+                              </Form.Item>
+                            </Col>
+                            <Col>
+                              <Form.Item name="pcode" label="PROMO CODE">
+                                <Input
+                                  value=""
+                                  placeholder="Enter"
+                                  onChange={handlePromoCodeChange}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        </div>
+                        <div className="price-info">
+                          <Row>
+                            <Col className="price-left">Service Charge</Col>
+                            <Col className="price-right">AED 23</Col>
+                          </Row>
+                          <Row>
+                            <Col className="price-left">Tax</Col>
+                            <Col className="price-right">AED 78</Col>
+                          </Row>
+                          <Row className="total-row">
+                            <Col className="price-left">Grand Total</Col>
+                            <Col className="price-right">
+                              AED <b>101</b>
+                            </Col>
+                          </Row>
+                        </div>
+                      </div>
+                      <div className="bottom-action mt-3">
+                        <MediaQuery minWidth={767}>
+                          <Button
+                            type="primary"
+                            onClick={() => {
+                              window.location.href = "/discover/checkout";
+                            }}
+                            block
+                          >
+                            Book Now
+                          </Button>
+                        </MediaQuery>
+                        <Button
+                          type="link"
+                          icon={<SvgIcon name="play" viewbox="0 0 41.93 41.965" />}
+                          block
+                        >
+                          Learn How to book
+                        </Button>
+                      </div>
+                      <div
+                        className="getit-touch"
+                        data-aos="fade-in"
+                        data-aos-duration="1400"
+                      >
+                        <div className="upper-row">
+                          <h3>Get in touch</h3>
+                        </div>
+                        <p>
+                          If you have any doubt please reach Out us @{" "}
+                          <Link to="/">info@imcholding.com</Link>
+                        </p>
+                      </div>
+                    </Form>
+                  </div>
+                </div>
+              </div>
+              <div className="details-experiences">
+                <div className="gallery-row">
+                  <h2>Gallery</h2>
+                  <div className="details-images">
+                    <div className="showphotos-btn" onClick={showDrawer}>
+                      <span>10</span> SHOW PHOTOS
+                    </div>
+                    <div className="left-image">
+                      <button className="play-btn" onClick={showDrawer}>
+                        <SvgIcon name="play-icon" viewbox="0 0 48 61" />
+                      </button>
+                      <img src={DetailsImg1} alt="Experience London skyline" />
+                    </div>
+                    <div className="right-image">
+                      <img src={DetailsImg2} alt="Experience London skyline" />
+                      <img src={DetailsImg3} alt="Experience London skyline" />
+                      <img src={DetailsImg4} alt="Experience London skyline" />
+                      <img src={DetailsImg5} alt="Experience London skyline" />
+                    </div>
+                  </div>
+                </div>
+                <div className="operatinghours-row">
+                  <h2>Operating Hours</h2>
+                  <ul>
+                    <li>
+                      Monday <label>10:00 - 19:00</label>
+                    </li>
+                    <li>
+                      Tuesday <label>10:00 - 19:00</label>
+                    </li>
+                    <li>
+                      Wednesday <label>10:00 - 19:00</label>
+                    </li>
+                    <li>
+                      Thursday <label>10:00 - 19:00</label>
+                    </li>
+                    <li>
+                      Friday <label>10:00 - 19:00</label>
+                    </li>
+                    <li>
+                      Saturday <label>10:00 - 19:00</label>
+                    </li>
+                    <li>
+                      Sunday <label>10:00 - 19:00</label>
+                    </li>
+                  </ul>
+                </div>
+                <div className="whatexpect-row">
+                  <h2>What to Expect</h2>
+                  <ul>
+                    <li>
+                      <div className="check-circle">
+                        <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      </div>
+                      Chance to see the world’s tallest building up-close{" "}
+                    </li>
+                    <li>
+                      <div className="check-circle">
+                        <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      </div>
+                      Get access to the observation decks at 124th and 125th levels{" "}
+                    </li>
+                    <li>
+                      <div className="check-circle">
+                        <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      </div>
+                      Use the cutting-edge telescopes for closer views of Dubai’s
+                      major landmarks{" "}
+                    </li>
+                    <li>
+                      <div className="check-circle">
+                        <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      </div>
+                      Safety Verified as it complies with all COVID-19 preventive
+                      measures imposed by both WHO and the government
+                    </li>
+                  </ul>
+                </div>
+                <div className="whatexpect-row thing-note">
+                  <h2>Things to Note</h2>
+                  <ul>
+                    <li>
+                      <div className="check-circle">
+                        <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      </div>
+                      Familiarize yourself with cancellation and refund policies{" "}
+                    </li>
+                    <li>
+                      <div className="check-circle">
+                        <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      </div>
+                      Check if the package can be customized to your needs.{" "}
+                    </li>
+                    <li>
+                      <div className="check-circle">
+                        <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      </div>
+                      Compare the bundled price with individual costs.{" "}
+                    </li>
+                    <li>
+                      <div className="check-circle">
+                        <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
+                      </div>
+                      Take note of the package’s usage timeframe.
+                    </li>
+                  </ul>
+                </div>
+                <div className="visitorreview-row">
+                  <h2>Visitor Reviews</h2>
+                  <Row className="rating-section">
+                    <Col sm="6" className="rating-left">
+                      <div className="rating-row">
+                        <label className="left-label">5 Stars</label>
+                        <Progress
+                          strokeColor="#18D39E"
+                          trailColor="#F5FCFC"
+                          size="small"
+                          percent={84}
+                        />
+                      </div>
+                      <div className="rating-row">
+                        <label className="left-label">4 Stars</label>
+                        <Progress
+                          strokeColor="#18D39E"
+                          trailColor="#F5FCFC"
+                          size="small"
+                          percent={65}
+                        />
+                      </div>
+                      <div className="rating-row">
+                        <label className="left-label">3 Stars</label>
+                        <Progress
+                          strokeColor="#18D39E"
+                          trailColor="#F5FCFC"
+                          size="small"
+                          percent={40}
+                        />
+                      </div>
+                      <div className="rating-row">
+                        <label className="left-label">2 Stars</label>
+                        <Progress
+                          strokeColor="#18D39E"
+                          trailColor="#F5FCFC"
+                          size="small"
+                          percent={32}
+                        />
+                      </div>
+                      <div className="rating-row">
+                        <label className="left-label">1 Stars</label>
+                        <Progress
+                          strokeColor="#18D39E"
+                          trailColor="#F5FCFC"
+                          size="small"
+                          percent={11}
+                        />
+                      </div>
+                    </Col>
+                    <Col sm="6" className="rating-right">
+                      <h3>4.5 Out of 5</h3>
+                      <div className="rating">
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-outline" viewbox="0 0 15.999 16" />
+                      </div>
+                    </Col>
+                  </Row>
+
+                  {/* Render tour reviews */}
+                  {tourDetails.tourReviews && tourDetails.tourReviews.length > 0 && (
+                    <Row>
+                      <Col>
+                        <ul className="reviewer-list">
+                          {tourDetails.tourReviews.slice(0, 6).map((item, index) => (
+                            <li key={index}>
+                              <div className="reviewer-img">
+                                <img src={item.imagePath} alt={item.guestName} />
+                              </div>
+                              <h3>{item.reviewTitle}</h3>
+                              <p>{item.reviewContent}</p>
+                              <label>
+                                BY {item.guestName} / {item.visitMonth}
+                              </label>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="allreviewbtn-row">
+                          <Button type="primary" ghost>
+                            View all Reviews
+                          </Button>
+                        </div>
+                      </Col>
+                    </Row>
+                  )}
+                </div>
+                <div className="address-row">
+                  <h2 className="mb-2">Address</h2>
+                  <p className="mb-4 pb-2">
+                    1 Sheikh Mohammed bin Rashid Blvd, Downtown Dubai, Dubai
+                  </p>
+                  <img className="w-100" src={MapAddress} alt="map" />
+                </div>
+              </div>
+            </Container>
+          </section>
+          <DownloadSection />
+        </>
+      )}
     </div>
   );
 };

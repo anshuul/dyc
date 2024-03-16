@@ -727,7 +727,7 @@ const LandingPage = () => {
                               />
                             </Button>
                           }
-                          onClick={() => window.open("/details", "_self")}
+                          onClick={() => window.open(`/details?tourId=${item.tourId}`, "_self")}
                         >
                           <div className="bottom-row">
                             <div className="left-col">
