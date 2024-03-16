@@ -17,6 +17,7 @@ import apiClient from "../../../apiConfig";
 import { setSelectedCity } from "../../../slice/citySearchSlice";
 import DeleteAccountModal from "../../../containers/ProfileSetting/DeleteAccountModal";
 import CurrenciesDropDown from "../../common/CurrenciesDropDown";
+import { setCurrencyList, setSelectedCurrencyKey } from "../../../slice/currencySlice";
 
 const getAppItems = [
   {
@@ -200,22 +201,76 @@ const NavbarLanding = () => {
   const [countryCityList, setCountryCityList] = useState([]);
   const [filteredCityList, setFilteredCityList] = useState([]);
 
+  // const [currencyList, setCurrencyList] = useState([]);
+  // const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
   const [visibleDropDown, setVisibleDropDown] = useState(false);
-  const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
+  const currencyList = useSelector((state) => state.currency.currencyList);
+  const selectedCurrencyKey = useSelector((state) => state.currency.selectedCurrencyKey);
+
+  console.log("currencyList: ", currencyList)
+  console.log("selectedCurrencyKey: ", selectedCurrencyKey)
+
 
   useEffect(() => {
-    apiClient
-      .post("/deal/countryCityList")
-      .then((res) => {
-        const data = res.data?.DATA || [];
+    const fetchData = async () => {
+      try {
+        let response;
+        if (userData) {
+          // Fetch endpoint with userData
+          response = await apiClient.get("/discover/currencyList", {
+            headers: {
+              iUserId: userData?.DATA?.iUserID || "",
+            },
+          });
+        } else {
+          // Fetch endpoint without userData
+          response = await apiClient.get("/deal/currencyList");
+        }
+        // setCurrencyList(response.data?.DATA || []);
+        dispatch(setCurrencyList(response.data?.DATA || []));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Save selected currency object to localStorage
+    localStorage.setItem('selectedCurrency', JSON.stringify(
+      currencyList.find(currency => currency.uCurrencyID === selectedCurrencyKey)
+    ));
+  }, [selectedCurrencyKey, currencyList]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let response;
+        if (userData) {
+          // Fetch endpoint with userData and headers
+          response = await apiClient.post("/offer/countryCityList", {
+            headers: {
+              iUserId: userData?.DATA?.iUserID || "",
+            },
+          });
+        } else {
+          // Fetch endpoint without userData
+          response = await apiClient.post("/deal/countryCityList");
+        }
+        const data = response.data?.DATA || [];
         setCountryCityList(data);
         const allCities = data.flatMap((country) => country.cityList);
         setFilteredCityList(allCities);
-      })
-      .catch((err) => {
-        console.error("Error fetching country city list:", err);
-      });
+      } catch (error) {
+        console.error("Error fetching country city list:", error);
+      }
+    };
+
+    fetchData();
   }, []);
+
 
   useEffect(() => {
     // Filter city list based on search input
@@ -229,27 +284,24 @@ const NavbarLanding = () => {
 
   const handleClick = () => {
     setVisibleDropDown(false);
-
-    // Find the selected currency by its ID
-    const selectedCurrency = currencies.find(
-      (currency) => currency.id === selectedCurrencyKey
+    const selectedCurrency = currencyList.find(
+      (currency) => currency.uCurrencyID === selectedCurrencyKey
     );
-
-    // Log the details of the selected currency
     if (selectedCurrency) {
-      console.log("Selected Currency:", selectedCurrency.name);
-      console.log("Symbol:", selectedCurrency.symbol);
+      console.log("Selected Currency:", selectedCurrency.uCurrency);
+      console.log("Symbol:", selectedCurrency.uCurrencySymbol);
+      console.log("Selected Currency Key Object:", selectedCurrencyKey); // Logging the entire object
     } else {
       console.log("No currency selected");
     }
   };
 
   const handleCurrencySelect = (currencyKey) => {
-    setSelectedCurrencyKey(currencyKey);
+    dispatch(setSelectedCurrencyKey(currencyKey));
   };
 
   const handleReset = () => {
-    setSelectedCurrencyKey("1");
+    dispatch(setSelectedCurrencyKey("")); // Reset the selected currency
   };
 
   const handleSearch = (inputValue) => {
@@ -359,7 +411,74 @@ const NavbarLanding = () => {
               </div>
             </Dropdown>
             {/* CurrenciesDropDown Component */}
-            <CurrenciesDropDown />
+            {/* <CurrenciesDropDown /> */}
+
+            <Dropdown
+              overlay={
+                <div className="category-box">
+                  <h3>Choose currency</h3>
+                  <ul>
+                    {currencyList.map((currency) => (
+                      <li
+                        key={currency.uCurrencyID}
+                        className={
+                          selectedCurrencyKey === currency.uCurrencyID
+                            ? "selected"
+                            : ""
+                        }
+                        onClick={() => handleCurrencySelect(currency.uCurrencyID)}
+                      >
+                        <div className="left-col">
+                          <span className="falg-img" />
+                          {currency.uCurrency}
+                        </div>
+                        <div className="right-col">
+                          <span>{currency.uCurrencySymbol}</span> -{" "}
+                          {/* {currency.uCurrencyName} */}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              }
+              trigger={["click"]}
+              visible={visibleDropDown}
+              onVisibleChange={(flag) => setVisibleDropDown(flag)}
+              placement="bottom"
+              overlayClassName="currencyheader-drop"
+              dropdownRender={(menu) => (
+                <div>
+                  {menu}
+                  <div className="drop-footer">
+                    <Button type="text" onClick={handleReset}>
+                      Reset all
+                    </Button>
+                    <Button type="primary" onClick={handleClick}>
+                      Choose
+                    </Button>
+                  </div>
+                </div>
+              )}
+            >
+              <div className="currency-col" onClick={(e) => e.preventDefault()}>
+                {/* <div className="falg-img">
+                  <img
+                    src={
+                      currencyList.find(
+                        (currency) => currency.uCurrencyID === selectedCurrencyKey
+                      )?.icon || ""
+                    }
+                    alt=""
+                  />
+                </div> */}
+                <span className="falg-img" />
+                {
+                  currencyList.find(
+                    (currency) => currency.uCurrencyID === selectedCurrencyKey
+                  )?.uCurrency || ""
+                }
+              </div>
+            </Dropdown>
             {!userData && (
               <Button
                 onClick={() => window.open("/login", "_self")}
