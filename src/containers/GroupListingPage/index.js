@@ -179,49 +179,23 @@ const GroupListingPage = () => {
       ),
     },
   ];
+  const userData = localStorage.getItem("userData");
   const [groupData, setGroupData] = useState([]);
   const [groupTitle, setGroupTitle] = useState("");
   const [groupImage, setGroupImage] = useState("");
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
 
-  //   useEffect(() => {
-  //     if (selectedCity) {
-  //       const headers = {
-  //         uCurrency: "AED",
-  //       };
-  //       apiClient
-  //         .post(
-  //           Apis("listByGroup", selectedCity.vCountryName, "loogedIn"),
-  //           {
-  //             iCountryID: selectedCity.iCountryID,
-  //             dCurrentLat: selectedCity.vCityLatitude,
-  //             dCurrentLong: selectedCity.vCityLongitude,
-  //             iCityID: selectedCity.iCityID,
-  //             Language: "en",
-  //             rgroup_id: "6",
-  //           },
-  //           {
-  //             headers: headers,
-  //           }
-  //         )
-  //         .then((res) => {
-  //           console.log("Response Data:", res.data.DATA);
-  //           console.log("Response data Data:", res.data);
-  //           if (res.data && res.data.DATA) {
-  //             setGroupData(res.data.DATA);
-  //           }
-  //         })
-
-  //         .catch((err) => console.log(err));
-  //     }
-  //   }, [selectedCity]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch data from API
+        console.log("selectedCity.iCountryID: ", selectedCity.iCountryID)
+        console.log("selectedCity.vCityLatitude: ", selectedCity.vCityLatitude)
+        console.log("selectedCity vCityLongitude: ", selectedCity.vCityLongitude)
+        console.log("selectedCity.iCityID: ", selectedCity.iCityID)
         const response = await apiClient.post(
-          Apis("listByGroup", selectedCity.vCountryName, ""),
+          // Fetch data from API
+          Apis("listByGroup", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
+          // Apis("listByGroup", selectedCity.vCountryName, "guest"),
           {
             iCountryID: selectedCity.iCountryID,
             dCurrentLat: selectedCity.vCityLatitude,
@@ -349,7 +323,7 @@ const GroupListingPage = () => {
           <Row>
             <Col>
               <div className="listing-row">
-                {groupData && 
+                {groupData &&
                   groupData.map((item) => (
                     <Card
                       key={item.tourId} // Assuming tourId is unique
