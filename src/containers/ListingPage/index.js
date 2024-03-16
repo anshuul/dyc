@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, SvgIcon } from '../../components/common';
 import { Button, Card, Slider, Dropdown, Checkbox } from 'antd';
 import Calendar from 'react-calendar';
@@ -23,6 +23,10 @@ import Listimg13 from '../../assets/images/list-img-13.jpg';
 import Listimg14 from '../../assets/images/list-img-14.jpg';
 import Listimg15 from '../../assets/images/list-img-15.jpg';
 import Listimg16 from '../../assets/images/list-img-16.jpg';
+import apiClient from '../../apiConfig';
+import Apis from '../../utility/apis';
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 
 const ListingPage = () => {
     const ListData = [
@@ -183,6 +187,50 @@ const ListingPage = () => {
         },
     ];
 
+    const { search } = useLocation();
+    const searchParams = new URLSearchParams(search);
+    const param = searchParams.get("gCategoryID");
+
+    const userData = localStorage.getItem("userData");
+    const selectedCity = useSelector((state) => state.citySearch.selectedCity);
+
+    const [listData, setListData] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await apiClient.post(
+                    // Fetch data from API
+                    Apis("tourList", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
+                    // Apis("listByGroup", selectedCity.vCountryName, "guest"),
+                    {
+                        iCountryID: selectedCity.iCountryID,
+                        dCurrentLat: selectedCity.vCityLatitude,
+                        dCurrentLong: selectedCity.vCityLongitude,
+                        vCityName: selectedCity.vCityName,
+                        iCityID: selectedCity.iCityID,
+                        rCategoryID: param,
+                        Language: "en",
+                    },
+                    {
+                        headers: {
+                            uCurrency: "AED",
+                        },
+                    }
+                );
+
+                console.log("response,response: ", response)
+                // Update ListData state with the received data
+                setListData(response.data?.DATA || []);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        // Call fetchData function
+        fetchData();
+    }, [param]);
+
     return (
         <div className='twl-listing-wrapper'>
 
@@ -247,7 +295,25 @@ const ListingPage = () => {
                     <Row>
                         <Col>
                             <div className='listing-row'>
-                                {ListData.map(item =>
+                                {listData.map(item =>
+                                    <Card
+                                        className='tp-item-card'
+                                        key={item.productId}
+                                        cover={<img alt="TP List" src={item.rTourImage} />}
+                                        extra={<Button><SvgIcon name='heart' viewbox='0 0 10.238 9.131' /></Button>}
+                                        onClick={() => window.open(`${item.rayna ? "/rayna-details" : `/details?tourId=${item.tourId}`}`, "_self")}
+                                    >
+                                        <div className='bottom-row'>
+                                            <div className='left-col'>
+                                                <h3>{item.tourName}</h3>
+                                                <div className='price-col'>
+                                                    From <span className='bottomprice'>AED {item.adultPrice}</span> / person <span className='off-price'>AED {item.originalPrice}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                )}
+                                {/* {ListData.map(item =>
                                     <Card
                                         className='tp-item-card'
                                         cover={<img alt="TP List" src={item.image} />}
@@ -263,7 +329,7 @@ const ListingPage = () => {
                                             </div>
                                         </div>
                                     </Card>
-                                )}
+                                )} */}
                             </div>
                         </Col>
                     </Row>

@@ -105,7 +105,6 @@ const LandingPage = () => {
   useEffect(() => {
     if (selectedCity) {
       apiClient
-        // .post(Apis("featuredOfferList", selectedCity.vCountryName, "guest"), {
         .post(Apis("featuredOfferList", selectedCity.vCountryName, userData ? "loggedIn" : "guest"), {
           iCountryID: selectedCity.iCountryID,
           dCurrentLat: selectedCity.vCityLatitude,
@@ -123,7 +122,6 @@ const LandingPage = () => {
         .catch((err) => console.log(err));
       apiClient
         .post(Apis("featuredOfferList2", selectedCity.vCountryName, userData ? "loggedIn" : "guest"), {
-          // .post(Apis("featuredOfferList2", selectedCity.vCountryName, "guest"), {
           iCountryID: selectedCity.iCountryID,
           dCurrentLat: selectedCity.vCityLatitude,
           dCurrentLong: selectedCity.vCityLongitude,
@@ -298,44 +296,6 @@ const LandingPage = () => {
 
   const handleShowResultsClick = () => {
     setVisible(false);
-
-    apiClient
-      .post(
-        // Apis("featuredOfferList", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
-        Apis("featuredOfferList", selectedCity.vCountryName, "guest"),
-        {
-          iCountryID: selectedCity.iCountryID,
-          dCurrentLat: selectedCity.vCityLatitude,
-          dCurrentLong: selectedCity.vCityLongitude,
-          vCityName: selectedCity.vCityName,
-          iCityID: selectedCity.iCityID,
-        }
-      )
-      .then((res) => {
-        const FD = res.data.DATA.find((e) => e.type === "Group Banner")
-          .DATA.discoverbanner;
-        dispatch(setFeaturedOfferList(FD));
-      })
-      .catch((err) => console.error(err));
-
-    // API call for featuredOfferList2
-    apiClient
-      .post(
-        Apis("featuredOfferList2", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
-        // Apis("featuredOfferList2", selectedCity.vCountryName, "guest"),
-        {
-          iCountryID: selectedCity.iCountryID,
-          dCurrentLat: selectedCity.vCityLatitude,
-          dCurrentLong: selectedCity.vCityLongitude,
-          vCityName: selectedCity.vCityName,
-          iCityID: selectedCity.iCityID,
-        }
-      )
-      .then((res) => {
-        const result = res.data.DATA;
-        dispatch(setFeatureOfferList2(result));
-      })
-      .catch((err) => console.error(err));
   };
 
   const handleShowDateClick = () => {
@@ -626,7 +586,7 @@ const LandingPage = () => {
                           </div>
                           <Button
                             onClick={() =>
-                              window.open("/group-listing-page", "_self")
+                              window.open(`/group-listing-page?rgroupId=${e.rgroup_id}`, "_self")
                             }
                           >
                             Explore{" "}
@@ -744,7 +704,7 @@ const LandingPage = () => {
                   <h1>{e.rCategoryName}</h1>
                 </Col>
                 <Col className="text-right">
-                  <Link to="/listing-page">
+                  <Link to={`/listing-page?gCategoryID=${e.rCategoryID}`}>
                     <Button className="more-btn" size="small">
                       More
                     </Button>

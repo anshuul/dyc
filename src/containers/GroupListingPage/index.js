@@ -27,6 +27,7 @@ import GroupImg from "../../assets/images/group-img.jpg";
 import { useSelector } from "react-redux";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
+import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 
 const GroupListingPage = () => {
   const ListData = [
@@ -179,6 +180,12 @@ const GroupListingPage = () => {
       ),
     },
   ];
+  // const param = useSearchParam();
+  const { search } = useLocation();
+  const searchParams = new URLSearchParams(search);
+  const param = searchParams.get("rgroupId");
+  console.log("param: ", param)
+
   const userData = localStorage.getItem("userData");
   const [groupData, setGroupData] = useState([]);
   const [groupTitle, setGroupTitle] = useState("");
@@ -202,7 +209,7 @@ const GroupListingPage = () => {
             dCurrentLong: selectedCity.vCityLongitude,
             iCityID: selectedCity.iCityID,
             Language: "en",
-            rgroup_id: "7",
+            rgroup_id: param,
           },
           {
             headers: {
