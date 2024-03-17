@@ -17,7 +17,7 @@ import apiClient from "../../../apiConfig";
 import { setSelectedCity } from "../../../slice/citySearchSlice";
 import DeleteAccountModal from "../../../containers/ProfileSetting/DeleteAccountModal";
 import CurrenciesDropDown from "../../common/CurrenciesDropDown";
-import { setCurrencyList, setSelectedCurrencyKey } from "../../../slice/currencySlice";
+import { setSelectedCurrency } from "../../../slice/currencySlice";
 
 const getAppItems = [
   {
@@ -201,14 +201,9 @@ const NavbarLanding = () => {
   const [countryCityList, setCountryCityList] = useState([]);
   const [filteredCityList, setFilteredCityList] = useState([]);
 
-  // const [currencyList, setCurrencyList] = useState([]);
-  // const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
+  const selectedCurrency = useSelector((state) => state.currency.selectedCurrency);
   const [visibleDropDown, setVisibleDropDown] = useState(false);
-  const currencyList = useSelector((state) => state.currency.currencyList);
-  const selectedCurrencyKey = useSelector((state) => state.currency.selectedCurrencyKey);
-
-  console.log("currencyList: ", currencyList)
-  console.log("selectedCurrencyKey: ", selectedCurrencyKey)
+  const [currencyList, setCurrencyList] = useState([]);
 
 
   useEffect(() => {
@@ -227,7 +222,7 @@ const NavbarLanding = () => {
           response = await apiClient.get("/deal/currencyList");
         }
         // setCurrencyList(response.data?.DATA || []);
-        dispatch(setCurrencyList(response.data?.DATA || []));
+        setCurrencyList(response.data?.DATA || []);
       } catch (error) {
         console.log(error);
       }
@@ -236,13 +231,14 @@ const NavbarLanding = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    // Save selected currency object to localStorage
-    localStorage.setItem('selectedCurrency', JSON.stringify(
-      currencyList.find(currency => currency.uCurrencyID === selectedCurrencyKey)
-    ));
-  }, [selectedCurrencyKey, currencyList]);
-
+  // useEffect(() => {
+  //   // Save selected currency object to localStorage
+  //   if (selectedCurrency) {
+  //     localStorage.setItem('selectedCurrency', JSON.stringify(
+  //       currencyList.find(currency => currency.uCurrencyID === selectedCurrency)
+  //     ));
+  //   }
+  // }, [selectedCurrency]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -284,25 +280,25 @@ const NavbarLanding = () => {
 
   const handleClick = () => {
     setVisibleDropDown(false);
-    const selectedCurrency = currencyList.find(
-      (currency) => currency.uCurrencyID === selectedCurrencyKey
-    );
     if (selectedCurrency) {
-      console.log("Selected Currency:", selectedCurrency.uCurrency);
-      console.log("Symbol:", selectedCurrency.uCurrencySymbol);
-      console.log("Selected Currency Key Object:", selectedCurrencyKey); // Logging the entire object
+      console.log("Selected Currency Key Object:", selectedCurrency);
     } else {
       console.log("No currency selected");
     }
   };
 
-  const handleCurrencySelect = (currencyKey) => {
-    dispatch(setSelectedCurrencyKey(currencyKey));
+  const handleCurrencySelect = (currencyId) => {
+    const selectedCurrency = currencyList.find(currency => currency.uCurrencyID === currencyId);
+    if (selectedCurrency) {
+      console.log("Selected Currency:", selectedCurrency);
+      dispatch(setSelectedCurrency(selectedCurrency));
+    }
   };
 
   const handleReset = () => {
-    dispatch(setSelectedCurrencyKey("")); // Reset the selected currency
+    dispatch(setSelectedCurrency(null)); // Reset the selected currency
   };
+
 
   const handleSearch = (inputValue) => {
     setSearchInput(inputValue);
@@ -422,7 +418,7 @@ const NavbarLanding = () => {
                       <li
                         key={currency.uCurrencyID}
                         className={
-                          selectedCurrencyKey === currency.uCurrencyID
+                          selectedCurrency === currency.uCurrencyID
                             ? "selected"
                             : ""
                         }
@@ -465,7 +461,7 @@ const NavbarLanding = () => {
                   <img
                     src={
                       currencyList.find(
-                        (currency) => currency.uCurrencyID === selectedCurrencyKey
+                        (currency) => currency.uCurrencyID === selectedCurrency 
                       )?.icon || ""
                     }
                     alt=""
@@ -474,7 +470,7 @@ const NavbarLanding = () => {
                 <span className="falg-img" />
                 {
                   currencyList.find(
-                    (currency) => currency.uCurrencyID === selectedCurrencyKey
+                    (currency) => currency.uCurrencyID === selectedCurrency
                   )?.uCurrency || ""
                 }
               </div>
