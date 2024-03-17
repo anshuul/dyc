@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, SvgIcon, FloatLabel } from '../../../components/common';
 import { Button, Input, Form, Select } from 'antd';
 import { Link } from 'react-router-dom';
@@ -10,8 +10,26 @@ import GpayIcon from '../../../assets/images/gpay.png';
 import AppleIcon from '../../../assets/images/applepay.png';
 import MasterCard from '../../../assets/images/mastercard-icon.png';
 import PaymentsType from '../../../assets/images/payments-type.png';
+import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
+import apiClient from '../../../apiConfig';
+import Apis from '../../../utility/apis';
+import { useSelector } from "react-redux";
 
 const CheckoutDiscover = () => {
+    const { search } = useLocation();
+    const searchParams = new URLSearchParams(search);
+    const param = searchParams.get("tourId");
+    console.log("param: ", param)
+
+    const userData = localStorage.getItem("userData");
+    const userDataObj = JSON.parse(userData);
+    const userObj = userDataObj.DATA
+    console.log("userData ID: ", userObj.iUserID);
+    console.log("userData vEmail: ", userObj.vEmail);
+
+    const selectedCity = useSelector((state) => state.citySearch.selectedCity);
+    const selectedCurrency = useSelector((state) => state.currency.selectedCurrency);
+
     const [title, setTitle] = useState(" ");
     const [name, setName] = useState("Name");
     const [mobile, setMobile] = useState("+91 7805876205");
@@ -20,6 +38,59 @@ const CheckoutDiscover = () => {
     const [expiration, setExpiration] = useState("");
     const [cvv, setCvv] = useState("");
     const [promocode, setPromocode] = useState("");
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await apiClient.post(
+                    // Fetch data from API
+                    Apis("transactionPrepare", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
+
+                    {
+                        tourId: param,
+                        tourOptionId: '1572468',
+                        adultCount: '1',
+                        childCount: '0',
+                        infantCount: '0',
+                        tourDate: '2024-02-22',
+                        timeSlotId: '',
+                        startTime: '16:00:00',
+                        pickup: '',
+                        adultRate: '19.0',
+                        childRate: '19.0',
+                        serviceTotal: '19.0',
+                        serviceType: 'Tour',
+                        prefix: 'Mr.',
+                        firstName: 'Discover Your',
+                        lastName: 'City',
+                        email: userObj.vEmail,
+                        mobile: userObj.vMobileNo,
+                        nationality: '',
+                        message: '',
+                        leadPassenger: '1',
+                        paxType: 'Adult',
+                        clientReferenceNo: '3252628751',
+                        currency: selectedCurrency.uCurrency || "AED",
+                        tPromoCode: '',
+                    },
+                    {
+                        headers: {
+                            iUserId: userObj.iUserID,
+                            uCurrency: selectedCurrency.uCurrency || "AED",
+                        },
+                    }
+                );
+
+                console.log("transactionPrepare response : ", response)
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        // Call fetchData function
+        fetchData();
+    }, [param]);
+
     return (
         <div className='checkout-discover-wrapper'>
             <div className='checkoutdiscover-inner'>

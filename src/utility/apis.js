@@ -17,6 +17,7 @@ const loggedInDiscoverApis = {
   listByGroup: "/deal/discoverListByGroup",
   tourList: "/discover/discoverList",
   tourDetails: "/discover/discoverDetail",
+  transactionPrepare: "/discover/discoverTransactionPrepare",
 };
 
 const loggedInGlobalApis = {

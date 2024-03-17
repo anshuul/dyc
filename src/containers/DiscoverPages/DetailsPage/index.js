@@ -584,7 +584,7 @@ const DetailsPage = () => {
               <Button
                 type="primary"
                 onClick={() => {
-                  window.location.href = "/discover/checkout";
+                  window.location.href = `/discover/checkout?tourId=${param}`;
                 }}
               >
                 Book Now
@@ -984,7 +984,7 @@ const DetailsPage = () => {
                           <Button
                             type="primary"
                             onClick={() => {
-                              window.location.href = "/discover/checkout";
+                              window.location.href = `/discover/checkout?tourId=${param}`;
                             }}
                             block
                           >
