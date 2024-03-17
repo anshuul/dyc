@@ -205,6 +205,8 @@ const NavbarLanding = () => {
   const [visibleDropDown, setVisibleDropDown] = useState(false);
   const [currencyList, setCurrencyList] = useState([]);
 
+  console.log("selectedCurrency : ", selectedCurrency)
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -239,6 +241,8 @@ const NavbarLanding = () => {
   //     ));
   //   }
   // }, [selectedCurrency]);
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -418,7 +422,7 @@ const NavbarLanding = () => {
                       <li
                         key={currency.uCurrencyID}
                         className={
-                          selectedCurrency === currency.uCurrencyID
+                          selectedCurrency?.uCurrencyID === currency.uCurrencyID
                             ? "selected"
                             : ""
                         }
@@ -475,6 +479,7 @@ const NavbarLanding = () => {
                 }
               </div>
             </Dropdown>
+            
             {!userData && (
               <Button
                 onClick={() => window.open("/login", "_self")}
