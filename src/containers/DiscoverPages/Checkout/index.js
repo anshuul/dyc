@@ -31,9 +31,9 @@ const CheckoutDiscover = () => {
     const selectedCurrency = useSelector((state) => state.currency.selectedCurrency);
 
     const [title, setTitle] = useState(" ");
-    const [name, setName] = useState("Name");
-    const [mobile, setMobile] = useState("+91 7805876205");
-    const [email, setEmail] = useState("akp.arvindpatel@gmail.com");
+    const [name, setName] = useState(userObj.vUserName);
+    const [mobile, setMobile] = useState(userObj.vMobileNo);
+    const [email, setEmail] = useState(userObj.vEmail);
     const [cardnumber, setCardnumber] = useState("");
     const [expiration, setExpiration] = useState("");
     const [cvv, setCvv] = useState("");
@@ -45,7 +45,6 @@ const CheckoutDiscover = () => {
                 const response = await apiClient.post(
                     // Fetch data from API
                     Apis("transactionPrepare", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
-
                     {
                         tourId: param,
                         tourOptionId: '1572468',
@@ -61,7 +60,7 @@ const CheckoutDiscover = () => {
                         serviceTotal: '19.0',
                         serviceType: 'Tour',
                         prefix: 'Mr.',
-                        firstName: 'Discover Your',
+                        firstName: userObj.vUserName,
                         lastName: 'City',
                         email: userObj.vEmail,
                         mobile: userObj.vMobileNo,

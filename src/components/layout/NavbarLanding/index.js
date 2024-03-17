@@ -461,22 +461,13 @@ const NavbarLanding = () => {
               )}
             >
               <div className="currency-col" onClick={(e) => e.preventDefault()}>
-                {/* <div className="falg-img">
-                  <img
-                    src={
-                      currencyList.find(
-                        (currency) => currency.uCurrencyID === selectedCurrency 
-                      )?.icon || ""
-                    }
-                    alt=""
-                  />
-                </div> */}
                 <span className="falg-img" />
-                {
+                {/* {
                   currencyList.find(
                     (currency) => currency.uCurrencyID === selectedCurrency
                   )?.uCurrency || ""
-                }
+                } */}
+                {selectedCurrency ? selectedCurrency.uCurrency : ""}
               </div>
             </Dropdown>
             

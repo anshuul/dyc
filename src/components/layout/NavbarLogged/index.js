@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Dropdown } from "antd";
 import { Container, SvgIcon, DownloadAppModal } from "../../common";
@@ -13,6 +13,9 @@ import inrIcon from "../../../assets/images/inr.png";
 import eurIcon from "../../../assets/images/eur.png";
 import userImg from "../../../assets/images/top-creator4.png";
 import CurrenciesDropDown from "../../common/CurrenciesDropDown";
+import { useDispatch, useSelector } from "react-redux";
+import apiClient from "../../../apiConfig";
+import { setSelectedCurrency } from "../../../slice/currencySlice";
 
 const userData = JSON.parse(localStorage.getItem("userData"));
 const handleLogout = () => {
@@ -31,100 +34,100 @@ const currencies = [
 const userItems =
   userData && userData.DATA
     ? [
-        {
-          key: "1",
-          label: (
-            <div className="user-upper">
-              <div className="user-upper-img">
-                {" "}
-                <img src={userImg} alt="" />{" "}
-              </div>
-              {/* <h4>Hi, {`${userData.DATA.vUserName}`}👋</h4> */}
+      {
+        key: "1",
+        label: (
+          <div className="user-upper">
+            <div className="user-upper-img">
+              {" "}
+              <img src={userImg} alt="" />{" "}
             </div>
-          ),
-        },
-        {
-          key: "2",
-          icon: (
-            <span className="menu-icons">
-              <SvgIcon name="profile-setting-icon" viewbox="0 0 9.022 9.736" />
-            </span>
-          ),
-          label: <Link to="/profile-setting">Profile Setting</Link>,
-        },
-        {
-          key: "3",
-          icon: (
-            <span className="menu-icons">
-              <SvgIcon name="mybooking" viewbox="0 0 11.026 9.836" />
-            </span>
-          ),
-          label: <Link to="/profile-setting">My Bookings</Link>,
-        },
-        {
-          key: "4",
-          icon: (
-            <span className="menu-icons">
-              <SvgIcon name="favourite-icon" viewbox="0 0 10.055 8.961" />
-            </span>
-          ),
-          label: <Link to="/profile-setting">Wishlist</Link>,
-        },
-        {
-          key: "5",
-          icon: (
-            <span className="menu-icons">
-              <SvgIcon name="mycards-icon" viewbox="0 0 10.575 7.931" />
-            </span>
-          ),
-          label: <Link to="/profile-setting">My Cards</Link>,
-        },
-        {
-          key: "6",
-          icon: (
-            <span className="menu-icons">
-              <SvgIcon name="myoffers-icon" viewbox="0 0 10.083 10.096" />
-            </span>
-          ),
-          label: <Link to="/profile-setting">My Offers</Link>,
-        },
-        {
-          key: "7",
-          icon: (
-            <span className="menu-icons">
-              <SvgIcon name="notification-icon" viewbox="0 0 8.315 9.262" />
-            </span>
-          ),
-          label: <Link to="/profile-setting">Notification Setting</Link>,
-        },
-        {
-          key: "8",
-          icon: (
-            <span className="menu-icons">
-              <SvgIcon name="terms" viewbox="0 0 7.55 9.38" />
-            </span>
-          ),
-          label: <Link to="/terms-conditions">Terms & Conditions</Link>,
-        },
-        {
-          key: "9",
-          icon: (
-            <span className="menu-icons">
-              <SvgIcon name="mice" viewbox="0 0 13.753 13.407" />
-            </span>
-          ),
-          label: <Link to="/contact">Need Help?</Link>,
-        },
-        {
-          key: "10",
-          label: <Link to="/login">Logout</Link>,
-          onClick: handleLogout,
-        },
-        {
-          key: "11",
-          label: <DeleteAccountModal />,
-        },
-      ]
+            {/* <h4>Hi, {`${userData.DATA.vUserName}`}👋</h4> */}
+          </div>
+        ),
+      },
+      {
+        key: "2",
+        icon: (
+          <span className="menu-icons">
+            <SvgIcon name="profile-setting-icon" viewbox="0 0 9.022 9.736" />
+          </span>
+        ),
+        label: <Link to="/profile-setting">Profile Setting</Link>,
+      },
+      {
+        key: "3",
+        icon: (
+          <span className="menu-icons">
+            <SvgIcon name="mybooking" viewbox="0 0 11.026 9.836" />
+          </span>
+        ),
+        label: <Link to="/profile-setting">My Bookings</Link>,
+      },
+      {
+        key: "4",
+        icon: (
+          <span className="menu-icons">
+            <SvgIcon name="favourite-icon" viewbox="0 0 10.055 8.961" />
+          </span>
+        ),
+        label: <Link to="/profile-setting">Wishlist</Link>,
+      },
+      {
+        key: "5",
+        icon: (
+          <span className="menu-icons">
+            <SvgIcon name="mycards-icon" viewbox="0 0 10.575 7.931" />
+          </span>
+        ),
+        label: <Link to="/profile-setting">My Cards</Link>,
+      },
+      {
+        key: "6",
+        icon: (
+          <span className="menu-icons">
+            <SvgIcon name="myoffers-icon" viewbox="0 0 10.083 10.096" />
+          </span>
+        ),
+        label: <Link to="/profile-setting">My Offers</Link>,
+      },
+      {
+        key: "7",
+        icon: (
+          <span className="menu-icons">
+            <SvgIcon name="notification-icon" viewbox="0 0 8.315 9.262" />
+          </span>
+        ),
+        label: <Link to="/profile-setting">Notification Setting</Link>,
+      },
+      {
+        key: "8",
+        icon: (
+          <span className="menu-icons">
+            <SvgIcon name="terms" viewbox="0 0 7.55 9.38" />
+          </span>
+        ),
+        label: <Link to="/terms-conditions">Terms & Conditions</Link>,
+      },
+      {
+        key: "9",
+        icon: (
+          <span className="menu-icons">
+            <SvgIcon name="mice" viewbox="0 0 13.753 13.407" />
+          </span>
+        ),
+        label: <Link to="/contact">Need Help?</Link>,
+      },
+      {
+        key: "10",
+        label: <Link to="/login">Logout</Link>,
+        onClick: handleLogout,
+      },
+      {
+        key: "11",
+        label: <DeleteAccountModal />,
+      },
+    ]
     : [];
 
 const getAppItems = [
@@ -203,33 +206,57 @@ const curItems = [
 ];
 
 const NavbarLogged = () => {
+  const dispatch = useDispatch();
+  const selectedCurrency = useSelector((state) => state.currency.selectedCurrency);
   const [visibleDropDown, setVisibleDropDown] = useState(false);
-  const [selectedCurrencyKey, setSelectedCurrencyKey] = useState("1");
+  const [currencyList, setCurrencyList] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let response;
+        if (userData) {
+          // Fetch endpoint with userData
+          response = await apiClient.get("/discover/currencyList", {
+            headers: {
+              iUserId: userData?.DATA?.iUserID || "",
+            },
+          });
+        } else {
+          // Fetch endpoint without userData
+          response = await apiClient.get("/deal/currencyList");
+        }
+        // setCurrencyList(response.data?.DATA || []);
+        setCurrencyList(response.data?.DATA || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleClick = () => {
     setVisibleDropDown(false);
-
-    // Find the selected currency by its ID
-    const selectedCurrency = currencies.find(
-      (currency) => currency.id === selectedCurrencyKey
-    );
-
-    // Log the details of the selected currency
     if (selectedCurrency) {
-      console.log("Selected Currency:", selectedCurrency.name);
-      console.log("Symbol:", selectedCurrency.symbol);
+      console.log("Selected Currency Key Object:", selectedCurrency);
     } else {
       console.log("No currency selected");
     }
   };
 
-  const handleCurrencySelect = (currencyKey) => {
-    setSelectedCurrencyKey(currencyKey);
+  const handleCurrencySelect = (currencyId) => {
+    const selectedCurrency = currencyList.find(currency => currency.uCurrencyID === currencyId);
+    if (selectedCurrency) {
+      console.log("Selected Currency:", selectedCurrency);
+      dispatch(setSelectedCurrency(selectedCurrency));
+    }
   };
 
   const handleReset = () => {
-    setSelectedCurrencyKey("1");
+    dispatch(setSelectedCurrency(null)); // Reset the selected currency
   };
+
   return (
     <header
       className="landing-main-header-light"
@@ -255,27 +282,29 @@ const NavbarLogged = () => {
                 <SvgIcon name="phone" viewbox="0 0 12.18 20.438" /> Get the App
               </div>
             </Dropdown>
-            {/* <Dropdown
+
+            <Dropdown
               overlay={
                 <div className="category-box">
                   <h3>Choose currency</h3>
                   <ul>
-                    {currencies.map((currency) => (
+                    {currencyList.map((currency) => (
                       <li
-                        key={currency.id}
+                        key={currency.uCurrencyID}
                         className={
-                          selectedCurrencyKey === currency.id ? "selected" : ""
+                          selectedCurrency?.uCurrencyID === currency.uCurrencyID
+                            ? "selected"
+                            : ""
                         }
-                        onClick={() => handleCurrencySelect(currency.id)}
+                        onClick={() => handleCurrencySelect(currency.uCurrencyID)}
                       >
                         <div className="left-col">
-                          <div className="cur-icon">
-                            <img src={currency.icon} alt="" />
-                          </div>{" "}
-                          {currency.name}
+                          <span className="falg-img" />
+                          {currency.uCurrency}
                         </div>
                         <div className="right-col">
-                          <span>{currency.symbol}</span> - {currency.name}
+                          <span>{currency.uCurrencySymbol}</span> -{" "}
+                          {/* {currency.uCurrencyName} */}
                         </div>
                       </li>
                     ))}
@@ -302,25 +331,26 @@ const NavbarLogged = () => {
               )}
             >
               <div className="currency-col" onClick={(e) => e.preventDefault()}>
-                <div className="falg-img">
+                {/* <div className="falg-img">
                   <img
                     src={
-                      currencies.find(
-                        (currency) => currency.id === selectedCurrencyKey
-                      )?.icon
+                      currencyList.find(
+                        (currency) => currency.uCurrencyID === selectedCurrency 
+                      )?.icon || ""
                     }
                     alt=""
                   />
-                </div>
-                {
-                  currencies.find(
-                    (currency) => currency.id === selectedCurrencyKey
-                  )?.name
-                }
+                </div> */}
+                <span className="falg-img" />
+                {/* {
+                  currencyList.find(
+                    (currency) => currency.uCurrencyID === selectedCurrency
+                  )?.uCurrency || ""
+                } */}
+                {selectedCurrency ? selectedCurrency.uCurrency : ""}
               </div>
-            </Dropdown> */}
-            {/* CurrenciesDropDown Component */}
-            <CurrenciesDropDown />
+            </Dropdown>
+
             <Dropdown
               overlayClassName="user-drop-menu"
               menu={{ items: userItems }}

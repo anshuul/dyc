@@ -1,11 +1,16 @@
 @import "../../../assets/scss/variables.scss";
 
-.category-box.currency-item li {
+.category-box ul li {
   cursor: pointer;
 }
 
-.category-box.currency-item li.selected {
-  background-color: #000;
+// .category-box.currency-item li.selected {
+//   background-color: #cd8d8d;
+// }
+
+
+.category-box ul li.selected {
+  background-color: #c9b4b4;
 }
 
 .landing-main-header {
