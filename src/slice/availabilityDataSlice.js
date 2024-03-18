@@ -1,23 +1,26 @@
-// availabilityDataSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  enteredPromoCode: "",
-  selectedDate: null,
+  adult: 1,
+  child: 0,
+  infant: 0,
 };
 
 const availabilityDataSlice = createSlice({
-  name: "availabilityDataSlice",
+  name: "availabilityData",
   initialState,
   reducers: {
-    setEnteredPromoCode: (state, action) => {
-      state.enteredPromoCode = action.payload;
+    setAdult: (state, action) => {
+      state.adult = action.payload;
     },
-    setSelectedDate: (state, action) => {
-      state.selectedDate = action.payload;
+    setChild: (state, action) => {
+      state.child = action.payload;
+    },
+    setInfant: (state, action) => {
+      state.infant = action.payload;
     },
   },
 });
 
-export const { setEnteredPromoCode, setSelectedDate } = availabilityDataSlice.actions;
+export const { setAdult, setChild, setInfant } = availabilityDataSlice.actions;
 export default availabilityDataSlice.reducer;

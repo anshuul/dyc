@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Calendar from "react-calendar";
 import {
   Container,
@@ -43,6 +43,11 @@ import ReviewImg6 from "../../../assets/images/top-creator7.png";
 import DetailsImg6 from "../../../assets/images/privelanding-banner.jpg";
 import apiClient from "../../../apiConfig";
 import Apis from "../../../utility/apis";
+import {
+  setAdult,
+  setChild,
+  setInfant,
+} from "../../../slice/availabilityDataSlice";
 
 const imagesArray = [
   {
@@ -90,62 +95,6 @@ const imagesArray = [
   },
   {
     src: DetailsImg2,
-  },
-];
-
-const items = [
-  {
-    key: "1",
-    label: (
-      <div className="participants-select">
-        <h3>Participants</h3>
-        <div className="participants-row">
-          <div className="left-col">
-            <h4>Adults</h4>
-            <label>Age 13+</label>
-          </div>
-          <div className="plusminus">
-            <Button>
-              <SvgIcon name="minus" viewbox="0 0 16.638 2.405" />
-            </Button>
-            <div className="counts">1</div>
-            <Button>
-              <SvgIcon name="plus" viewbox="0 0 16.638 17.53" />
-            </Button>
-          </div>
-        </div>
-        <div className="participants-row">
-          <div className="left-col">
-            <h4>Children</h4>
-            <label>Ages 2-12</label>
-          </div>
-          <div className="plusminus">
-            <Button>
-              <SvgIcon name="minus" viewbox="0 0 16.638 2.405" />
-            </Button>
-            <div className="counts">1</div>
-            <Button>
-              <SvgIcon name="plus" viewbox="0 0 16.638 17.53" />
-            </Button>
-          </div>
-        </div>
-        <div className="participants-row">
-          <div className="left-col">
-            <h4>Infants</h4>
-            <label>Under 2</label>
-          </div>
-          <div className="plusminus">
-            <Button>
-              <SvgIcon name="minus" viewbox="0 0 16.638 2.405" />
-            </Button>
-            <div className="counts">1</div>
-            <Button>
-              <SvgIcon name="plus" viewbox="0 0 16.638 17.53" />
-            </Button>
-          </div>
-        </div>
-      </div>
-    ),
   },
 ];
 
@@ -225,6 +174,20 @@ const OutsideClickHandler = ({ onOutsideClick, children }) => {
 };
 
 const RaynaDetailsPage = () => {
+  const dispatch = useDispatch();
+
+  const handleAdultChange = (value) => {
+    dispatch(setAdult(value));
+  };
+
+  const handleChildChange = (value) => {
+    dispatch(setChild(value));
+  };
+
+  const handleInfantChange = (value) => {
+    dispatch(setInfant(value));
+  };
+
   const [tourDetails, setTourDetails] = useState(null);
   const [showAllImages, setShowAllImages] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -433,6 +396,62 @@ const RaynaDetailsPage = () => {
     setShowAllImages(false);
   };
 
+  const items = [
+    {
+      key: "1",
+      label: (
+        <div className="participants-select">
+          <h3>Participants</h3>
+          {/* Your other components */}
+          <div className="participants-row">
+            <div className="left-col">
+              <h4>Adults</h4>
+              <label>Age 13+</label>
+            </div>
+            <div className="plusminus">
+              <Button onClick={() => handleDecrement("adult")}>
+                <SvgIcon name="minus" viewbox="0 0 16.638 2.405" />
+              </Button>
+              <div className="counts">{counts.adult}</div>
+              <Button onClick={() => handleIncrement("adult")}>
+                <SvgIcon name="plus" viewbox="0 0 16.638 17.53" />
+              </Button>
+            </div>
+          </div>
+          <div className="participants-row">
+            <div className="left-col">
+              <h4>Children</h4>
+              <label>Ages 2-12</label>
+            </div>
+            <div className="plusminus">
+              <Button onClick={() => handleDecrement("child")}>
+                <SvgIcon name="minus" viewbox="0 0 16.638 2.405" />
+              </Button>
+              <div className="counts">{counts.child}</div>
+              <Button onClick={() => handleIncrement("child")}>
+                <SvgIcon name="plus" viewbox="0 0 16.638 17.53" />
+              </Button>
+            </div>
+          </div>
+          <div className="participants-row">
+            <div className="left-col">
+              <h4>Infants</h4>
+              <label>Under 2</label>
+            </div>
+            <div className="plusminus">
+              <Button onClick={() => handleDecrement("infant")}>
+                <SvgIcon name="minus" viewbox="0 0 16.638 2.405" />
+              </Button>
+              <div className="counts">{counts.infant}</div>
+              <Button onClick={() => handleIncrement("infant")}>
+                <SvgIcon name="plus" viewbox="0 0 16.638 17.53" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+  ];
   const detailSlider = {
     dots: false,
     infinite: false,
@@ -839,9 +858,11 @@ const RaynaDetailsPage = () => {
                                     const endDate = new Date(toDate);
                                     return date < startDate || date > endDate;
                                   }
-                                  return !selectedOption.operationdays[
-                                    dayOfWeek
-                                  ];
+                                  // Check if the day of the week is available based on operationdays
+                                  return (
+                                    selectedOption.operationdays[dayOfWeek] ===
+                                    "0"
+                                  );
                                 }}
                               />
                             </div>
