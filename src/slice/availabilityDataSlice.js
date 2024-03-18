@@ -4,6 +4,7 @@ const initialState = {
   adult: 1,
   child: 0,
   infant: 0,
+  selectedData: "", // Add selectedData here
 };
 
 const availabilityDataSlice = createSlice({
@@ -19,8 +20,17 @@ const availabilityDataSlice = createSlice({
     setInfant: (state, action) => {
       state.infant = action.payload;
     },
+    setSelectedData: (state, action) => {
+      // Add this reducer
+      state.selectedData = action.payload;
+    },
   },
 });
 
-export const { setAdult, setChild, setInfant } = availabilityDataSlice.actions;
+export const {
+  setAdult,
+  setChild,
+  setInfant,
+  setSelectedData, // Export setSelectedData
+} = availabilityDataSlice.actions;
 export default availabilityDataSlice.reducer;
