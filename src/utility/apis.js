@@ -3,12 +3,14 @@ const guestDiscoverApis = {
   featuredOfferList2: "/deal/discoverFeaturedOfferList2",
   tourList: "/deal/discoverList",
   tourDetails: "/deal/discoverDetail",
+  categoryList: "/deal/categoryListDiscover",
 };
 const guestGlobalApis = {
   featuredOfferList: "/deal/productFeaturedOfferList",
   featuredOfferList2: "/deal/productFeaturedOfferList2",
   tourList: "/deal/productList",
   tourDetails: "/deal/productDetails",
+  categoryList: "/deal/categoryListProduct",
 };
 
 const loggedInDiscoverApis = {
@@ -26,6 +28,7 @@ const loggedInGlobalApis = {
   featuredOfferList2: "/globaltix/featuredOfferList2",
   tourList: "/globaltix/productList",
   tourDetails: "/globaltix/productDetails",
+  categoryList: "/globaltix/categoryList",
 };
 
 const Apis = (api, type, userType) => {

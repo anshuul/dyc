@@ -52,6 +52,14 @@ import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
 import { setFeatureOfferList2 } from "../../slice/featuredOfferList2";
 import { setFeaturedOfferList } from "../../slice/featuredOfferList";
+import {
+  resetCheckedItems,
+  selectCheckedItems,
+  setCheckedItems,
+} from "../../slice/checkedItemsSlice";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { selectSelectedDate, setSelectedDate } from "../../slice/dateSlice";
+import { selectSelectedPriceRange, setSelectedPriceRange } from "../../slice/priceRangeSlice";
 
 function NextArrow(props) {
   const { className, onClick } = props;
@@ -89,6 +97,7 @@ function PrevArrowClients(props) {
   );
 }
 const LandingPage = () => {
+  const history = useHistory();
   const userData = localStorage.getItem("userData");
   const dispatch = useDispatch();
   const featuredOfferList = useSelector(
@@ -105,13 +114,20 @@ const LandingPage = () => {
   useEffect(() => {
     if (selectedCity) {
       apiClient
-        .post(Apis("featuredOfferList", selectedCity.vCountryName, userData ? "loggedIn" : "guest"), {
-          iCountryID: selectedCity.iCountryID,
-          dCurrentLat: selectedCity.vCityLatitude,
-          dCurrentLong: selectedCity.vCityLongitude,
-          vCityName: selectedCity.vCityName,
-          iCityID: selectedCity.iCityID,
-        })
+        .post(
+          Apis(
+            "featuredOfferList",
+            selectedCity.vCountryName,
+            userData ? "loggedIn" : "guest"
+          ),
+          {
+            iCountryID: selectedCity.iCountryID,
+            dCurrentLat: selectedCity.vCityLatitude,
+            dCurrentLong: selectedCity.vCityLongitude,
+            vCityName: selectedCity.vCityName,
+            iCityID: selectedCity.iCityID,
+          }
+        )
         .then((res) => {
           let FD = res.data.DATA.find((e) => {
             return e.type === "Group Banner";
@@ -121,13 +137,20 @@ const LandingPage = () => {
 
         .catch((err) => console.log(err));
       apiClient
-        .post(Apis("featuredOfferList2", selectedCity.vCountryName, userData ? "loggedIn" : "guest"), {
-          iCountryID: selectedCity.iCountryID,
-          dCurrentLat: selectedCity.vCityLatitude,
-          dCurrentLong: selectedCity.vCityLongitude,
-          vCityName: selectedCity.vCityName,
-          iCityID: selectedCity.iCityID,
-        })
+        .post(
+          Apis(
+            "featuredOfferList2",
+            selectedCity.vCountryName,
+            userData ? "loggedIn" : "guest"
+          ),
+          {
+            iCountryID: selectedCity.iCountryID,
+            dCurrentLat: selectedCity.vCityLatitude,
+            dCurrentLong: selectedCity.vCityLongitude,
+            vCityName: selectedCity.vCityName,
+            iCityID: selectedCity.iCityID,
+          }
+        )
         .then((res) => {
           let result = res.data.DATA;
           dispatch(setFeatureOfferList2(result));
@@ -139,7 +162,7 @@ const LandingPage = () => {
       console.log("City Name:", selectedCity.vCityName);
       console.log("City ID:", selectedCity.iCityID);
     }
-    return () => { };
+    return () => {};
   }, [dispatch, selectedCity]);
 
   useEffect(() => {
@@ -257,12 +280,15 @@ const LandingPage = () => {
   const isMobile = useMediaQuery({ query: `(max-width: 767px)` });
 
   const [categoryList, setCategoryList] = useState([]);
-  const [checkedItems, setCheckedItems] = useState([]);
+  const checkedItems = useSelector(selectCheckedItems);
+
+  console.log("checkedItems: ", checkedItems);
+
   useEffect(() => {
     apiClient
       .post("/deal/categoryListDiscover", {
-        iCountryID: "10",
-        iCityID: "8",
+        iCountryID: selectedCity.iCountryID,
+        iCityID: selectedCity.iCityID,
       })
       .then((res) => {
         const categoryListData = res.data?.DATA || [];
@@ -274,33 +300,90 @@ const LandingPage = () => {
       });
   }, []);
 
-  const [visible, setVisible] = useState(false);
-  const [visibleDate, setVisibleDate] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  // const handleCheckboxChange = (categoryId) => {
+  //   const categoryToAdd = categoryList.find(
+  //     (category) => category.rCategoryID === categoryId
+  //   );
 
-  const [visiblePrice, setVisiblePrice] = useState(false);
+  //   if (categoryToAdd) {
+  //     const isAlreadyChecked = checkedItems.some(
+  //       (item) => item.rCategoryID === categoryId
+  //     );
 
-  const handleCheckboxChange = (categoryId) => {
-    setCheckedItems((prevItems) => {
-      if (prevItems.includes(categoryId)) {
-        return prevItems.filter((item) => item !== categoryId);
-      } else {
-        return [...prevItems, categoryId];
-      }
-    });
+  //     let updatedCheckedItems = [];
+
+  //     if (isAlreadyChecked) {
+  //       updatedCheckedItems = checkedItems.filter(
+  //         (item) => item.rCategoryID !== categoryId
+  //       );
+  //     } else {
+  //       updatedCheckedItems = [...checkedItems, categoryToAdd];
+  //     }
+
+  //     console.log("updatedCheckedItems: ", updatedCheckedItems);
+  //     dispatch(setCheckedItems(updatedCheckedItems));
+  //   }
+  // };
+
+  const handleCheckboxChange = (category) => {
+    const isAlreadyChecked = checkedItems.some(
+      (item) => item.rCategoryID === category.rCategoryID
+    );
+
+    let updatedCheckedItems = [];
+
+    if (isAlreadyChecked) {
+      updatedCheckedItems = checkedItems.filter(
+        (item) => item.rCategoryID !== category.rCategoryID
+      );
+    } else {
+      updatedCheckedItems = [...checkedItems, category];
+    }
+
+    console.log("updatedCheckedItems: ", updatedCheckedItems);
+    dispatch(setCheckedItems(updatedCheckedItems));
   };
 
   const handleResetClick = () => {
-    setCheckedItems([]);
+    dispatch(resetCheckedItems());
   };
 
   const handleShowResultsClick = () => {
+    // Extract rCategoryName values from checkedItems
+    const checkedCategoryNames = checkedItems.map((item) => item.rCategoryName);
+
+    // Join rCategoryName values with commas
+    const checkedCategoryNamesString = checkedCategoryNames.join(",");
+
+    // Redirect to listing-page with query parameters
+    history.push(`/listing-page?categories=${checkedCategoryNamesString}`);
     setVisible(false);
   };
+
+  const [visible, setVisible] = useState(false);
+
+  const selectedDate = useSelector(selectSelectedDate);
+  const [visibleDate, setVisibleDate] = useState(false);
 
   const handleShowDateClick = () => {
     setVisibleDate(false);
     console.log("Selected Date:", selectedDate);
+  };
+
+  // const handleDateChange = (date) => {
+  //   dispatch(setSelectedDate(date));
+  //   setVisibleDate(false);
+  // };
+
+  const handleDateChange = (date) => {
+    const formattedDate = {
+      day: date.toLocaleDateString("en", { weekday: "short" }),
+      date: date.getDate(),
+      month: date.toLocaleDateString("en", { month: "short" }),
+      year: date.getFullYear(),
+    };
+    dispatch(setSelectedDate(formattedDate));
+    setVisibleDate(false);
   };
 
   const dateItems = [
@@ -310,29 +393,27 @@ const LandingPage = () => {
         <div className="category-box">
           <h3>Planning your trip?</h3>
           <div className="planning-time">
-            <Calendar onChange={(date) => setSelectedDate(date)} />
+            <Calendar
+              onChange={handleDateChange}
+              value={selectedDate} // Set the value prop to the selectedDate
+              onClickDay={handleShowDateClick} // If needed, toggle visibility on day click
+              showWeekNumbers
+              showNeighboringMonth={false}
+              locale="en"
+              minDate={new Date()}
+            />
           </div>
         </div>
       ),
     },
   ];
 
-  const [selectedPriceRange, setSelectedPriceRange] = useState([0, 0]);
+  const selectedPriceRange = useSelector(selectSelectedPriceRange);
+  const [visiblePrice, setVisiblePrice] = useState(false);
 
   const handleShowPriceClick = () => {
     setVisiblePrice(false);
-    console.log("Selected Price Range:", selectedPriceRange);
   };
-
-  // Save data to localStorage
-  useEffect(() => {
-    const dataToStore = {
-      checkedItems,
-      selectedDate,
-      selectedPriceRange,
-    };
-    localStorage.setItem("discoveryData", JSON.stringify(dataToStore));
-  }, [checkedItems, selectedDate, selectedPriceRange]);
 
   const marks = {
     0: "0",
@@ -367,19 +448,26 @@ const LandingPage = () => {
           <div className="price-range">
             <div className="minmax-row">
               <div className="column">
-                <label>${selectedPriceRange[0]}</label>
+                <label>${selectedPriceRange.start}</label>
                 <p>Minimum</p>
               </div>
               <div className="column">
-                <label>${selectedPriceRange[1]}</label>
+                <label>${selectedPriceRange.limit}</label>
                 <p>Maximum</p>
               </div>
             </div>
             <Slider
               range
               marks={marks}
-              defaultValue={selectedPriceRange}
-              onChange={(values) => setSelectedPriceRange(values)}
+              defaultValue={[
+                selectedPriceRange.start,
+                selectedPriceRange.limit,
+              ]}
+              onChange={(values) =>
+                dispatch(
+                  setSelectedPriceRange({ start: values[0], limit: values[1] })
+                )
+              }
             />
           </div>
         </div>
@@ -410,11 +498,12 @@ const LandingPage = () => {
                               <li key={category.rCategoryID}>
                                 {category.rCategoryName}{" "}
                                 <Checkbox
-                                  checked={checkedItems.includes(
-                                    category.rCategoryID
+                                  checked={checkedItems.some(
+                                    (item) =>
+                                      item.rCategoryID === category.rCategoryID
                                   )}
                                   onChange={() =>
-                                    handleCheckboxChange(category.rCategoryID)
+                                    handleCheckboxChange(category)
                                   }
                                 />
                               </li>
@@ -586,7 +675,10 @@ const LandingPage = () => {
                           </div>
                           <Button
                             onClick={() =>
-                              window.open(`/group-listing-page?rgroupId=${e.rgroup_id}`, "_self")
+                              window.open(
+                                `/group-listing-page?rgroupId=${e.rgroup_id}`,
+                                "_self"
+                              )
                             }
                           >
                             Explore{" "}
@@ -727,7 +819,12 @@ const LandingPage = () => {
                               />
                             </Button>
                           }
-                          onClick={() => window.open(`/details?tourId=${item.tourId}`, "_self")}
+                          onClick={() =>
+                            window.open(
+                              `/details?tourId=${item.tourId}`,
+                              "_self"
+                            )
+                          }
                         >
                           <div className="bottom-row">
                             <div className="left-col">

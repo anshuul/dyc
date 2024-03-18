@@ -96,100 +96,100 @@ const NavbarLanding = () => {
 
   const userItems = userData
     ? [
-      {
-        key: "1",
-        label: (
-          <div className="user-upper">
-            <div className="user-upper-img">
-              {" "}
-              <img src={userImg} alt="" />{" "}
+        {
+          key: "1",
+          label: (
+            <div className="user-upper">
+              <div className="user-upper-img">
+                {" "}
+                <img src={userImg} alt="" />{" "}
+              </div>
+              <h4>Hi, {`${userData.DATA.vUserName}`}👋</h4>
             </div>
-            <h4>Hi, {`${userData.DATA.vUserName}`}👋</h4>
-          </div>
-        ),
-      },
-      {
-        key: "2",
-        icon: (
-          <span className="menu-icons">
-            <SvgIcon name="profile-setting-icon" viewbox="0 0 9.022 9.736" />
-          </span>
-        ),
-        label: <Link to="/profile-setting">Profile Setting</Link>,
-      },
-      {
-        key: "3",
-        icon: (
-          <span className="menu-icons">
-            <SvgIcon name="mybooking" viewbox="0 0 11.026 9.836" />
-          </span>
-        ),
-        label: <Link to="/profile-setting">My Bookings</Link>,
-      },
-      {
-        key: "4",
-        icon: (
-          <span className="menu-icons">
-            <SvgIcon name="favourite-icon" viewbox="0 0 10.055 8.961" />
-          </span>
-        ),
-        label: <Link to="/profile-setting">Wishlist</Link>,
-      },
-      {
-        key: "5",
-        icon: (
-          <span className="menu-icons">
-            <SvgIcon name="mycards-icon" viewbox="0 0 10.575 7.931" />
-          </span>
-        ),
-        label: <Link to="/profile-setting">My Cards</Link>,
-      },
-      {
-        key: "6",
-        icon: (
-          <span className="menu-icons">
-            <SvgIcon name="myoffers-icon" viewbox="0 0 10.083 10.096" />
-          </span>
-        ),
-        label: <Link to="/profile-setting">My Offers</Link>,
-      },
-      {
-        key: "7",
-        icon: (
-          <span className="menu-icons">
-            <SvgIcon name="notification-icon" viewbox="0 0 8.315 9.262" />
-          </span>
-        ),
-        label: <Link to="/profile-setting">Notification Setting</Link>,
-      },
-      {
-        key: "8",
-        icon: (
-          <span className="menu-icons">
-            <SvgIcon name="terms" viewbox="0 0 7.55 9.38" />
-          </span>
-        ),
-        label: <Link to="/terms-conditions">Terms & Conditions</Link>,
-      },
-      {
-        key: "9",
-        icon: (
-          <span className="menu-icons">
-            <SvgIcon name="mice" viewbox="0 0 13.753 13.407" />
-          </span>
-        ),
-        label: <Link to="/contact">Need Help?</Link>,
-      },
-      {
-        key: "10",
-        label: <Link to="/login">Logout</Link>,
-        onClick: handleLogout,
-      },
-      {
-        key: "11",
-        label: <DeleteAccountModal />,
-      },
-    ]
+          ),
+        },
+        {
+          key: "2",
+          icon: (
+            <span className="menu-icons">
+              <SvgIcon name="profile-setting-icon" viewbox="0 0 9.022 9.736" />
+            </span>
+          ),
+          label: <Link to="/profile-setting">Profile Setting</Link>,
+        },
+        {
+          key: "3",
+          icon: (
+            <span className="menu-icons">
+              <SvgIcon name="mybooking" viewbox="0 0 11.026 9.836" />
+            </span>
+          ),
+          label: <Link to="/profile-setting">My Bookings</Link>,
+        },
+        {
+          key: "4",
+          icon: (
+            <span className="menu-icons">
+              <SvgIcon name="favourite-icon" viewbox="0 0 10.055 8.961" />
+            </span>
+          ),
+          label: <Link to="/profile-setting">Wishlist</Link>,
+        },
+        {
+          key: "5",
+          icon: (
+            <span className="menu-icons">
+              <SvgIcon name="mycards-icon" viewbox="0 0 10.575 7.931" />
+            </span>
+          ),
+          label: <Link to="/profile-setting">My Cards</Link>,
+        },
+        {
+          key: "6",
+          icon: (
+            <span className="menu-icons">
+              <SvgIcon name="myoffers-icon" viewbox="0 0 10.083 10.096" />
+            </span>
+          ),
+          label: <Link to="/profile-setting">My Offers</Link>,
+        },
+        {
+          key: "7",
+          icon: (
+            <span className="menu-icons">
+              <SvgIcon name="notification-icon" viewbox="0 0 8.315 9.262" />
+            </span>
+          ),
+          label: <Link to="/profile-setting">Notification Setting</Link>,
+        },
+        {
+          key: "8",
+          icon: (
+            <span className="menu-icons">
+              <SvgIcon name="terms" viewbox="0 0 7.55 9.38" />
+            </span>
+          ),
+          label: <Link to="/terms-conditions">Terms & Conditions</Link>,
+        },
+        {
+          key: "9",
+          icon: (
+            <span className="menu-icons">
+              <SvgIcon name="mice" viewbox="0 0 13.753 13.407" />
+            </span>
+          ),
+          label: <Link to="/contact">Need Help?</Link>,
+        },
+        {
+          key: "10",
+          label: <Link to="/login">Logout</Link>,
+          onClick: handleLogout,
+        },
+        {
+          key: "11",
+          label: <DeleteAccountModal />,
+        },
+      ]
     : [];
 
   // New state to hold the selected item object for logging
@@ -201,12 +201,13 @@ const NavbarLanding = () => {
   const [countryCityList, setCountryCityList] = useState([]);
   const [filteredCityList, setFilteredCityList] = useState([]);
 
-  const selectedCurrency = useSelector((state) => state.currency.selectedCurrency);
+  const selectedCurrency = useSelector(
+    (state) => state.currency.selectedCurrency
+  );
   const [visibleDropDown, setVisibleDropDown] = useState(false);
   const [currencyList, setCurrencyList] = useState([]);
 
-  console.log("selectedCurrency : ", selectedCurrency)
-
+  console.log("selectedCurrency : ", selectedCurrency);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -225,8 +226,6 @@ const NavbarLanding = () => {
         }
         const fetchedCurrencyList = response.data?.DATA || [];
         setCurrencyList(fetchedCurrencyList);
-
-        
       } catch (error) {
         console.log(error);
       }
@@ -236,15 +235,12 @@ const NavbarLanding = () => {
   }, []);
 
   // useEffect(() => {
-  //   // Save selected currency object to localStorage
   //   if (selectedCurrency) {
   //     localStorage.setItem('selectedCurrency', JSON.stringify(
   //       currencyList.find(currency => currency.uCurrencyID === selectedCurrency)
   //     ));
   //   }
   // }, [selectedCurrency]);
-
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -262,6 +258,7 @@ const NavbarLanding = () => {
           response = await apiClient.post("/deal/countryCityList");
         }
         const data = response.data?.DATA || [];
+        console.log("Data: ", data);
         setCountryCityList(data);
         const allCities = data.flatMap((country) => country.cityList);
         setFilteredCityList(allCities);
@@ -272,7 +269,6 @@ const NavbarLanding = () => {
 
     fetchData();
   }, []);
-
 
   useEffect(() => {
     // Filter city list based on search input
@@ -294,7 +290,9 @@ const NavbarLanding = () => {
   };
 
   const handleCurrencySelect = (currencyId) => {
-    const selectedCurrency = currencyList.find(currency => currency.uCurrencyID === currencyId);
+    const selectedCurrency = currencyList.find(
+      (currency) => currency.uCurrencyID === currencyId
+    );
     if (selectedCurrency) {
       console.log("Selected Currency:", selectedCurrency);
       dispatch(setSelectedCurrency(selectedCurrency));
@@ -304,7 +302,6 @@ const NavbarLanding = () => {
   const handleReset = () => {
     dispatch(setSelectedCurrency(null)); // Reset the selected currency
   };
-
 
   const handleSearch = (inputValue) => {
     setSearchInput(inputValue);
@@ -428,7 +425,9 @@ const NavbarLanding = () => {
                             ? "selected"
                             : ""
                         }
-                        onClick={() => handleCurrencySelect(currency.uCurrencyID)}
+                        onClick={() =>
+                          handleCurrencySelect(currency.uCurrencyID)
+                        }
                       >
                         <div className="left-col">
                           <span className="falg-img" />
