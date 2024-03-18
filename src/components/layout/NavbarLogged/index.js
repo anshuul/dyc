@@ -226,8 +226,13 @@ const NavbarLogged = () => {
           // Fetch endpoint without userData
           response = await apiClient.get("/deal/currencyList");
         }
-        // setCurrencyList(response.data?.DATA || []);
-        setCurrencyList(response.data?.DATA || []);
+        const fetchedCurrencyList = response.data?.DATA || [];
+        setCurrencyList(fetchedCurrencyList);
+
+        // Set default selected currency to the first currency in the list
+        if (fetchedCurrencyList.length > 0) {
+          dispatch(setSelectedCurrency(fetchedCurrencyList[0]));
+        }
       } catch (error) {
         console.log(error);
       }

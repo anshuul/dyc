@@ -1274,9 +1274,7 @@ const DetailsPage = () => {
                 </div>
                 <div className="address-row">
                   <h2 className="mb-2">Address</h2>
-                  <p className="mb-4 pb-2">
-                    1 Sheikh Mohammed bin Rashid Blvd, Downtown Dubai, Dubai
-                  </p>
+                  <p className="mb-4 pb-2">{tourDetails.areaAddress}</p>
                   <img className="w-100" src={MapAddress} alt="map" />
                 </div>
               </div>

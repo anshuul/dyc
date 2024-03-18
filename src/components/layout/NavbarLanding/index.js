@@ -223,8 +223,10 @@ const NavbarLanding = () => {
           // Fetch endpoint without userData
           response = await apiClient.get("/deal/currencyList");
         }
-        // setCurrencyList(response.data?.DATA || []);
-        setCurrencyList(response.data?.DATA || []);
+        const fetchedCurrencyList = response.data?.DATA || [];
+        setCurrencyList(fetchedCurrencyList);
+
+        
       } catch (error) {
         console.log(error);
       }
@@ -470,7 +472,7 @@ const NavbarLanding = () => {
                 {selectedCurrency ? selectedCurrency.uCurrency : ""}
               </div>
             </Dropdown>
-            
+
             {!userData && (
               <Button
                 onClick={() => window.open("/login", "_self")}
