@@ -59,7 +59,10 @@ import {
 } from "../../slice/checkedItemsSlice";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { selectSelectedDate, setSelectedDate } from "../../slice/dateSlice";
-import { selectSelectedPriceRange, setSelectedPriceRange } from "../../slice/priceRangeSlice";
+import {
+  selectSelectedPriceRange,
+  setSelectedPriceRange,
+} from "../../slice/priceRangeSlice";
 
 function NextArrow(props) {
   const { className, onClick } = props;
@@ -156,14 +159,9 @@ const LandingPage = () => {
           dispatch(setFeatureOfferList2(result));
         })
         .catch((err) => console.log(err));
-      // Log selected city information
-      console.log("Selected City Information:");
-      console.log("Country ID:", selectedCity.iCountryID);
-      console.log("City Name:", selectedCity.vCityName);
-      console.log("City ID:", selectedCity.iCityID);
     }
     return () => {};
-  }, [dispatch, selectedCity]);
+  }, [selectedCity]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -285,45 +283,22 @@ const LandingPage = () => {
   console.log("checkedItems: ", checkedItems);
 
   useEffect(() => {
-    apiClient
-      .post("/deal/categoryListDiscover", {
-        iCountryID: selectedCity.iCountryID,
-        iCityID: selectedCity.iCityID,
-      })
-      .then((res) => {
-        const categoryListData = res.data?.DATA || [];
-        console.log("Category List:", categoryListData);
-        setCategoryList(categoryListData);
-      })
-      .catch((err) => {
-        console.error("Error fetching category list:", err);
-      });
-  }, []);
-
-  // const handleCheckboxChange = (categoryId) => {
-  //   const categoryToAdd = categoryList.find(
-  //     (category) => category.rCategoryID === categoryId
-  //   );
-
-  //   if (categoryToAdd) {
-  //     const isAlreadyChecked = checkedItems.some(
-  //       (item) => item.rCategoryID === categoryId
-  //     );
-
-  //     let updatedCheckedItems = [];
-
-  //     if (isAlreadyChecked) {
-  //       updatedCheckedItems = checkedItems.filter(
-  //         (item) => item.rCategoryID !== categoryId
-  //       );
-  //     } else {
-  //       updatedCheckedItems = [...checkedItems, categoryToAdd];
-  //     }
-
-  //     console.log("updatedCheckedItems: ", updatedCheckedItems);
-  //     dispatch(setCheckedItems(updatedCheckedItems));
-  //   }
-  // };
+    if (selectedCity && selectedCity.iCountryID && selectedCity.iCityID) {
+      apiClient
+        .post("/deal/categoryListDiscover", {
+          iCountryID: selectedCity.iCountryID,
+          iCityID: selectedCity.iCityID,
+        })
+        .then((res) => {
+          const categoryListData = res.data?.DATA || [];
+          console.log("Category List:", categoryListData);
+          setCategoryList(categoryListData);
+        })
+        .catch((err) => {
+          console.error("Error fetching category list:", err);
+        });
+    }
+  }, [selectedCity]);
 
   const handleCheckboxChange = (category) => {
     const isAlreadyChecked = checkedItems.some(
@@ -348,17 +323,17 @@ const LandingPage = () => {
     dispatch(resetCheckedItems());
   };
 
-  const handleShowResultsClick = () => {
-    // Extract rCategoryName values from checkedItems
-    const checkedCategoryNames = checkedItems.map((item) => item.rCategoryName);
+  // const handleShowResultsClick = () => {
+  //   // Extract rCategoryName values from checkedItems
+  //   const checkedCategoryNames = checkedItems.map((item) => item.rCategoryName);
 
-    // Join rCategoryName values with commas
-    const checkedCategoryNamesString = checkedCategoryNames.join(",");
+  //   // Join rCategoryName values with commas
+  //   const checkedCategoryNamesString = checkedCategoryNames.join(",");
 
-    // Redirect to listing-page with query parameters
-    history.push(`/listing-page?categories=${checkedCategoryNamesString}`);
-    setVisible(false);
-  };
+  //   // Redirect to listing-page with query parameters
+  //   history.push(`/listing-page?categories=${checkedCategoryNamesString}`);
+  //   setVisible(false);
+  // };
 
   const [visible, setVisible] = useState(false);
 
@@ -370,11 +345,6 @@ const LandingPage = () => {
     console.log("Selected Date:", selectedDate);
   };
 
-  // const handleDateChange = (date) => {
-  //   dispatch(setSelectedDate(date));
-  //   setVisibleDate(false);
-  // };
-
   const handleDateChange = (date) => {
     const formattedDate = {
       day: date.toLocaleDateString("en", { weekday: "short" }),
@@ -385,6 +355,8 @@ const LandingPage = () => {
     dispatch(setSelectedDate(formattedDate));
     setVisibleDate(false);
   };
+
+  console.log("selectedDate: ", selectedDate);
 
   const dateItems = [
     {
@@ -410,10 +382,6 @@ const LandingPage = () => {
 
   const selectedPriceRange = useSelector(selectSelectedPriceRange);
   const [visiblePrice, setVisiblePrice] = useState(false);
-
-  const handleShowPriceClick = () => {
-    setVisiblePrice(false);
-  };
 
   const marks = {
     0: "0",
@@ -474,6 +442,50 @@ const LandingPage = () => {
       ),
     },
   ];
+
+  // Handler for clicking "Show Results"
+  const handleShowResultsClick = () => {
+    let queryParams = [];
+
+    // Check if categories are selected
+    if (checkedItems.length > 0) {
+      const checkedCategoryNames = checkedItems.map((item) => item.rCategoryID);
+      queryParams.push(`categories=${checkedCategoryNames.join(",")}`);
+    }
+
+    // Check if date is selected
+    if (
+      selectedDate &&
+      selectedDate.year &&
+      selectedDate.month &&
+      selectedDate.date
+    ) {
+      const dateString = `${selectedDate.year}-${selectedDate.month}-${selectedDate.date}`;
+      queryParams.push(`selectedDate=${encodeURIComponent(dateString)}`);
+    }
+
+    // Check if price range is selected and not default
+    if (
+      (selectedPriceRange.start !== 0 || selectedPriceRange.limit !== 100) &&
+      (selectedPriceRange.start !== marks[0] ||
+        selectedPriceRange.limit !== marks[100])
+    ) {
+      const { start, limit } = selectedPriceRange;
+      queryParams.push(`start=${start}&limit=${limit}`);
+    }
+
+    // Construct the query string
+    const queryString = queryParams.join("&");
+
+    // Redirect to listing-page with query parameters if any
+    if (queryString) {
+      history.push(`/listing-page?${queryString}`);
+    } else {
+      history.push(`/listing-page`);
+    }
+
+    setVisible(false);
+  };
 
   return (
     <div className="twl-landing-wrapper">
@@ -551,7 +563,7 @@ const LandingPage = () => {
                   {menu}
                   <div className="drop-footer">
                     <Button type="text">Reset all</Button>
-                    <Button type="primary" onClick={handleShowDateClick}>
+                    <Button type="primary" onClick={handleShowResultsClick}>
                       Show results
                     </Button>
                   </div>
@@ -573,7 +585,7 @@ const LandingPage = () => {
                   {menu}
                   <div className="drop-footer">
                     <Button type="text">Reset all</Button>
-                    <Button type="primary" onClick={handleShowPriceClick}>
+                    <Button type="primary" onClick={handleShowResultsClick}>
                       Show results
                     </Button>
                   </div>
@@ -821,10 +833,23 @@ const LandingPage = () => {
                           }
                           onClick={() =>
                             window.open(
-                              `/details?tourId=${item.tourId}`,
+                              `/rayna-details?tourId=${item.tourId}`,
                               "_self"
                             )
                           }
+                          // onClick={() => {
+                          //   if (item.tourId) {
+                          //     window.open(
+                          //       `/details?tourId=${item.tourId}`,
+                          //       "_self"
+                          //     );
+                          //   } else {
+                          //     window.open(
+                          //       `/rayna-details?productId=${item.productId}`,
+                          //       "_self"
+                          //     );
+                          //   }
+                          // }}
                         >
                           <div className="bottom-row">
                             <div className="left-col">

@@ -397,7 +397,7 @@ const DetailsPage = () => {
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
   const param = searchParams.get("tourId");
-  console.log("param: ", param)
+  console.log("param: ", param);
 
   const userData = localStorage.getItem("userData");
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
@@ -406,7 +406,11 @@ const DetailsPage = () => {
       try {
         const response = await apiClient.post(
           // Fetch data from API
-          Apis("tourDetails", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
+          Apis(
+            "tourDetails",
+            selectedCity.vCountryName,
+            userData ? "loggedIn" : "guest"
+          ),
           {
             iCountryID: selectedCity.iCountryID,
             Language: "en",
@@ -421,7 +425,7 @@ const DetailsPage = () => {
 
         // Set the fetched tour details to the state
         setTourDetails(response.data?.DATA || null);
-        console.log("response tourDetails: ", response)
+        console.log("response tourDetails: ", response);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -432,10 +436,10 @@ const DetailsPage = () => {
 
   function parseHtmlStringToArray(htmlString) {
     const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlString, 'text/html');
-    const ulElement = doc.querySelector('ul');
+    const doc = parser.parseFromString(htmlString, "text/html");
+    const ulElement = doc.querySelector("ul");
     if (ulElement) {
-      return Array.from(ulElement.children).map(child => child.outerHTML);
+      return Array.from(ulElement.children).map((child) => child.outerHTML);
     } else {
       return [];
     }
@@ -549,9 +553,11 @@ const DetailsPage = () => {
     console.log("Entered Promo Code:", promoCodeValue);
   };
 
-  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${counts.child
-    } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${counts.infant > 1 ? "s" : ""
-    }`;
+  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
+    counts.child
+  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
+    counts.infant > 1 ? "s" : ""
+  }`;
 
   console.log("Selected Data:", selectedData);
 
@@ -603,15 +609,28 @@ const DetailsPage = () => {
                     <SvgIcon name="heart-outline" viewbox="0 0 13.269 12.168" />
                   </Button>
                   <Button type="link">
-                    Share <SvgIcon name="share-icon" viewbox="0 0 10.314 11.942" />
+                    Share{" "}
+                    <SvgIcon name="share-icon" viewbox="0 0 10.314 11.942" />
                   </Button>
                 </div>
               }
-              closeIcon={<SvgIcon name="chevron-left" viewbox="0 0 4.029 6.932" />}
+              closeIcon={
+                <SvgIcon name="chevron-left" viewbox="0 0 4.029 6.932" />
+              }
               onClose={onClose}
               open={showAllImages}
             >
-              <Gallery images={tourDetails && tourDetails.rTourImageList && tourDetails.rTourImageList.map((image, index) => ({ src: image, alt: `Image ${index + 1}` }))} enableImageSelection={false} />
+              <Gallery
+                images={
+                  tourDetails &&
+                  tourDetails.rTourImageList &&
+                  tourDetails.rTourImageList.map((image, index) => ({
+                    src: image,
+                    alt: `Image ${index + 1}`,
+                  }))
+                }
+                enableImageSelection={false}
+              />
             </Drawer>
             <Container className="container-upper">
               {/* <MediaQuery minWidth={768}>
@@ -630,29 +649,43 @@ const DetailsPage = () => {
                   </div>
                 </div>
               </MediaQuery> */}
-              {tourDetails && tourDetails.rTourImageList && tourDetails.rTourImageList.length > 0 && (
-                <MediaQuery minWidth={768}>
-                  <div className="details-images">
-                    <div className="showphotos-btn" onClick={showDrawer}>
-                      <span>{tourDetails.rTourImageList.length}</span> SHOW PHOTOS
+              {tourDetails &&
+                tourDetails.rTourImageList &&
+                tourDetails.rTourImageList.length > 0 && (
+                  <MediaQuery minWidth={768}>
+                    <div className="details-images">
+                      <div className="showphotos-btn" onClick={showDrawer}>
+                        <span>{tourDetails.rTourImageList.length}</span> SHOW
+                        PHOTOS
+                      </div>
+                      <div className="left-image">
+                        <img
+                          src={tourDetails.rTourImageList[0]}
+                          alt="Tour Image 1"
+                        />
+                      </div>
+                      <div className="right-image">
+                        {showAllImages
+                          ? tourDetails.rTourImageList.map((image, index) => (
+                              <img
+                                key={index}
+                                src={image}
+                                alt={`Tour Image ${index + 1}`}
+                              />
+                            ))
+                          : tourDetails.rTourImageList
+                              .slice(1, 6)
+                              .map((image, index) => (
+                                <img
+                                  key={index}
+                                  src={image}
+                                  alt={`Tour Image ${index + 2}`}
+                                />
+                              ))}
+                      </div>
                     </div>
-                    <div className="left-image">
-                      <img src={tourDetails.rTourImageList[0]} alt="Tour Image 1" />
-                    </div>
-                    <div className="right-image">
-                      {showAllImages ? (
-                        tourDetails.rTourImageList.map((image, index) => (
-                          <img key={index} src={image} alt={`Tour Image ${index + 1}`} />
-                        ))
-                      ) : (
-                        tourDetails.rTourImageList.slice(1, 6).map((image, index) => (
-                          <img key={index} src={image} alt={`Tour Image ${index + 2}`} />
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </MediaQuery>
-              )}
+                  </MediaQuery>
+                )}
 
               {/* <MediaQuery maxWidth={767}>
                 <div className="mobile-details-slider">
@@ -678,11 +711,15 @@ const DetailsPage = () => {
               <MediaQuery maxWidth={767}>
                 <div className="mobile-details-slider">
                   <Slider {...detailSlider}>
-                    {tourDetails.rTourImageList && tourDetails.rTourImageList.map((image, index) => (
-                      <div key={index}>
-                        <img src={image} alt={`Experience London skyline ${index + 1}`} />
-                      </div>
-                    ))}
+                    {tourDetails.rTourImageList &&
+                      tourDetails.rTourImageList.map((image, index) => (
+                        <div key={index}>
+                          <img
+                            src={image}
+                            alt={`Experience London skyline ${index + 1}`}
+                          />
+                        </div>
+                      ))}
                   </Slider>
                 </div>
               </MediaQuery>
@@ -693,12 +730,26 @@ const DetailsPage = () => {
                     <div className="dtl-upperleft">
                       <div className="rating">
                         {/* Render stars based on tourRating */}
-                        {Array.from({ length: Math.floor(tourDetails.tourRating) }, (_, index) => (
-                          <SvgIcon key={index} name="star-filled" viewbox="0 0 15 15" />
-                        ))}
-                        {Array.from({ length: 5 - Math.floor(tourDetails.tourRating) }, (_, index) => (
-                          <SvgIcon key={index} name="star-outline" viewbox="0 0 15.999 16" />
-                        ))}
+                        {Array.from(
+                          { length: Math.floor(tourDetails.tourRating) },
+                          (_, index) => (
+                            <SvgIcon
+                              key={index}
+                              name="star-filled"
+                              viewbox="0 0 15 15"
+                            />
+                          )
+                        )}
+                        {Array.from(
+                          { length: 5 - Math.floor(tourDetails.tourRating) },
+                          (_, index) => (
+                            <SvgIcon
+                              key={index}
+                              name="star-outline"
+                              viewbox="0 0 15.999 16"
+                            />
+                          )
+                        )}
                       </div>
                       <h1>{tourDetails.tourName}</h1>
                       <div className="location">
@@ -717,7 +768,10 @@ const DetailsPage = () => {
                         </Button>
                         <Button type="link">
                           Share{" "}
-                          <SvgIcon name="share-icon" viewbox="0 0 10.314 11.942" />
+                          <SvgIcon
+                            name="share-icon"
+                            viewbox="0 0 10.314 11.942"
+                          />
                         </Button>
                       </div>
                     </MediaQuery>
@@ -726,13 +780,23 @@ const DetailsPage = () => {
                   <div className="overview-row">
                     <h2>Overview</h2>
                     <div>
-                      <div style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: showFullDescription ? tourDetails.tourShortDescription : `${tourDetails.tourShortDescription.substring(0, 424)}...` }} />
+                      <div
+                        style={{ display: "inline-block" }}
+                        dangerouslySetInnerHTML={{
+                          __html: showFullDescription
+                            ? tourDetails.tourShortDescription
+                            : `${tourDetails.tourShortDescription.substring(
+                                0,
+                                424
+                              )}...`,
+                        }}
+                      />
                       {!showFullDescription && (
                         <span>
                           <a
                             onClick={toggleDescription}
                             to="#"
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: "pointer" }}
                           >
                             Read More
                           </a>
@@ -749,8 +813,8 @@ const DetailsPage = () => {
                           <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
                         </div>
                         <div>
-                          Stand above the clouds as you catch a closeup view of the
-                          pyramidal
+                          Stand above the clouds as you catch a closeup view of
+                          the pyramidal
                         </div>
                       </li>
                       <li>
@@ -758,8 +822,8 @@ const DetailsPage = () => {
                           <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
                         </div>
                         <div>
-                          Immerse yourself into discovery in the Observation Deck on
-                          the 86th Floor
+                          Immerse yourself into discovery in the Observation
+                          Deck on the 86th Floor
                         </div>
                       </li>
                       <li>
@@ -767,8 +831,8 @@ const DetailsPage = () => {
                           <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
                         </div>
                         <div>
-                          Standing as one of best spots to view the city of Kuala
-                          Lumpur
+                          Standing as one of best spots to view the city of
+                          Kuala Lumpur
                         </div>
                       </li>
                       <li>
@@ -776,8 +840,8 @@ const DetailsPage = () => {
                           <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
                         </div>
                         <div>
-                          Immerse yourself into discovery in the Observation Deck on
-                          the 86th Floor
+                          Immerse yourself into discovery in the Observation
+                          Deck on the 86th Floor
                         </div>
                       </li>
                       <li>
@@ -785,8 +849,8 @@ const DetailsPage = () => {
                           <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
                         </div>
                         <div>
-                          Standing as one of best spots to view the city of Kuala
-                          Lumpur
+                          Standing as one of best spots to view the city of
+                          Kuala Lumpur
                         </div>
                       </li>
                     </ul>
@@ -879,7 +943,10 @@ const DetailsPage = () => {
                                   popupMatchSelectWidth={false}
                                   popupClassName="timeselect"
                                   suffixIcon={
-                                    <SvgIcon name="down-arrow" viewbox="0 0 18 9" />
+                                    <SvgIcon
+                                      name="down-arrow"
+                                      viewbox="0 0 18 9"
+                                    />
                                   }
                                   dropdownRender={(menu) => (
                                     <>
@@ -993,7 +1060,9 @@ const DetailsPage = () => {
                         </MediaQuery>
                         <Button
                           type="link"
-                          icon={<SvgIcon name="play" viewbox="0 0 41.93 41.965" />}
+                          icon={
+                            <SvgIcon name="play" viewbox="0 0 41.93 41.965" />
+                          }
                           block
                         >
                           Learn How to book
@@ -1021,28 +1090,39 @@ const DetailsPage = () => {
                   <h2>Gallery</h2>
                   <div className="details-images">
                     <div className="showphotos-btn" onClick={showDrawer}>
-                      <span>{tourDetails.rTourImageList.length}</span> SHOW PHOTOS
+                      <span>{tourDetails.rTourImageList.length}</span> SHOW
+                      PHOTOS
                     </div>
                     <div className="left-image">
                       <button className="play-btn" onClick={showDrawer}>
                         <SvgIcon name="play-icon" viewbox="0 0 48 61" />
                       </button>
-                      <img src={tourDetails.rTourImageList[0]} alt="Tour Image 1" />
+                      <img
+                        src={tourDetails.rTourImageList[0]}
+                        alt="Tour Image 1"
+                      />
                     </div>
                     <div className="right-image">
-                      {showAllImages ? (
-                        tourDetails.rTourImageList.map((image, index) => (
-                          <img key={index} src={image} alt={`Tour Image ${index + 1}`} />
-                        ))
-                      ) : (
-                        tourDetails.rTourImageList.slice(1, 6).map((image, index) => (
-                          <img key={index} src={image} alt={`Tour Image ${index + 2}`} />
-                        ))
-                      )}
+                      {showAllImages
+                        ? tourDetails.rTourImageList.map((image, index) => (
+                            <img
+                              key={index}
+                              src={image}
+                              alt={`Tour Image ${index + 1}`}
+                            />
+                          ))
+                        : tourDetails.rTourImageList
+                            .slice(1, 6)
+                            .map((image, index) => (
+                              <img
+                                key={index}
+                                src={image}
+                                alt={`Tour Image ${index + 2}`}
+                              />
+                            ))}
                     </div>
                   </div>
                 </div>
-
 
                 <div className="operatinghours-row">
                   <h2>Operating Hours</h2>
@@ -1083,21 +1163,22 @@ const DetailsPage = () => {
                       <div className="check-circle">
                         <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
                       </div>
-                      Get access to the observation decks at 124th and 125th levels{" "}
+                      Get access to the observation decks at 124th and 125th
+                      levels{" "}
                     </li>
                     <li>
                       <div className="check-circle">
                         <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
                       </div>
-                      Use the cutting-edge telescopes for closer views of Dubai’s
-                      major landmarks{" "}
+                      Use the cutting-edge telescopes for closer views of
+                      Dubai’s major landmarks{" "}
                     </li>
                     <li>
                       <div className="check-circle">
                         <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
                       </div>
-                      Safety Verified as it complies with all COVID-19 preventive
-                      measures imposed by both WHO and the government
+                      Safety Verified as it complies with all COVID-19
+                      preventive measures imposed by both WHO and the government
                     </li>
                   </ul>
                 </div>
@@ -1213,32 +1294,59 @@ const DetailsPage = () => {
                   {tourDetails.tourRating && (
                     <Row className="rating-section">
                       <Col sm="6" className="rating-left">
-                        {Object.keys(tourDetails.tourRating).map((key, index) => {
-                          // Exclude the 'averageRating' key
-                          if (key !== 'averageRating') {
-                            return (
-                              <div className="rating-row" key={index}>
-                                <label className="left-label">{key.charAt(4)} Stars</label>
-                                <Progress
-                                  strokeColor="#18D39E"
-                                  trailColor="#F5FCFC"
-                                  size="small"
-                                  percent={tourDetails.tourRating[key]}
-                                />
-                              </div>
-                            );
+                        {Object.keys(tourDetails.tourRating).map(
+                          (key, index) => {
+                            // Exclude the 'averageRating' key
+                            if (key !== "averageRating") {
+                              return (
+                                <div className="rating-row" key={index}>
+                                  <label className="left-label">
+                                    {key.charAt(4)} Stars
+                                  </label>
+                                  <Progress
+                                    strokeColor="#18D39E"
+                                    trailColor="#F5FCFC"
+                                    size="small"
+                                    percent={tourDetails.tourRating[key]}
+                                  />
+                                </div>
+                              );
+                            }
+                            return null; // Skip rendering if it's the 'averageRating' key
                           }
-                          return null; // Skip rendering if it's the 'averageRating' key
-                        })}
+                        )}
                       </Col>
                       <Col sm="6" className="rating-right">
                         <h3>{tourDetails.tourRating.averageRating} Out of 5</h3>
                         <div className="rating">
-                          {[...Array(Math.round(parseFloat(tourDetails.tourRating.averageRating)))].map((_, index) => (
-                            <SvgIcon key={index} name="star-filled" viewbox="0 0 15 15" />
+                          {[
+                            ...Array(
+                              Math.round(
+                                parseFloat(tourDetails.tourRating.averageRating)
+                              )
+                            ),
+                          ].map((_, index) => (
+                            <SvgIcon
+                              key={index}
+                              name="star-filled"
+                              viewbox="0 0 15 15"
+                            />
                           ))}
-                          {[...Array(5 - Math.round(parseFloat(tourDetails.tourRating.averageRating)))].map((_, index) => (
-                            <SvgIcon key={index} name="star-outline" viewbox="0 0 15.999 16" />
+                          {[
+                            ...Array(
+                              5 -
+                                Math.round(
+                                  parseFloat(
+                                    tourDetails.tourRating.averageRating
+                                  )
+                                )
+                            ),
+                          ].map((_, index) => (
+                            <SvgIcon
+                              key={index}
+                              name="star-outline"
+                              viewbox="0 0 15.999 16"
+                            />
                           ))}
                         </div>
                       </Col>
@@ -1246,31 +1354,37 @@ const DetailsPage = () => {
                   )}
 
                   {/* Render tour reviews */}
-                  {tourDetails.tourReviews && tourDetails.tourReviews.length > 0 && (
-                    <Row>
-                      <Col>
-                        <ul className="reviewer-list">
-                          {tourDetails.tourReviews.slice(0, 6).map((item, index) => (
-                            <li key={index}>
-                              <div className="reviewer-img">
-                                <img src={item.imagePath} alt={item.guestName} />
-                              </div>
-                              <h3>{item.reviewTitle}</h3>
-                              <p>{item.reviewContent}</p>
-                              <label>
-                                BY {item.guestName} / {item.visitMonth}
-                              </label>
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="allreviewbtn-row">
-                          <Button type="primary" ghost>
-                            View all Reviews
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
-                  )}
+                  {tourDetails.tourReviews &&
+                    tourDetails.tourReviews.length > 0 && (
+                      <Row>
+                        <Col>
+                          <ul className="reviewer-list">
+                            {tourDetails.tourReviews
+                              .slice(0, 6)
+                              .map((item, index) => (
+                                <li key={index}>
+                                  <div className="reviewer-img">
+                                    <img
+                                      src={item.imagePath}
+                                      alt={item.guestName}
+                                    />
+                                  </div>
+                                  <h3>{item.reviewTitle}</h3>
+                                  <p>{item.reviewContent}</p>
+                                  <label>
+                                    BY {item.guestName} / {item.visitMonth}
+                                  </label>
+                                </li>
+                              ))}
+                          </ul>
+                          <div className="allreviewbtn-row">
+                            <Button type="primary" ghost>
+                              View all Reviews
+                            </Button>
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
                 </div>
                 <div className="address-row">
                   <h2 className="mb-2">Address</h2>
