@@ -43,11 +43,6 @@ import ReviewImg6 from "../../../assets/images/top-creator7.png";
 import DetailsImg6 from "../../../assets/images/privelanding-banner.jpg";
 import apiClient from "../../../apiConfig";
 import Apis from "../../../utility/apis";
-import {
-  setAdult,
-  setChild,
-  setInfant,
-} from "../../../slice/availabilityDataSlice";
 
 const imagesArray = [
   {
@@ -176,17 +171,35 @@ const OutsideClickHandler = ({ onOutsideClick, children }) => {
 const RaynaDetailsPage = () => {
   const dispatch = useDispatch();
 
-  const handleAdultChange = (value) => {
-    dispatch(setAdult(value));
+  const [counts, setCounts] = useState({
+    adult: 1,
+    child: 0,
+    infant: 0,
+  });
+
+  const handleIncrement = (type) => {
+    setCounts((prevCounts) => ({
+      ...prevCounts,
+      [type]: prevCounts[type] + 1,
+    }));
   };
 
-  const handleChildChange = (value) => {
-    dispatch(setChild(value));
+  const handleDecrement = (type) => {
+    setCounts((prevCounts) => ({
+      ...prevCounts,
+      [type]: Math.max(prevCounts[type] - 1, 0),
+    }));
   };
 
-  const handleInfantChange = (value) => {
-    dispatch(setInfant(value));
-  };
+  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
+    counts.child
+  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
+    counts.infant > 1 ? "s" : ""
+  }`;
+
+  console.log("Selected Data:", selectedData);
+
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
   const [tourDetails, setTourDetails] = useState(null);
   const [showAllImages, setShowAllImages] = useState(false);
@@ -234,6 +247,8 @@ const RaynaDetailsPage = () => {
 
   const [discoverOptions, setDiscoverOptions] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -251,10 +266,8 @@ const RaynaDetailsPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [param]);
 
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
   // Function to handle checkbox click
   const handleCheckboxClick = (option) => {
     if (showCalendar) {
@@ -266,6 +279,19 @@ const RaynaDetailsPage = () => {
       setShowCalendar(true);
     }
   };
+  // Function to handle unchecking of checkbox
+  const handleCheckboxUncheck = () => {
+    setSelectedDate(null); // Clear the selectedDate when the checkbox is unchecked
+  };
+
+  const [promoCodeValue, setPromoCodeValue] = useState("");
+
+  const handlePromoCodeChange = (e) => {
+    const promoCodeValue = e.target.value;
+    console.log("Entered Promo Code:", promoCodeValue);
+    setPromoCodeValue(promoCodeValue); // Update promo code value in state
+  };
+
   const [bookingData, setBookingData] = useState(null);
   // Function to fetch booking data
   const fetchBookingData = async (tourOptionId, travelDate) => {
@@ -294,10 +320,17 @@ const RaynaDetailsPage = () => {
       return date >= startDate && date <= endDate;
     }
     const dayOfWeek = date.getDay(); // Get the day of the week (0 for Sunday, 1 for Monday, ...)
-    const dayName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayOfWeek];
+    const dayName = [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ][dayOfWeek];
     return selectedOption.operationdays[dayName] === "1";
   };
-
 
   // Function to handle calendar change
   const handleCalendarChange = (date) => {
@@ -343,7 +376,7 @@ const RaynaDetailsPage = () => {
   const handleOutsideClick = () => {
     setShowCalendar(false);
   };
-
+  const [errorMessage, setErrorMessage] = useState("");
   const handleBookNow = async () => {
     if (!bookingData) return;
 
@@ -356,9 +389,9 @@ const RaynaDetailsPage = () => {
       transferId,
       contractId,
       travelDate,
-      adult: 1, // Hardcoded value
-      child: 0, // Hardcoded value
-      infant: 0, // Hardcoded value
+      adult: counts.adult,
+      child: counts.child,
+      infant: counts.infant,
     };
 
     try {
@@ -366,15 +399,26 @@ const RaynaDetailsPage = () => {
         "/discover/discoverAvailability",
         requestBody
       );
+
       if (
         response.data &&
-        response.data.status === 1
+        response.data.DATA?.status === 1
         // response.data.message === "success"
       ) {
         // Redirect to checkout page if status is 1
-        window.location.href = `/discover/checkout?tourId=${param}`;
+        const countsParams = `&adult=${counts.adult}&child=${counts.child}&infant=${counts.infant}`;
+        const promoCodeParam = encodeURIComponent(promoCodeValue);
+        window.location.href = `/discover/checkout?tourId=${param}&person=${countsParams}&tPromoCode=${promoCodeParam}&tourOptionId=${tourOptionId}&travelDate=${travelDate}&transferId=${transferId}&timeSlotId=${selectedTimeSlot}`;
       } else {
-        console.error("Booking unsuccessful:", response.data?.MESSAGE);
+        if (response.data?.status === 0) {
+          // window.location.href = "/discover/booking-failed";
+        } else {
+          setErrorMessage(
+            response.data?.MESSAGE ||
+              "You cannot book this tour on selected date due to cutoff time."
+          );
+          console.error("Booking unsuccessful:", response.data?.MESSAGE);
+        }
       }
     } catch (error) {
       console.error("Error booking:", error);
@@ -397,26 +441,6 @@ const RaynaDetailsPage = () => {
   };
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const [counts, setCounts] = useState({
-    adult: 1,
-    child: 0,
-    infant: 0,
-  });
-
-  const handleIncrement = (type) => {
-    setCounts((prevCounts) => ({
-      ...prevCounts,
-      [type]: prevCounts[type] + 1,
-    }));
-  };
-
-  const handleDecrement = (type) => {
-    setCounts((prevCounts) => ({
-      ...prevCounts,
-      [type]: Math.max(prevCounts[type] - 1, 0),
-    }));
-  };
 
   const showDrawer = () => {
     setShowAllImages(true);
@@ -494,16 +518,13 @@ const RaynaDetailsPage = () => {
     console.log("Selected Date:", dateString);
   };
 
-  const handlePromoCodeChange = (e) => {
-    const promoCodeValue = e.target.value;
-    console.log("Entered Promo Code:", promoCodeValue);
-  };
+  // const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
+  //   counts.child
+  // } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
+  //   counts.infant > 1 ? "s" : ""
+  // }`;
 
-  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${counts.child
-    } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${counts.infant > 1 ? "s" : ""
-    }`;
-
-  console.log("Selected Data:", selectedData);
+  // console.log("Selected Data:", selectedData);
 
   return (
     <div className="twl-details-wrapper">
@@ -531,15 +552,10 @@ const RaynaDetailsPage = () => {
                   <SvgIcon name="call-icon" viewbox="0 0 14.993 14.993" />
                 </Button>
               </div>
-              <Button
-                type="primary"
-                // onClick={() => {
-                //   window.location.href = `/discover/checkout?tourId=${param}`;
-                // }}
-                onClick={handleBookNow}
-              >
+              <Button type="primary" onClick={handleBookNow}>
                 Book Nows
               </Button>
+              {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             </div>
           </MediaQuery>
           <section>
@@ -613,21 +629,21 @@ const RaynaDetailsPage = () => {
                       <div className="right-image">
                         {showAllImages
                           ? tourDetails.rTourImageList.map((image, index) => (
-                            <img
-                              key={index}
-                              src={image}
-                              alt={`Tour Image ${index + 1}`}
-                            />
-                          ))
-                          : tourDetails.rTourImageList
-                            .slice(1, 6)
-                            .map((image, index) => (
                               <img
                                 key={index}
                                 src={image}
-                                alt={`Tour Image ${index + 2}`}
+                                alt={`Tour Image ${index + 1}`}
                               />
-                            ))}
+                            ))
+                          : tourDetails.rTourImageList
+                              .slice(1, 6)
+                              .map((image, index) => (
+                                <img
+                                  key={index}
+                                  src={image}
+                                  alt={`Tour Image ${index + 2}`}
+                                />
+                              ))}
                       </div>
                     </div>
                   </MediaQuery>
@@ -737,9 +753,9 @@ const RaynaDetailsPage = () => {
                           __html: showFullDescription
                             ? tourDetails.tourShortDescription
                             : `${tourDetails.tourShortDescription.substring(
-                              0,
-                              424
-                            )}...`,
+                                0,
+                                424
+                              )}...`,
                         }}
                       />
                       {!showFullDescription && (
@@ -758,71 +774,20 @@ const RaynaDetailsPage = () => {
                   <div className="highlights-row highlights-row-rayna">
                     <h2>Highlights</h2>
                     <ul>
-                      <li>
-                        <div className="left-icon">
-                          <SvgIcon
-                            name="duration"
-                            viewbox="0 0 28.536 28.536"
-                          />
-                        </div>
-                        <div>
-                          <label>Duration</label>1 Hr (Approx)
-                        </div>
-                      </li>
-                      <li>
-                        <div className="left-icon">
-                          <SvgIcon
-                            name="opening-hours"
-                            viewbox="0 0 25.955 25.783"
-                          />
-                        </div>
-                        <div>
-                          <label>Opening Hours</label>
-                          10:00 AM To Midnight
-                        </div>
-                      </li>
-                      <li>
-                        <div className="left-icon">
-                          <SvgIcon
-                            name="languages"
-                            viewbox="0 0 24.599 24.599"
-                          />
-                        </div>
-                        <div>
-                          <label>Languages</label>
-                          English, Arabic
-                        </div>
-                      </li>
-                      <li>
-                        <div className="left-icon">
-                          <SvgIcon
-                            name="reporting-location"
-                            viewbox="0 0 37.244 16.326"
-                          />
-                        </div>
-                        <div>
-                          <label>Reporting Location</label>
-                          Hotel Lobby
-                        </div>
-                      </li>
-                      <li>
-                        <div className="left-icon">
-                          <SvgIcon name="calendar" viewbox="0 0 22.239 23.41" />
-                        </div>
-                        <div>
-                          <label>Booking Status</label>
-                          Instant
-                        </div>
-                      </li>
-                      <li>
-                        <div className="left-icon">
-                          <SvgIcon name="voucher" viewbox="0 0 32.708 27.896" />
-                        </div>
-                        <div>
-                          <label>Type of Voucher</label>
-                          Mobile
-                        </div>
-                      </li>
+                      {tourDetails?.tourHighLights.map((highlight, index) => (
+                        <li key={index}>
+                          <div className="left-icon">
+                            <img
+                              src={highlight.rHighlightsIcon}
+                              alt={highlight.rHighlightsTitle}
+                            />
+                          </div>
+                          <div>
+                            <label>{highlight.rHighlightsTitle}</label>
+                            {highlight.rHighlights}
+                          </div>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
@@ -840,12 +805,13 @@ const RaynaDetailsPage = () => {
                             <h4>Options</h4>
                             <Checkbox.Group
                               onChange={(checkedValues) => {
-                                handleCheckboxClick(
-                                  discoverOptions.find(
-                                    (option) =>
-                                      option.optionName === checkedValues[0]
-                                  )
+                                const option = discoverOptions.find(
+                                  (option) =>
+                                    option.optionName === checkedValues[0]
                                 );
+                                option
+                                  ? handleCheckboxClick(option)
+                                  : handleCheckboxUncheck();
                               }}
                             >
                               <ul>
@@ -876,350 +842,151 @@ const RaynaDetailsPage = () => {
                                 onChange={handleCalendarChange}
                                 value={selectedDate}
                                 // Disabled date logic
-                                tileDisabled={({ date }) => isDateDisabled(date)}
+                                tileDisabled={({ date }) =>
+                                  isDateDisabled(date)
+                                }
                               />
                             </div>
                           )}
                         </OutsideClickHandler>
-                        {/* <div className="availability-colum">
-                          <h4>Availability</h4>
-                          <Row>
-                            <Col>
-                              <Form.Item
-                                name="transferOptions"
-                                label="TRANSFER OPTIONS"
-                              >
-                                <Select
-                                  defaultValue="option1"
-                                  popupClassName="transferoptions-select"
-                                  suffixIcon={
-                                    <SvgIcon
-                                      name="down-arrow"
-                                      viewbox="0 0 18 9"
+
+                        {bookingData && (
+                          <>
+                            <div className="availability-colum">
+                              <h4>Availability</h4>
+                              <Row>
+                                <Col>
+                                  <Form.Item name="date" label="DATE">
+                                    <DatePicker
+                                      popupClassName="pickdate-drop"
+                                      onChange={handleDateChange}
+                                      value={selectedDate}
+                                      icon={false}
+                                      suffixIcon={false}
+                                      placeholder="DD / MM / YYYY"
                                     />
-                                  }
-                                  dropdownRender={(menu) => (
-                                    <>
-                                      <h3 className="title">
-                                        Transfer Options
-                                      </h3>
-                                      {menu}
-                                      <Form
-                                        name="search"
-                                        autoComplete="off"
-                                        layout="vertical"
-                                      >
-                                        <Form.Item
-                                          name="pul"
-                                          label="PICK UP LOCATION"
-                                        >
-                                          <Input
-                                            value=""
-                                            placeholder="Business bay"
+                                  </Form.Item>
+                                </Col>
+                                <Col>
+                                  <Form.Item name="time" label="TIME">
+                                    <Select
+                                      value={
+                                        selectedTimeSlot ||
+                                        bookingData
+                                          ?.tourPriceTransfertimeDetails
+                                          ?.timeslot[0]?.timeSlotId
+                                      }
+                                      onChange={(value) =>
+                                        setSelectedTimeSlot(value)
+                                      }
+                                      placement="bottomRight"
+                                      defaultValue="12:00"
+                                      popupMatchSelectWidth={false}
+                                      popupClassName="timeselect"
+                                      suffixIcon={
+                                        <SvgIcon
+                                          name="down-arrow"
+                                          viewbox="0 0 18 9"
+                                        />
+                                      }
+                                      dropdownRender={(menu) => (
+                                        <>
+                                          <h3 className="title">
+                                            Pick the Time
+                                          </h3>
+                                          {menu}
+                                        </>
+                                      )}
+                                      options={
+                                        bookingData?.tourPriceTransfertimeDetails?.timeslot.map(
+                                          (slot, index) => ({
+                                            value: slot.timeSlotId,
+                                            label: (
+                                              <div
+                                                className="time-row"
+                                                key={index}
+                                              >
+                                                <div className="time-left">
+                                                  {slot.timeSlot}
+                                                </div>
+                                                <div className="right-price">
+                                                  {slot.adultPrice}
+                                                </div>
+                                              </div>
+                                            ),
+                                          })
+                                        ) || []
+                                      }
+                                    />
+                                  </Form.Item>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col>
+                                  <Form.Item name="person" label="PERSON">
+                                    <Dropdown
+                                      menu={{ items }}
+                                      overlayClassName="participants-drop"
+                                      trigger={["click"]}
+                                      visible={dropdownVisible}
+                                      onVisibleChange={(flag) =>
+                                        setDropdownVisible(flag)
+                                      }
+                                    >
+                                      <Input
+                                        value={selectedData}
+                                        readOnly
+                                        suffix={
+                                          <SvgIcon
+                                            name="down-arrow"
+                                            viewbox="0 0 18 9"
                                           />
-                                        </Form.Item>
-                                      </Form>
-                                      <div className="transfers-list">
-                                        <ul>
-                                          <li>
-                                            <div className="icons">
-                                              <SvgIcon
-                                                name="map"
-                                                viewbox="0 0 8.358 12.537"
-                                              />
-                                            </div>
-                                            Business Bay
-                                          </li>
-                                          <li>
-                                            <div className="icons">
-                                              <SvgIcon
-                                                name="map"
-                                                viewbox="0 0 8.358 12.537"
-                                              />
-                                            </div>
-                                            Al Karama
-                                          </li>
-                                          <li>
-                                            <div className="icons">
-                                              <SvgIcon
-                                                name="map"
-                                                viewbox="0 0 8.358 12.537"
-                                              />
-                                            </div>
-                                            Marina
-                                          </li>
-                                          <li>
-                                            <div className="icons">
-                                              <SvgIcon
-                                                name="map"
-                                                viewbox="0 0 8.358 12.537"
-                                              />
-                                            </div>
-                                            Financial Center
-                                          </li>
-                                        </ul>
-                                      </div>
-                                    </>
-                                  )}
-                                  options={[
-                                    {
-                                      value: "option1",
-                                      label: (
-                                        <Checkbox>Without Transfer</Checkbox>
-                                      ),
-                                    },
-                                    {
-                                      value: "option2",
-                                      label: (
-                                        <Checkbox>Shared Transfer</Checkbox>
-                                      ),
-                                    },
-                                    {
-                                      value: "option3",
-                                      label: (
-                                        <Checkbox>Private Transfer</Checkbox>
-                                      ),
-                                    },
-                                  ]}
-                                />
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col>
-                              <Form.Item name="date" label="DATE">
-                                <DatePicker
-                                  popupClassName="pickdate-drop"
-                                  icon={false}
-                                  suffixIcon={false}
-                                  placeholder="DD / MM / YYYY"
-                                  // renderExtraFooter={() => <div>
-                                  //     <h3>Pick the Date</h3>
-                                  //     <ul>
-                                  //         <li></li>
-                                  //     </ul>
-                                  // </div>}
-                                />
-                              </Form.Item>
-                            </Col>
-                            <Col>
-                              <Form.Item name="time" label="TIME">
-                                <Select
-                                  placement="bottomRight"
-                                  defaultValue="option1"
-                                  popupMatchSelectWidth={false}
-                                  popupClassName="timeselect"
-                                  suffixIcon={
-                                    <SvgIcon
-                                      name="down-arrow"
-                                      viewbox="0 0 18 9"
-                                    />
-                                  }
-                                  dropdownRender={(menu) => (
-                                    <>
-                                      <h3 className="title">Pick the Time</h3>
-                                      {menu}
-                                    </>
-                                  )}
-                                  options={[
-                                    {
-                                      value: "option1",
-                                      label: (
-                                        <div className="time-row">
-                                          <div className="time-left">
-                                            12 <span>pm</span>
-                                          </div>
-                                          <div className="right-price">$50</div>
-                                        </div>
-                                      ),
-                                    },
-                                    {
-                                      value: "option2",
-                                      label: (
-                                        <div className="time-row">
-                                          <div className="time-left">
-                                            12 <span>pm</span>
-                                          </div>
-                                          <div className="right-price">$50</div>
-                                        </div>
-                                      ),
-                                    },
-                                    {
-                                      value: "option3",
-                                      label: (
-                                        <div className="time-row">
-                                          <div className="time-left">
-                                            12 <span>pm</span>
-                                          </div>
-                                          <div className="right-price">$50</div>
-                                        </div>
-                                      ),
-                                    },
-                                  ]}
-                                />
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col>
-                              <Form.Item name="person" label="PERSON">
-                                <Dropdown
-                                  menu={{ items }}
-                                  overlayClassName="participants-drop"
-                                  trigger={["click"]}
-                                >
-                                  <Input
-                                    suffix={
-                                      <SvgIcon
-                                        name="down-arrow"
-                                        viewbox="0 0 18 9"
+                                        }
                                       />
-                                    }
-                                  />
-                                </Dropdown>
-                              </Form.Item>
-                            </Col>
-                            <Col>
-                              <Form.Item name="pcode" label="PROMO CODE">
-                                <Input value="" placeholder="Enter" />
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                        </div> */}
-                        <div className="availability-colum">
-                          <h4>Availability</h4>
-                          <Row>
-                            <Col>
-                              <Form.Item name="date" label="DATE">
-                                <DatePicker
-                                  popupClassName="pickdate-drop"
-                                  onChange={handleDateChange}
-                                  icon={false}
-                                  suffixIcon={false}
-                                  placeholder="DD / MM / YYYY"
-                                />
-                              </Form.Item>
-                            </Col>
-                            <Col>
-                              <Form.Item name="time" label="TIME">
-                                <Select
-                                  placement="bottomRight"
-                                  defaultValue="option1"
-                                  popupMatchSelectWidth={false}
-                                  popupClassName="timeselect"
-                                  suffixIcon={
-                                    <SvgIcon
-                                      name="down-arrow"
-                                      viewbox="0 0 18 9"
+                                    </Dropdown>
+                                  </Form.Item>
+                                </Col>
+                                <Col>
+                                  <Form.Item name="pcode" label="PROMO CODE">
+                                    <Input
+                                      value=""
+                                      placeholder="Enter"
+                                      onChange={handlePromoCodeChange}
                                     />
-                                  }
-                                  dropdownRender={(menu) => (
-                                    <>
-                                      <h3 className="title">Pick the Time</h3>
-                                      {menu}
-                                    </>
-                                  )}
-                                  options={[
-                                    {
-                                      value: "option1",
-                                      label: (
-                                        <div className="time-row">
-                                          <div className="time-left">
-                                            12 <span>pm</span>
-                                          </div>
-                                          <div className="right-price">$50</div>
-                                        </div>
-                                      ),
-                                    },
-                                    {
-                                      value: "option2",
-                                      label: (
-                                        <div className="time-row">
-                                          <div className="time-left">
-                                            12 <span>pm</span>
-                                          </div>
-                                          <div className="right-price">$50</div>
-                                        </div>
-                                      ),
-                                    },
-                                    {
-                                      value: "option3",
-                                      label: (
-                                        <div className="time-row">
-                                          <div className="time-left">
-                                            12 <span>pm</span>
-                                          </div>
-                                          <div className="right-price">$50</div>
-                                        </div>
-                                      ),
-                                    },
-                                  ]}
-                                />
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col>
-                              <Form.Item name="person" label="PERSON">
-                                <Dropdown
-                                  menu={{ items }}
-                                  overlayClassName="participants-drop"
-                                  trigger={["click"]}
-                                  visible={dropdownVisible}
-                                  onVisibleChange={(flag) =>
-                                    setDropdownVisible(flag)
-                                  }
-                                >
-                                  <Input
-                                    value={selectedData}
-                                    readOnly
-                                    suffix={
-                                      <SvgIcon
-                                        name="down-arrow"
-                                        viewbox="0 0 18 9"
-                                      />
-                                    }
-                                  />
-                                </Dropdown>
-                              </Form.Item>
-                            </Col>
-                            <Col>
-                              <Form.Item name="pcode" label="PROMO CODE">
-                                <Input
-                                  value=""
-                                  placeholder="Enter"
-                                  onChange={handlePromoCodeChange}
-                                />
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                        </div>
-                        <div className="price-info">
-                          <Row>
-                            <Col className="price-left">Service Charge</Col>
-                            <Col className="price-right">AED 23</Col>
-                          </Row>
-                          <Row>
-                            <Col className="price-left">Tax</Col>
-                            <Col className="price-right">AED 78</Col>
-                          </Row>
-                          <Row className="total-row">
-                            <Col className="price-left">Grand Total</Col>
-                            <Col className="price-right">
-                              AED <b>101</b>
-                            </Col>
-                          </Row>
-                        </div>
+                                  </Form.Item>
+                                </Col>
+                              </Row>
+                            </div>
+
+                            <div className="price-info">
+                              <Row>
+                                <Col className="price-left">Service Charge</Col>
+                                <Col className="price-right">AED 23</Col>
+                              </Row>
+                              <Row>
+                                <Col className="price-left">Tax</Col>
+                                <Col className="price-right">AED 78</Col>
+                              </Row>
+                              <Row className="total-row">
+                                <Col className="price-left">Grand Total</Col>
+                                <Col className="price-right">
+                                  AED <b>101</b>
+                                </Col>
+                              </Row>
+                            </div>
+                          </>
+                        )}
                       </div>
                       <div className="bottom-action mt-3">
                         <MediaQuery minWidth={767}>
                           <Button
                             type="primary"
-                            // onClick={() => {
-                            //   window.location.href = `/discover/checkout?tourId=${param}`;
-                            // }}
                             onClick={handleBookNow}
                             block
+                            disabled={!bookingData}
+                            style={{
+                              backgroundColor: !bookingData ? "gray" : "black",
+                            }}
                           >
                             Book Nows
                           </Button>
@@ -1324,21 +1091,21 @@ const RaynaDetailsPage = () => {
                     <div className="right-image">
                       {showAllImages
                         ? tourDetails.rTourImageList.map((image, index) => (
-                          <img
-                            key={index}
-                            src={image}
-                            alt={`Tour Image ${index + 1}`}
-                          />
-                        ))
-                        : tourDetails.rTourImageList
-                          .slice(1, 6)
-                          .map((image, index) => (
                             <img
                               key={index}
                               src={image}
-                              alt={`Tour Image ${index + 2}`}
+                              alt={`Tour Image ${index + 1}`}
                             />
-                          ))}
+                          ))
+                        : tourDetails.rTourImageList
+                            .slice(1, 6)
+                            .map((image, index) => (
+                              <img
+                                key={index}
+                                src={image}
+                                alt={`Tour Image ${index + 2}`}
+                              />
+                            ))}
                     </div>
                   </div>
                   {/* <MediaQuery maxWidth={767}>
@@ -1509,11 +1276,11 @@ const RaynaDetailsPage = () => {
                           {[
                             ...Array(
                               5 -
-                              Math.round(
-                                parseFloat(
-                                  tourDetails.tourRating.averageRating
+                                Math.round(
+                                  parseFloat(
+                                    tourDetails.tourRating.averageRating
+                                  )
                                 )
-                              )
                             ),
                           ].map((_, index) => (
                             <SvgIcon

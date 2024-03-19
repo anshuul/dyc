@@ -3,12 +3,11 @@ import { configureStore } from "@reduxjs/toolkit";
 import citySearchReducer from "../slice/citySearchSlice";
 import authReducer from "../slice/authSlice";
 import featuredOfferList2Reducer from "../slice/featuredOfferList2";
-import featuredOfferListReducer  from "../slice/featuredOfferList";
+import featuredOfferListReducer from "../slice/featuredOfferList";
 import currencyReducer from "../slice/currencySlice";
 import checkedItemsReducer from "../slice/checkedItemsSlice";
 import dateReducer from "../slice/dateSlice";
 import priceRangeReducer from "../slice/priceRangeSlice";
-import availabilityDataReducer from "../slice/availabilityDataSlice"
 
 export default configureStore({
   reducer: {
@@ -18,8 +17,7 @@ export default configureStore({
     selectedDate: dateReducer,
     selectedPriceRange: priceRangeReducer,
     auth: authReducer,
-    featureOfferList2State:featuredOfferList2Reducer,
-    featuredOfferListSlice:featuredOfferListReducer ,
-    availabilityData: availabilityDataReducer,
+    featureOfferList2State: featuredOfferList2Reducer,
+    featuredOfferListSlice: featuredOfferListReducer,
   },
 });

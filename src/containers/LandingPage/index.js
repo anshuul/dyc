@@ -129,6 +129,7 @@ const LandingPage = () => {
             dCurrentLong: selectedCity.vCityLongitude,
             vCityName: selectedCity.vCityName,
             iCityID: selectedCity.iCityID,
+            // Language: "en"
           }
         )
         .then((res) => {

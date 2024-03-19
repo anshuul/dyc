@@ -396,7 +396,7 @@ const DetailsPage = () => {
 
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
-  const param = searchParams.get("tourId");
+  const param = searchParams.get("productId");
   console.log("param: ", param);
 
   const userData = localStorage.getItem("userData");
