@@ -129,7 +129,7 @@ const LandingPage = () => {
             dCurrentLong: selectedCity.vCityLongitude,
             vCityName: selectedCity.vCityName,
             iCityID: selectedCity.iCityID,
-            // Language: "en"
+            Language: "en",
           }
         )
         .then((res) => {
@@ -153,6 +153,7 @@ const LandingPage = () => {
             dCurrentLong: selectedCity.vCityLongitude,
             vCityName: selectedCity.vCityName,
             iCityID: selectedCity.iCityID,
+            Language: "en",
           }
         )
         .then((res) => {
@@ -806,10 +807,14 @@ const LandingPage = () => {
             <Container>
               <Row className="align-items-center mb-2">
                 <Col>
-                  <h1>{e.rCategoryName}</h1>
+                  <h1>{e.rCategoryName || e.gCategoryName}</h1>
                 </Col>
                 <Col className="text-right">
-                  <Link to={`/listing-page?gCategoryID=${e.rCategoryID}`}>
+                  <Link
+                    to={`/listing-page?gCategoryID=${
+                      e.rCategoryID || e.gCategoryID
+                    }`}
+                  >
                     <Button className="more-btn" size="small">
                       More
                     </Button>
@@ -823,7 +828,12 @@ const LandingPage = () => {
                       <div key={key}>
                         <Card
                           className="tp-item-card"
-                          cover={<img alt="TP List" src={item.rTourImage} />}
+                          cover={
+                            <img
+                              alt="TP List"
+                              src={item.rTourImage || item.gProductImage}
+                            />
+                          }
                           extra={
                             <Button>
                               <SvgIcon
@@ -832,25 +842,19 @@ const LandingPage = () => {
                               />
                             </Button>
                           }
-                          onClick={() =>
-                            window.open(
-                              `/rayna-details?tourId=${item.tourId}`,
-                              "_self"
-                            )
-                          }
-                          // onClick={() => {
-                          //   if (item.tourId) {
-                          //     window.open(
-                          //       `/details?tourId=${item.tourId}`,
-                          //       "_self"
-                          //     );
-                          //   } else {
-                          //     window.open(
-                          //       `/rayna-details?productId=${item.productId}`,
-                          //       "_self"
-                          //     );
-                          //   }
-                          // }}
+                          onClick={() => {
+                            if (item.tourId) {
+                              window.open(
+                                `/rayna-details?tourId=${item.tourId}`,
+                                "_self"
+                              );
+                            } else {
+                              window.open(
+                                `/details?productId=${item.productId}`,
+                                "_self"
+                              );
+                            }
+                          }}
                         >
                           <div className="bottom-row">
                             <div className="left-col">

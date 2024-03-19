@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Container,
   Row,
@@ -45,6 +45,7 @@ import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import apiClient from "../../../apiConfig";
 import Apis from "../../../utility/apis";
 import { useSelector } from "react-redux";
+import Calendar from "react-calendar";
 
 const imagesArray = [
   {
@@ -389,15 +390,62 @@ const reviewerData = [
   },
 ];
 
+const OutsideClickHandler = ({ onOutsideClick, children }) => {
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleClickOutside = (event) => {
+    if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+      onOutsideClick();
+    }
+  };
+
+  return <div ref={wrapperRef}>{children}</div>;
+};
+
 const DetailsPage = () => {
+  const [counts, setCounts] = useState({
+    adult: 1,
+    child: 0,
+    infant: 0,
+  });
+
+  const handleIncrement = (type) => {
+    setCounts((prevCounts) => ({
+      ...prevCounts,
+      [type]: prevCounts[type] + 1,
+    }));
+  };
+
+  const handleDecrement = (type) => {
+    setCounts((prevCounts) => ({
+      ...prevCounts,
+      [type]: Math.max(prevCounts[type] - 1, 0),
+    }));
+  };
+
+  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
+    counts.child
+  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
+    counts.infant > 1 ? "s" : ""
+  }`;
+
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+
   const [tourDetails, setTourDetails] = useState(null);
   const [showAllImages, setShowAllImages] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
-  const param = searchParams.get("productId");
-  console.log("param: ", param);
+  const productId = searchParams.get("productId");
+  console.log("productId: ", productId);
 
   const userData = localStorage.getItem("userData");
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
@@ -413,13 +461,9 @@ const DetailsPage = () => {
           ),
           {
             iCountryID: selectedCity.iCountryID,
-            Language: "en",
-            tourId: param,
-          },
-          {
-            headers: {
-              uCurrency: "AED",
-            },
+            dCurrentLat: selectedCity.vCityLatitude,
+            dCurrentLong: selectedCity.vCityLongitude,
+            productId: productId,
           }
         );
 
@@ -445,31 +489,159 @@ const DetailsPage = () => {
     }
   }
 
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const [discoverOptions, setDiscoverOptions] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apiClient.post("/globaltix/productOptions", {
+          productId: productId,
+        });
+
+        // Set the fetched tour details to the state
+        setDiscoverOptions(response.data?.DATA || null);
+        console.log("response tourDetails: ", response);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [productId]);
+
+  const productOPtionId =
+    discoverOptions && discoverOptions.length > 0
+      ? discoverOptions[0].productOPtionId
+      : null;
+
+  // You can then use productOptionId in your component logic as needed
+  console.log("productOptionId:", productOPtionId);
+
+  // Function to handle checkbox click
+  const handleCheckboxClick = (option) => {
+    if (showCalendar) {
+      // If showCalendar is already true, close it
+      setShowCalendar(false);
+    } else {
+      // If showCalendar is false, open it
+      setSelectedOption(option);
+      setShowCalendar(true);
+    }
+  };
+  // Function to handle unchecking of checkbox
+  const handleCheckboxUncheck = () => {
+    setSelectedDate(null); // Clear the selectedDate when the checkbox is unchecked
+  };
+
+  const [promoCodeValue, setPromoCodeValue] = useState("");
+
+  const handlePromoCodeChange = (e) => {
+    const promoCodeValue = e.target.value;
+    console.log("Entered Promo Code:", promoCodeValue);
+    setPromoCodeValue(promoCodeValue); // Update promo code value in state
+  };
+
+  const [bookingData, setBookingData] = useState(null);
+
+  // Function to fetch booking data
+  const fetchBookingData = async () => {
+    try {
+      const response = await apiClient.post("/globaltix/productBookingData", {
+        productId: productId,
+        productOPtionId: productOPtionId,
+      });
+      setBookingData(response.data?.DATA || null);
+    } catch (error) {
+      console.error("Error fetching booking data:", error);
+    }
+  };
+
+  // Function to handle calendar change
+  const handleCalendarChange = (date) => {
+    setSelectedDate(date);
+    setShowCalendar(false);
+
+    // Get the local time zone offset
+    const offset = date.getTimezoneOffset() * 60000;
+
+    // Adjust the date to the local time zone
+    const localDate = new Date(date.getTime() - offset);
+
+    // Format the date as "YYYY-MM-DD"
+    const formattedDate = localDate.toISOString().slice(0, 10);
+
+    // Fetch booking data if the date is enabled
+    if (selectedOption) {
+      fetchBookingData(selectedOption.tourOptionId, formattedDate);
+    }
+  };
+
+  const handleOutsideClick = () => {
+    setShowCalendar(false);
+  };
+
+  const pTicketTypeID =
+    bookingData && bookingData.pTicketType && bookingData.pTicketType.length > 0
+      ? bookingData.pTicketType[0].id
+      : null;
+
+  console.log("bookingData pTicketTypeID: ", pTicketTypeID);
+
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleBookNow = async () => {
+    if (!bookingData) return;
+    const requestBody = {
+      // productId: productId,
+      // productOPtionId: productOPtionId,
+      pTicketTypeID: pTicketTypeID,
+      dateForm: "2024-03-19",
+      dateTo: "2024-03-31",
+      // adult: counts.adult,
+      // child: counts.child,
+      // infant: counts.infant,
+    };
+
+    try {
+      const response = await apiClient.post(
+        "/globaltix/productAvailability",
+        requestBody
+      );
+
+      if (
+        response.data &&
+        response.data.DATA?.status === 1
+        // response.data.message === "success"
+      ) {
+        // Redirect to checkout page if status is 1
+        const countsParams = `&adult=${counts.adult}&child=${counts.child}&infant=${counts.infant}`;
+        const promoCodeParam = encodeURIComponent(promoCodeValue);
+        window.location.href = `/discover/checkout?tourId=${productId}&productOPtionId=${productOPtionId}&person=${countsParams}&tPromoCode=${promoCodeParam}&timeSlotId=${selectedTimeSlot}`;
+      } else {
+        if (response.data?.status === 0) {
+          // window.location.href = "/discover/booking-failed";
+        } else {
+          setErrorMessage(
+            response.data?.MESSAGE ||
+              "You cannot book this tour on selected date due to cutoff time."
+          );
+          console.error("Booking unsuccessful:", response.data?.MESSAGE);
+        }
+      }
+    } catch (error) {
+      console.error("Error booking:", error);
+    }
+  };
+
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription);
   };
 
+  const [open, setOpen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const [counts, setCounts] = useState({
-    adult: 1,
-    child: 0,
-    infant: 0,
-  });
-
-  const handleIncrement = (type) => {
-    setCounts((prevCounts) => ({
-      ...prevCounts,
-      [type]: prevCounts[type] + 1,
-    }));
-  };
-
-  const handleDecrement = (type) => {
-    setCounts((prevCounts) => ({
-      ...prevCounts,
-      [type]: Math.max(prevCounts[type] - 1, 0),
-    }));
-  };
 
   const showDrawer = () => {
     setShowAllImages(true);
@@ -477,14 +649,6 @@ const DetailsPage = () => {
 
   const onClose = () => {
     setShowAllImages(false);
-  };
-
-  const detailSlider = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
   };
 
   const items = [
@@ -544,22 +708,17 @@ const DetailsPage = () => {
     },
   ];
 
+  const detailSlider = {
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
   const handleDateChange = (date, dateString) => {
     console.log("Selected Date:", dateString);
   };
-
-  const handlePromoCodeChange = (e) => {
-    const promoCodeValue = e.target.value;
-    console.log("Entered Promo Code:", promoCodeValue);
-  };
-
-  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
-    counts.child
-  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
-    counts.infant > 1 ? "s" : ""
-  }`;
-
-  console.log("Selected Data:", selectedData);
 
   return (
     <div className="twl-details-wrapper">
@@ -590,7 +749,7 @@ const DetailsPage = () => {
               <Button
                 type="primary"
                 onClick={() => {
-                  window.location.href = `/discover/checkout?tourId=${param}`;
+                  window.location.href = "/discover/checkout";
                 }}
               >
                 Book Now
@@ -623,8 +782,8 @@ const DetailsPage = () => {
               <Gallery
                 images={
                   tourDetails &&
-                  tourDetails.rTourImageList &&
-                  tourDetails.rTourImageList.map((image, index) => ({
+                  tourDetails.gProductImageList &&
+                  tourDetails.gProductImageList.map((image, index) => ({
                     src: image,
                     alt: `Image ${index + 1}`,
                   }))
@@ -650,30 +809,32 @@ const DetailsPage = () => {
                 </div>
               </MediaQuery> */}
               {tourDetails &&
-                tourDetails.rTourImageList &&
-                tourDetails.rTourImageList.length > 0 && (
+                tourDetails.gProductImageList &&
+                tourDetails.gProductImageList.length > 0 && (
                   <MediaQuery minWidth={768}>
                     <div className="details-images">
                       <div className="showphotos-btn" onClick={showDrawer}>
-                        <span>{tourDetails.rTourImageList.length}</span> SHOW
+                        <span>{tourDetails.gProductImageList.length}</span> SHOW
                         PHOTOS
                       </div>
                       <div className="left-image">
                         <img
-                          src={tourDetails.rTourImageList[0]}
+                          src={tourDetails.gProductImageList[0]}
                           alt="Tour Image 1"
                         />
                       </div>
                       <div className="right-image">
                         {showAllImages
-                          ? tourDetails.rTourImageList.map((image, index) => (
-                              <img
-                                key={index}
-                                src={image}
-                                alt={`Tour Image ${index + 1}`}
-                              />
-                            ))
-                          : tourDetails.rTourImageList
+                          ? tourDetails.gProductImageList.map(
+                              (image, index) => (
+                                <img
+                                  key={index}
+                                  src={image}
+                                  alt={`Tour Image ${index + 1}`}
+                                />
+                              )
+                            )
+                          : tourDetails.gProductImageList
                               .slice(1, 6)
                               .map((image, index) => (
                                 <img
@@ -686,7 +847,6 @@ const DetailsPage = () => {
                     </div>
                   </MediaQuery>
                 )}
-
               {/* <MediaQuery maxWidth={767}>
                 <div className="mobile-details-slider">
                   <Slider {...detailSlider}>
@@ -708,11 +868,12 @@ const DetailsPage = () => {
                   </Slider>
                 </div>
               </MediaQuery> */}
+
               <MediaQuery maxWidth={767}>
                 <div className="mobile-details-slider">
                   <Slider {...detailSlider}>
-                    {tourDetails.rTourImageList &&
-                      tourDetails.rTourImageList.map((image, index) => (
+                    {tourDetails.gProductImageList &&
+                      tourDetails.gProductImageList.map((image, index) => (
                         <div key={index}>
                           <img
                             src={image}
@@ -729,32 +890,16 @@ const DetailsPage = () => {
                   <div className="dtl-upper">
                     <div className="dtl-upperleft">
                       <div className="rating">
-                        {/* Render stars based on tourRating */}
-                        {Array.from(
-                          { length: Math.floor(tourDetails.tourRating) },
-                          (_, index) => (
-                            <SvgIcon
-                              key={index}
-                              name="star-filled"
-                              viewbox="0 0 15 15"
-                            />
-                          )
-                        )}
-                        {Array.from(
-                          { length: 5 - Math.floor(tourDetails.tourRating) },
-                          (_, index) => (
-                            <SvgIcon
-                              key={index}
-                              name="star-outline"
-                              viewbox="0 0 15.999 16"
-                            />
-                          )
-                        )}
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-filled" viewbox="0 0 15 15" />
+                        <SvgIcon name="star-outline" viewbox="0 0 15.999 16" />
                       </div>
-                      <h1>{tourDetails.tourName}</h1>
+                      <h1>{tourDetails.productName}</h1>
                       <div className="location">
                         <SvgIcon name="map" viewbox="0 0 8.358 12.537" />
-                        {tourDetails.cityName}, {tourDetails.countryName}
+                        {tourDetails.areaName}
                       </div>
                     </div>
                     <MediaQuery minWidth={768}>
@@ -776,7 +921,6 @@ const DetailsPage = () => {
                       </div>
                     </MediaQuery>
                   </div>
-
                   <div className="overview-row">
                     <h2>Overview</h2>
                     <div>
@@ -784,11 +928,8 @@ const DetailsPage = () => {
                         style={{ display: "inline-block" }}
                         dangerouslySetInnerHTML={{
                           __html: showFullDescription
-                            ? tourDetails.tourShortDescription
-                            : `${tourDetails.tourShortDescription.substring(
-                                0,
-                                424
-                              )}...`,
+                            ? tourDetails.description
+                            : `${tourDetails.description.substring(0, 424)}...`,
                         }}
                       />
                       {!showFullDescription && (
@@ -804,7 +945,6 @@ const DetailsPage = () => {
                       )}
                     </div>
                   </div>
-
                   <div className="highlights-row">
                     <h2>Highlights</h2>
                     <ul>
@@ -865,7 +1005,7 @@ const DetailsPage = () => {
                             <span>$50 </span>/ Person
                           </h3>
                         </div>
-                        <div className="options-colum">
+                        {/* <div className="options-colum">
                           <h4>Options</h4>
                           <ul>
                             <li>
@@ -920,7 +1060,58 @@ const DetailsPage = () => {
                               </div>
                             </li>
                           </ul>
-                        </div>
+                        </div> */}
+                        {discoverOptions && (
+                          <div className="options-colum">
+                            <h4>Options</h4>
+                            <Checkbox.Group
+                              onChange={(checkedValues) => {
+                                const option = discoverOptions.find(
+                                  (option) =>
+                                    option.optionName === checkedValues[0]
+                                );
+                                option
+                                  ? handleCheckboxClick(option)
+                                  : handleCheckboxUncheck();
+                              }}
+                            >
+                              <ul>
+                                {discoverOptions.map((option, index) => (
+                                  <li key={index}>
+                                    <Checkbox value={option.optionName}>
+                                      {option.optionName}
+                                    </Checkbox>
+                                    <div className="right-col">
+                                      <span className="off-price">
+                                        {option.price}
+                                      </span>
+                                      $50 <span>/ Person</span>
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            </Checkbox.Group>
+                          </div>
+                        )}
+
+                        {/* Render the Calendar component conditionally */}
+                        <OutsideClickHandler
+                          onOutsideClick={handleOutsideClick}
+                        >
+                          {showCalendar && (
+                            <div className="calendar-container">
+                              <Calendar
+                                onChange={handleCalendarChange}
+                                value={selectedDate}
+                                // Disabled date logic
+                                // tileDisabled={({ date }) =>
+                                //   isDateDisabled(date)
+                                // }
+                              />
+                            </div>
+                          )}
+                        </OutsideClickHandler>
+
                         <div className="availability-colum">
                           <h4>Availability</h4>
                           <Row>
@@ -929,6 +1120,7 @@ const DetailsPage = () => {
                                 <DatePicker
                                   popupClassName="pickdate-drop"
                                   onChange={handleDateChange}
+                                  value={selectedDate}
                                   icon={false}
                                   suffixIcon={false}
                                   placeholder="DD / MM / YYYY"
@@ -938,8 +1130,16 @@ const DetailsPage = () => {
                             <Col>
                               <Form.Item name="time" label="TIME">
                                 <Select
+                                  value={
+                                    selectedTimeSlot ||
+                                    bookingData?.tourPriceTransfertimeDetails
+                                      ?.timeslot[0]?.timeSlotId
+                                  }
+                                  onChange={(value) =>
+                                    setSelectedTimeSlot(value)
+                                  }
                                   placement="bottomRight"
-                                  defaultValue="option1"
+                                  defaultValue="12:00"
                                   popupMatchSelectWidth={false}
                                   popupClassName="timeselect"
                                   suffixIcon={
@@ -954,41 +1154,23 @@ const DetailsPage = () => {
                                       {menu}
                                     </>
                                   )}
-                                  options={[
-                                    {
-                                      value: "option1",
-                                      label: (
-                                        <div className="time-row">
-                                          <div className="time-left">
-                                            12 <span>pm</span>
+                                  options={
+                                    bookingData?.tourPriceTransfertimeDetails?.timeslot.map(
+                                      (slot, index) => ({
+                                        value: slot.timeSlotId,
+                                        label: (
+                                          <div className="time-row" key={index}>
+                                            <div className="time-left">
+                                              {slot.timeSlot}
+                                            </div>
+                                            <div className="right-price">
+                                              {slot.adultPrice}
+                                            </div>
                                           </div>
-                                          <div className="right-price">$50</div>
-                                        </div>
-                                      ),
-                                    },
-                                    {
-                                      value: "option2",
-                                      label: (
-                                        <div className="time-row">
-                                          <div className="time-left">
-                                            12 <span>pm</span>
-                                          </div>
-                                          <div className="right-price">$50</div>
-                                        </div>
-                                      ),
-                                    },
-                                    {
-                                      value: "option3",
-                                      label: (
-                                        <div className="time-row">
-                                          <div className="time-left">
-                                            12 <span>pm</span>
-                                          </div>
-                                          <div className="right-price">$50</div>
-                                        </div>
-                                      ),
-                                    },
-                                  ]}
+                                        ),
+                                      })
+                                    ) || []
+                                  }
                                 />
                               </Form.Item>
                             </Col>
@@ -1050,12 +1232,14 @@ const DetailsPage = () => {
                         <MediaQuery minWidth={767}>
                           <Button
                             type="primary"
-                            onClick={() => {
-                              window.location.href = `/discover/checkout?tourId=${param}`;
-                            }}
+                            onClick={handleBookNow}
                             block
+                            disabled={!bookingData}
+                            style={{
+                              backgroundColor: !bookingData ? "gray" : "black",
+                            }}
                           >
-                            Book Now
+                            Book Nows
                           </Button>
                         </MediaQuery>
                         <Button
@@ -1090,28 +1274,27 @@ const DetailsPage = () => {
                   <h2>Gallery</h2>
                   <div className="details-images">
                     <div className="showphotos-btn" onClick={showDrawer}>
-                      <span>{tourDetails.rTourImageList.length}</span> SHOW
-                      PHOTOS
+                      <span>10</span> SHOW PHOTOS
                     </div>
                     <div className="left-image">
                       <button className="play-btn" onClick={showDrawer}>
                         <SvgIcon name="play-icon" viewbox="0 0 48 61" />
                       </button>
                       <img
-                        src={tourDetails.rTourImageList[0]}
+                        src={tourDetails.gProductImageList[0]}
                         alt="Tour Image 1"
                       />
                     </div>
                     <div className="right-image">
                       {showAllImages
-                        ? tourDetails.rTourImageList.map((image, index) => (
+                        ? tourDetails.gProductImageList.map((image, index) => (
                             <img
                               key={index}
                               src={image}
                               alt={`Tour Image ${index + 1}`}
                             />
                           ))
-                        : tourDetails.rTourImageList
+                        : tourDetails.gProductImageList
                             .slice(1, 6)
                             .map((image, index) => (
                               <img
@@ -1122,32 +1305,39 @@ const DetailsPage = () => {
                             ))}
                     </div>
                   </div>
+                  {/* <MediaQuery maxWidth={767}>
+                            <div className='mobile-details-slider'>
+                                <Slider {...detailSlider}>
+                                    <div>
+                                        <img src={DetailsImg1} alt="Experience London skyline" />
+                                    </div>
+                                    <div>
+                                        <img src={DetailsImg2} alt="Experience London skyline" />
+                                    </div>
+                                    <div>
+                                        <img src={DetailsImg3} alt="Experience London skyline" />
+                                    </div>
+                                    <div>
+                                        <img src={DetailsImg4} alt="Experience London skyline" />
+                                    </div>
+                                    <div>
+                                        <img src={DetailsImg5} alt="Experience London skyline" />
+                                    </div>
+                                </Slider>
+                            </div>
+                        </MediaQuery> */}
                 </div>
-
                 <div className="operatinghours-row">
                   <h2>Operating Hours</h2>
                   <ul>
-                    <li>
-                      Monday <label>10:00 - 19:00</label>
-                    </li>
-                    <li>
-                      Tuesday <label>10:00 - 19:00</label>
-                    </li>
-                    <li>
-                      Wednesday <label>10:00 - 19:00</label>
-                    </li>
-                    <li>
-                      Thursday <label>10:00 - 19:00</label>
-                    </li>
-                    <li>
-                      Friday <label>10:00 - 19:00</label>
-                    </li>
-                    <li>
-                      Saturday <label>10:00 - 19:00</label>
-                    </li>
-                    <li>
-                      Sunday <label>10:00 - 19:00</label>
-                    </li>
+                    {tourDetails?.operatingHours.map((operatingHour, index) => (
+                      <li key={index}>
+                        {operatingHour.day}{" "}
+                        <label>
+                          {operatingHour.startHour} - {operatingHour.endHour}
+                        </label>
+                      </li>
+                    ))}
                   </ul>
                 </div>
                 <div className="whatexpect-row">
@@ -1182,25 +1372,6 @@ const DetailsPage = () => {
                     </li>
                   </ul>
                 </div>
-
-                {/* <div className="whatexpect-row">
-                  <h2>What to Expect</h2>
-                  <ul>
-                    {tourDetails && tourDetails.whatsInThisTour ? (
-                      parseHtmlStringToArray(tourDetails.whatsInThisTour).map((item, index) => (
-                        <li key={index}>
-                          <div className="check-circle">
-                            <SvgIcon name="check" viewbox="0 0 10.289 9.742" />
-                          </div>
-                          <span dangerouslySetInnerHTML={{ __html: item }} />
-                        </li>
-                      ))
-                    ) : (
-                      <li>No information available</li>
-                    )}
-                  </ul>
-                </div> */}
-
                 <div className="whatexpect-row thing-note">
                   <h2>Things to Note</h2>
                   <ul>
@@ -1232,7 +1403,7 @@ const DetailsPage = () => {
                 </div>
                 <div className="visitorreview-row">
                   <h2>Visitor Reviews</h2>
-                  {/* <Row className="rating-section">
+                  <Row className="rating-section">
                     <Col sm="6" className="rating-left">
                       <div className="rating-row">
                         <label className="left-label">5 Stars</label>
@@ -1290,105 +1461,37 @@ const DetailsPage = () => {
                         <SvgIcon name="star-outline" viewbox="0 0 15.999 16" />
                       </div>
                     </Col>
-                  </Row> */}
-                  {tourDetails.tourRating && (
-                    <Row className="rating-section">
-                      <Col sm="6" className="rating-left">
-                        {Object.keys(tourDetails.tourRating).map(
-                          (key, index) => {
-                            // Exclude the 'averageRating' key
-                            if (key !== "averageRating") {
-                              return (
-                                <div className="rating-row" key={index}>
-                                  <label className="left-label">
-                                    {key.charAt(4)} Stars
-                                  </label>
-                                  <Progress
-                                    strokeColor="#18D39E"
-                                    trailColor="#F5FCFC"
-                                    size="small"
-                                    percent={tourDetails.tourRating[key]}
-                                  />
-                                </div>
-                              );
-                            }
-                            return null; // Skip rendering if it's the 'averageRating' key
-                          }
-                        )}
-                      </Col>
-                      <Col sm="6" className="rating-right">
-                        <h3>{tourDetails.tourRating.averageRating} Out of 5</h3>
-                        <div className="rating">
-                          {[
-                            ...Array(
-                              Math.round(
-                                parseFloat(tourDetails.tourRating.averageRating)
-                              )
-                            ),
-                          ].map((_, index) => (
-                            <SvgIcon
-                              key={index}
-                              name="star-filled"
-                              viewbox="0 0 15 15"
-                            />
-                          ))}
-                          {[
-                            ...Array(
-                              5 -
-                                Math.round(
-                                  parseFloat(
-                                    tourDetails.tourRating.averageRating
-                                  )
-                                )
-                            ),
-                          ].map((_, index) => (
-                            <SvgIcon
-                              key={index}
-                              name="star-outline"
-                              viewbox="0 0 15.999 16"
-                            />
-                          ))}
-                        </div>
-                      </Col>
-                    </Row>
-                  )}
-
+                  </Row>
                   {/* Render tour reviews */}
-                  {tourDetails.tourReviews &&
-                    tourDetails.tourReviews.length > 0 && (
-                      <Row>
-                        <Col>
-                          <ul className="reviewer-list">
-                            {tourDetails.tourReviews
-                              .slice(0, 6)
-                              .map((item, index) => (
-                                <li key={index}>
-                                  <div className="reviewer-img">
-                                    <img
-                                      src={item.imagePath}
-                                      alt={item.guestName}
-                                    />
-                                  </div>
-                                  <h3>{item.reviewTitle}</h3>
-                                  <p>{item.reviewContent}</p>
-                                  <label>
-                                    BY {item.guestName} / {item.visitMonth}
-                                  </label>
-                                </li>
-                              ))}
-                          </ul>
-                          <div className="allreviewbtn-row">
-                            <Button type="primary" ghost>
-                              View all Reviews
-                            </Button>
-                          </div>
-                        </Col>
-                      </Row>
-                    )}
+                  <Row>
+                    <Col>
+                      <ul className="reviewer-list">
+                        {reviewerData.map((item) => (
+                          <li key={item.key}>
+                            <div className="reviewer-img">
+                              <img src={item.image} alt={item.name} />
+                            </div>
+                            <h3>{item.title}</h3>
+                            <p>{item.description}</p>
+                            <label>
+                              BY {item.name} / {item.date}
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="allreviewbtn-row">
+                        <Button type="primary" ghost>
+                          View all Reviews
+                        </Button>
+                      </div>
+                    </Col>
+                  </Row>
                 </div>
                 <div className="address-row">
                   <h2 className="mb-2">Address</h2>
-                  <p className="mb-4 pb-2">{tourDetails.areaAddress}</p>
+                  <p className="mb-4 pb-2">
+                    1 Sheikh Mohammed bin Rashid Blvd, Downtown Dubai, Dubai
+                  </p>
                   <img className="w-100" src={MapAddress} alt="map" />
                 </div>
               </div>
