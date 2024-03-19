@@ -284,6 +284,21 @@ const RaynaDetailsPage = () => {
     }
   };
 
+  // Function to check if a date is enabled based on specialdates and operationdays
+  const isDateEnabled = (date) => {
+    if (!date) return false; // Check if date object is valid
+    if (selectedOption.specialdates) {
+      const { fromDate, toDate } = selectedOption.specialdates;
+      const startDate = new Date(fromDate);
+      const endDate = new Date(toDate);
+      return date >= startDate && date <= endDate;
+    }
+    const dayOfWeek = date.getDay(); // Get the day of the week (0 for Sunday, 1 for Monday, ...)
+    const dayName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayOfWeek];
+    return selectedOption.operationdays[dayName] === "1";
+  };
+
+
   // Function to handle calendar change
   const handleCalendarChange = (date) => {
     setSelectedDate(date);
@@ -298,16 +313,31 @@ const RaynaDetailsPage = () => {
     // Format the date as "YYYY-MM-DD"
     const formattedDate = localDate.toISOString().slice(0, 10);
 
-    if (selectedOption) {
-      const dayOfWeek = date.getDay();
-      if (!selectedOption.specialdates) {
-        if (!selectedOption.operationdays[dayOfWeek]) {
-          return;
-        }
-      }
+    // if (selectedOption) {
+    //   const dayOfWeek = date.getDay();
+    //   if (!selectedOption.specialdates) {
+    //     if (!selectedOption.operationdays[dayOfWeek]) {
+    //       return;
+    //     }
+    //   }
 
+    //   fetchBookingData(selectedOption.tourOptionId, formattedDate);
+    // }
+    // Fetch booking data based on the selected date and available days
+
+    // Fetch booking data if the date is enabled
+    if (selectedOption && isDateEnabled(date)) {
       fetchBookingData(selectedOption.tourOptionId, formattedDate);
     }
+  };
+
+  // Disabled date logic based on specialdates and operationdays
+  const isDateDisabled = (date) => {
+    // If selectedOption is not set, disable all dates
+    if (!selectedOption) return true;
+
+    // Check if the date is enabled based on special dates or operation days
+    return !isDateEnabled(date);
   };
 
   const handleOutsideClick = () => {
@@ -469,11 +499,9 @@ const RaynaDetailsPage = () => {
     console.log("Entered Promo Code:", promoCodeValue);
   };
 
-  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
-    counts.child
-  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
-    counts.infant > 1 ? "s" : ""
-  }`;
+  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${counts.child
+    } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${counts.infant > 1 ? "s" : ""
+    }`;
 
   console.log("Selected Data:", selectedData);
 
@@ -585,21 +613,21 @@ const RaynaDetailsPage = () => {
                       <div className="right-image">
                         {showAllImages
                           ? tourDetails.rTourImageList.map((image, index) => (
+                            <img
+                              key={index}
+                              src={image}
+                              alt={`Tour Image ${index + 1}`}
+                            />
+                          ))
+                          : tourDetails.rTourImageList
+                            .slice(1, 6)
+                            .map((image, index) => (
                               <img
                                 key={index}
                                 src={image}
-                                alt={`Tour Image ${index + 1}`}
+                                alt={`Tour Image ${index + 2}`}
                               />
-                            ))
-                          : tourDetails.rTourImageList
-                              .slice(1, 6)
-                              .map((image, index) => (
-                                <img
-                                  key={index}
-                                  src={image}
-                                  alt={`Tour Image ${index + 2}`}
-                                />
-                              ))}
+                            ))}
                       </div>
                     </div>
                   </MediaQuery>
@@ -709,9 +737,9 @@ const RaynaDetailsPage = () => {
                           __html: showFullDescription
                             ? tourDetails.tourShortDescription
                             : `${tourDetails.tourShortDescription.substring(
-                                0,
-                                424
-                              )}...`,
+                              0,
+                              424
+                            )}...`,
                         }}
                       />
                       {!showFullDescription && (
@@ -848,22 +876,7 @@ const RaynaDetailsPage = () => {
                                 onChange={handleCalendarChange}
                                 value={selectedDate}
                                 // Disabled date logic
-                                tileDisabled={({ date }) => {
-                                  const dayOfWeek = date.getDay();
-                                  if (!selectedOption) return false;
-                                  if (selectedOption.specialdates) {
-                                    const { fromDate, toDate } =
-                                      selectedOption.specialdates;
-                                    const startDate = new Date(fromDate);
-                                    const endDate = new Date(toDate);
-                                    return date < startDate || date > endDate;
-                                  }
-                                  // Check if the day of the week is available based on operationdays
-                                  return (
-                                    selectedOption.operationdays[dayOfWeek] ===
-                                    "0"
-                                  );
-                                }}
+                                tileDisabled={({ date }) => isDateDisabled(date)}
                               />
                             </div>
                           )}
@@ -1311,21 +1324,21 @@ const RaynaDetailsPage = () => {
                     <div className="right-image">
                       {showAllImages
                         ? tourDetails.rTourImageList.map((image, index) => (
+                          <img
+                            key={index}
+                            src={image}
+                            alt={`Tour Image ${index + 1}`}
+                          />
+                        ))
+                        : tourDetails.rTourImageList
+                          .slice(1, 6)
+                          .map((image, index) => (
                             <img
                               key={index}
                               src={image}
-                              alt={`Tour Image ${index + 1}`}
+                              alt={`Tour Image ${index + 2}`}
                             />
-                          ))
-                        : tourDetails.rTourImageList
-                            .slice(1, 6)
-                            .map((image, index) => (
-                              <img
-                                key={index}
-                                src={image}
-                                alt={`Tour Image ${index + 2}`}
-                              />
-                            ))}
+                          ))}
                     </div>
                   </div>
                   {/* <MediaQuery maxWidth={767}>
@@ -1496,11 +1509,11 @@ const RaynaDetailsPage = () => {
                           {[
                             ...Array(
                               5 -
-                                Math.round(
-                                  parseFloat(
-                                    tourDetails.tourRating.averageRating
-                                  )
+                              Math.round(
+                                parseFloat(
+                                  tourDetails.tourRating.averageRating
                                 )
+                              )
                             ),
                           ].map((_, index) => (
                             <SvgIcon
