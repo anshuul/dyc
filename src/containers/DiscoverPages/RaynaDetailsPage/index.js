@@ -836,7 +836,18 @@ const RaynaDetailsPage = () => {
                                       <span className="off-price">
                                         {option.price}
                                       </span>
-                                      $50 <span>/ Person</span>
+                                      {/* Display the adultPrice from transferIdData */}
+                                      {option.transferIdData &&
+                                        option.transferIdData.length > 0 && (
+                                          <>
+                                            $
+                                            {
+                                              option.transferIdData[0]
+                                                .adultPrice
+                                            }{" "}
+                                            <span>/ Person</span>
+                                          </>
+                                        )}
                                     </div>
                                   </li>
                                 ))}
@@ -862,294 +873,244 @@ const RaynaDetailsPage = () => {
                           )}
                         </OutsideClickHandler>
 
-                        {/* {bookingData && ( */}
-                        <>
-                          <div className="availability-colum">
-                            <h4>Availability</h4>
-                            <Row>
-                              <Col>
-                                <Form.Item
-                                  name="transferOptions"
-                                  label="TRANSFER OPTIONS"
-                                >
-                                  <Select
-                                    defaultValue="option1"
-                                    popupClassName="transferoptions-select"
-                                    suffixIcon={
-                                      <SvgIcon
-                                        name="down-arrow"
-                                        viewbox="0 0 18 9"
-                                      />
-                                    }
-                                    dropdownRender={(menu) => (
-                                      <>
-                                        <h3 className="title">
-                                          Transfer Options
-                                        </h3>
-                                        {menu}
-                                        <Form
-                                          name="search"
-                                          autoComplete="off"
-                                          layout="vertical"
-                                        >
-                                          <Form.Item
-                                            name="pul"
-                                            label="PICK UP LOCATION"
-                                          >
-                                            <Input
-                                              value=""
-                                              placeholder="Business bay"
-                                            />
-                                          </Form.Item>
-                                        </Form>
-                                        <div className="transfers-list">
-                                          <ul>
-                                            <li>
-                                              <div className="icons">
-                                                <SvgIcon
-                                                  name="map"
-                                                  viewbox="0 0 8.358 12.537"
-                                                />
-                                              </div>
-                                              Business Bay
-                                            </li>
-                                            <li>
-                                              <div className="icons">
-                                                <SvgIcon
-                                                  name="map"
-                                                  viewbox="0 0 8.358 12.537"
-                                                />
-                                              </div>
-                                              Al Karama
-                                            </li>
-                                            <li>
-                                              <div className="icons">
-                                                <SvgIcon
-                                                  name="map"
-                                                  viewbox="0 0 8.358 12.537"
-                                                />
-                                              </div>
-                                              Marina
-                                            </li>
-                                            <li>
-                                              <div className="icons">
-                                                <SvgIcon
-                                                  name="map"
-                                                  viewbox="0 0 8.358 12.537"
-                                                />
-                                              </div>
-                                              Financial Center
-                                            </li>
-                                          </ul>
-                                        </div>
-                                      </>
-                                    )}
-                                    options={[
-                                      {
-                                        value: "option1",
-                                        label: (
-                                          <Checkbox>Without Transfer</Checkbox>
-                                        ),
-                                      },
-                                      {
-                                        value: "option2",
-                                        label: (
-                                          <Checkbox>Shared Transfer</Checkbox>
-                                        ),
-                                      },
-                                      {
-                                        value: "option3",
-                                        label: (
-                                          <Checkbox>Private Transfer</Checkbox>
-                                        ),
-                                      },
-                                    ]}
-                                  />
-                                  {/* <Select
-                                    defaultValue="option1"
-                                    popupClassName="transferoptions-select"
-                                    suffixIcon={
-                                      <SvgIcon
-                                        name="down-arrow"
-                                        viewbox="0 0 18 9"
-                                      />
-                                    }
-                                    dropdownRender={(menu) => (
-                                      <>
-                                        <h3 className="title">
-                                          Transfer Options
-                                        </h3>
-                                        {menu}
-                                        <Form
-                                          name="search"
-                                          autoComplete="off"
-                                          layout="vertical"
-                                        >
-                                          <Form.Item
-                                            name="pul"
-                                            label="PICK UP LOCATION"
-                                          >
-                                            <Input
-                                              value=""
-                                              placeholder="Business bay"
-                                            />
-                                          </Form.Item>
-                                        </Form>
-                                        <div className="transfers-list">
-                                          <ul>
-                                            {bookingData?.DATA?.map(
-                                              (option) => (
-                                                <li key={option.tourOptionId}>
-                                                  <div className="icons">
-                                                    <SvgIcon
-                                                      name="map"
-                                                      viewbox="0 0 8.358 12.537"
-                                                    />
-                                                  </div>
-                                                  {option.optionName}
-                                                </li>
-                                              )
-                                            )}
-                                          </ul>
-                                        </div>
-                                      </>
-                                    )}
-                                    options={bookingData?.DATA?.flatMap(
-                                      (option) =>
-                                        option.transferIdData.map(
-                                          (transfer) => ({
-                                            value: transfer.transferId,
-                                            label: transfer.transferTitle,
-                                          })
-                                        )
-                                    )}
-                                  /> */}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col>
-                                <Form.Item name="date" label="DATE">
-                                  <DatePicker
-                                    popupClassName="pickdate-drop"
-                                    onChange={handleDateChange}
-                                    value={selectedDate}
-                                    icon={false}
-                                    suffixIcon={false}
-                                    placeholder="DD / MM / YYYY"
-                                  />
-                                </Form.Item>
-                              </Col>
-                              <Col>
-                                <Form.Item name="time" label="TIME">
-                                  <Select
-                                    value={
-                                      bookingData &&
-                                      bookingData.tourPriceTransfertimeDetails &&
-                                      bookingData.tourPriceTransfertimeDetails
-                                        .timeslot &&
-                                      bookingData.tourPriceTransfertimeDetails
-                                        .timeslot[0] &&
-                                      bookingData.tourPriceTransfertimeDetails
-                                        .timeslot[0].timeSlotId
-                                    }
-                                    onChange={(value) =>
-                                      setSelectedTimeSlot(value)
-                                    }
-                                    placement="bottomRight"
-                                    defaultValue="12:00"
-                                    popupMatchSelectWidth={false}
-                                    popupClassName="timeselect"
-                                    suffixIcon={
-                                      <SvgIcon
-                                        name="down-arrow"
-                                        viewbox="0 0 18 9"
-                                      />
-                                    }
-                                    dropdownRender={(menu) => (
-                                      <>
-                                        <h3 className="title">Pick the Time</h3>
-                                        {menu}
-                                      </>
-                                    )}
-                                    options={
-                                      (
-                                        bookingData
-                                          ?.tourPriceTransfertimeDetails
-                                          ?.timeslot || []
-                                      ).map((slot, index) => ({
-                                        value: slot.timeSlotId,
-                                        label: (
-                                          <div className="time-row" key={index}>
-                                            <div className="time-left">
-                                              {slot.timeSlot}
-                                            </div>
-                                            <div className="right-price">
-                                              {slot.adultPrice}
-                                            </div>
-                                          </div>
-                                        ),
-                                      })) || []
-                                    }
-                                  />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col>
-                                <Form.Item name="person" label="PERSON">
-                                  <Dropdown
-                                    menu={{ items }}
-                                    overlayClassName="participants-drop"
-                                    trigger={["click"]}
-                                    visible={dropdownVisible}
-                                    onVisibleChange={(flag) =>
-                                      setDropdownVisible(flag)
-                                    }
+                        {bookingData && (
+                          <>
+                            <div className="availability-colum">
+                              <h4>Availability</h4>
+                              <Row>
+                                <Col>
+                                  <Form.Item
+                                    name="transferOptions"
+                                    label="TRANSFER OPTIONS"
                                   >
-                                    <Input
-                                      value={selectedData}
-                                      readOnly
-                                      suffix={
+                                    <Select
+                                      defaultValue="option1"
+                                      popupClassName="transferoptions-select"
+                                      suffixIcon={
                                         <SvgIcon
                                           name="down-arrow"
                                           viewbox="0 0 18 9"
                                         />
                                       }
+                                      dropdownRender={(menu) => (
+                                        <>
+                                          <h3 className="title">
+                                            Transfer Options
+                                          </h3>
+                                          {menu}
+                                          <Form
+                                            name="search"
+                                            autoComplete="off"
+                                            layout="vertical"
+                                          >
+                                            <Form.Item
+                                              name="pul"
+                                              label="PICK UP LOCATION"
+                                            >
+                                              <Input
+                                                value=""
+                                                placeholder="Business bay"
+                                              />
+                                            </Form.Item>
+                                          </Form>
+                                          <div className="transfers-list">
+                                            <ul>
+                                              <li>
+                                                <div className="icons">
+                                                  <SvgIcon
+                                                    name="map"
+                                                    viewbox="0 0 8.358 12.537"
+                                                  />
+                                                </div>
+                                                Business Bay
+                                              </li>
+                                              <li>
+                                                <div className="icons">
+                                                  <SvgIcon
+                                                    name="map"
+                                                    viewbox="0 0 8.358 12.537"
+                                                  />
+                                                </div>
+                                                Al Karama
+                                              </li>
+                                              <li>
+                                                <div className="icons">
+                                                  <SvgIcon
+                                                    name="map"
+                                                    viewbox="0 0 8.358 12.537"
+                                                  />
+                                                </div>
+                                                Marina
+                                              </li>
+                                              <li>
+                                                <div className="icons">
+                                                  <SvgIcon
+                                                    name="map"
+                                                    viewbox="0 0 8.358 12.537"
+                                                  />
+                                                </div>
+                                                Financial Center
+                                              </li>
+                                            </ul>
+                                          </div>
+                                        </>
+                                      )}
+                                      options={[
+                                        {
+                                          value: "option1",
+                                          label: (
+                                            <Checkbox>
+                                              Without Transfer
+                                            </Checkbox>
+                                          ),
+                                        },
+                                        {
+                                          value: "option2",
+                                          label: (
+                                            <Checkbox>Shared Transfer</Checkbox>
+                                          ),
+                                        },
+                                        {
+                                          value: "option3",
+                                          label: (
+                                            <Checkbox>
+                                              Private Transfer
+                                            </Checkbox>
+                                          ),
+                                        },
+                                      ]}
                                     />
-                                  </Dropdown>
-                                </Form.Item>
-                              </Col>
-                              <Col>
-                                <Form.Item name="pcode" label="PROMO CODE">
-                                  <Input
-                                    value=""
-                                    placeholder="Enter"
-                                    onChange={handlePromoCodeChange}
-                                  />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                          </div>
+                                  </Form.Item>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col>
+                                  <Form.Item name="date" label="DATE">
+                                    <DatePicker
+                                      popupClassName="pickdate-drop"
+                                      onChange={handleDateChange}
+                                      value={selectedDate}
+                                      icon={false}
+                                      suffixIcon={false}
+                                      placeholder="DD / MM / YYYY"
+                                    />
+                                  </Form.Item>
+                                </Col>
+                                <Col>
+                                  <Form.Item name="time" label="TIME">
+                                    <Select
+                                      value={
+                                        bookingData &&
+                                        bookingData.tourPriceTransfertimeDetails &&
+                                        bookingData.tourPriceTransfertimeDetails
+                                          .timeslot &&
+                                        bookingData.tourPriceTransfertimeDetails
+                                          .timeslot[0] &&
+                                        bookingData.tourPriceTransfertimeDetails
+                                          .timeslot[0].timeSlotId
+                                      }
+                                      onChange={(value) =>
+                                        setSelectedTimeSlot(value)
+                                      }
+                                      placement="bottomRight"
+                                      defaultValue="12:00"
+                                      popupMatchSelectWidth={false}
+                                      popupClassName="timeselect"
+                                      suffixIcon={
+                                        <SvgIcon
+                                          name="down-arrow"
+                                          viewbox="0 0 18 9"
+                                        />
+                                      }
+                                      dropdownRender={(menu) => (
+                                        <>
+                                          <h3 className="title">
+                                            Pick the Time
+                                          </h3>
+                                          {menu}
+                                        </>
+                                      )}
+                                      options={
+                                        (
+                                          bookingData
+                                            ?.tourPriceTransfertimeDetails
+                                            ?.timeslot || []
+                                        ).map((slot, index) => ({
+                                          value: slot.timeSlotId,
+                                          label: (
+                                            <div
+                                              className="time-row"
+                                              key={index}
+                                            >
+                                              <div className="time-left">
+                                                {slot.timeSlot}
+                                              </div>
+                                              <div className="right-price">
+                                                {slot.adultPrice}
+                                              </div>
+                                            </div>
+                                          ),
+                                        })) || []
+                                      }
+                                    />
+                                  </Form.Item>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col>
+                                  <Form.Item name="person" label="PERSON">
+                                    <Dropdown
+                                      menu={{ items }}
+                                      overlayClassName="participants-drop"
+                                      trigger={["click"]}
+                                      visible={dropdownVisible}
+                                      onVisibleChange={(flag) =>
+                                        setDropdownVisible(flag)
+                                      }
+                                    >
+                                      <Input
+                                        value={selectedData}
+                                        readOnly
+                                        suffix={
+                                          <SvgIcon
+                                            name="down-arrow"
+                                            viewbox="0 0 18 9"
+                                          />
+                                        }
+                                      />
+                                    </Dropdown>
+                                  </Form.Item>
+                                </Col>
+                                <Col>
+                                  <Form.Item name="pcode" label="PROMO CODE">
+                                    <Input
+                                      value=""
+                                      placeholder="Enter"
+                                      onChange={handlePromoCodeChange}
+                                    />
+                                  </Form.Item>
+                                </Col>
+                              </Row>
+                            </div>
 
-                          <div className="price-info">
-                            <Row>
-                              <Col className="price-left">Service Charge</Col>
-                              <Col className="price-right">AED 23</Col>
-                            </Row>
-                            <Row>
-                              <Col className="price-left">Tax</Col>
-                              <Col className="price-right">AED 78</Col>
-                            </Row>
-                            <Row className="total-row">
-                              <Col className="price-left">Grand Total</Col>
-                              <Col className="price-right">
-                                AED <b>101</b>
-                              </Col>
-                            </Row>
-                          </div>
-                        </>
-                        {/* )} */}
+                            <div className="price-info">
+                              <Row>
+                                <Col className="price-left">Service Charge</Col>
+                                <Col className="price-right">AED 23</Col>
+                              </Row>
+                              <Row>
+                                <Col className="price-left">Tax</Col>
+                                <Col className="price-right">AED 78</Col>
+                              </Row>
+                              <Row className="total-row">
+                                <Col className="price-left">Grand Total</Col>
+                                <Col className="price-right">
+                                  AED <b>101</b>
+                                </Col>
+                              </Row>
+                            </div>
+                          </>
+                        )}
                       </div>
                       <div className="bottom-action mt-3">
                         <MediaQuery minWidth={767}>

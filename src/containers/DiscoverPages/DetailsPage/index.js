@@ -649,57 +649,14 @@ const DetailsPage = () => {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleBookNow = async () => {
-    if (!bookingData) return;
-
-    // Get the current date and format it as "yyyy-MM-dd"
-    // const currentDate = format(new Date(), "yyyy-MM-dd");
-
-    // // Get the end date of the current month and format it as "yyyy-MM-dd"
-    // const endDateOfMonth = format(endOfMonth(new Date()), "yyyy-MM-dd");
-
-    // const requestBody = {
-    //   pTicketTypeID: pTicketTypeID,
-    //   dateForm: currentDate,
-    //   dateTo: endDateOfMonth,
-    // };
-
-    // try {
-    //   const response = await apiClient.post(
-    //     "/globaltix/productAvailability",
-    //     requestBody
-    //   );
-
-    //   if (
-    //     response.data &&
-    //     response.data.DATA?.status === 1
-    //     // response.data.message === "success"
-    //   ) {
-    //     // Redirect to checkout page if status is 1
-    //     const countsParams = `&adult=${counts.adult}&child=${counts.child}&infant=${counts.infant}`;
-    //     const promoCodeParam = encodeURIComponent(promoCodeValue);
-    //     window.location.href = `/discover/checkout?tourId=${productId}&productOPtionId=${productOPtionId}&person=${countsParams}&tPromoCode=${promoCodeParam}&timeSlotId=${selectedTimeSlot}`;
-    //   } else {
-    //     if (response.data?.status === 0) {
-    //       // window.location.href = "/discover/booking-failed";
-    //     } else {
-    //       setErrorMessage(
-    //         response.data?.MESSAGE ||
-    //           "You cannot book this tour on selected date due to cutoff time."
-    //       );
-    //       console.error("Booking unsuccessful:", response.data?.MESSAGE);
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.error("Error booking:", error);
-    // }
+  const handleBookNow = () => {
+    window.location.href = `/discover/checkout?productOPtionId=${productOPtionId}&productId=${productId}`;
   };
 
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription);
   };
 
-  const [open, setOpen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const showDrawer = () => {
@@ -786,29 +743,29 @@ const DetailsPage = () => {
   const handleMonthChange = async ({ activeStartDate }) => {
     try {
       console.log("Month changed to:", activeStartDate);
-  
+
       const startDate = format(startOfMonth(activeStartDate), "yyyy-MM-dd");
       const endDate = format(endOfMonth(activeStartDate), "yyyy-MM-dd");
-  
+
       setActiveStartDate(activeStartDate);
-  
+
       let fetchStartDate = startDate;
       let fetchEndDate = endDate;
-  
+
       // Check if the user has moved back to the current month
       const today = new Date();
       const currentYear = today.getFullYear();
       const currentMonth = today.getMonth() + 1; // Month is zero-indexed
-  
+
       const activeYear = activeStartDate.getFullYear();
       const activeMonth = activeStartDate.getMonth() + 1; // Month is zero-indexed
-  
+
       if (activeYear === currentYear && activeMonth === currentMonth) {
         // If the user has moved back to the current month, use the current date and end date
         fetchStartDate = format(today, "yyyy-MM-dd");
         fetchEndDate = format(endOfMonth(today), "yyyy-MM-dd");
       }
-  
+
       const availabilityResponse = await apiClient.post(
         "/globaltix/productAvailability",
         {
@@ -817,22 +774,22 @@ const DetailsPage = () => {
           dateTo: fetchEndDate,
         }
       );
-  
+
       setAvailabilityData(availabilityResponse.data.DATA);
-  
+
       const disabled = availabilityResponse.data.DATA.map(
         (item) => new Date(item.time)
       );
       setDisabledDates(disabled);
-  
+
       console.log("productAvailability:", availabilityResponse.data.DATA);
-  
+
       // Extract available times from the response and set them in state
       const availableTimes = availabilityResponse.data.DATA.map(
         (item) => item.time.split("T")[1]
       );
       setAvailabilityTimes(availableTimes);
-  
+
       // Update previous month's start and end dates
       setPrevMonthStart(activeStartDate);
       setPrevMonthEnd(activeStartDate);
@@ -840,7 +797,6 @@ const DetailsPage = () => {
       console.error("Error fetching data:", error);
     }
   };
-  
 
   return (
     <div className="twl-details-wrapper">
@@ -1347,9 +1303,11 @@ const DetailsPage = () => {
                             type="primary"
                             onClick={handleBookNow}
                             block
-                            disabled={!bookingData}
+                            disabled={!availabilityData}
                             style={{
-                              backgroundColor: !bookingData ? "gray" : "black",
+                              backgroundColor: !availabilityData
+                                ? "gray"
+                                : "black",
                             }}
                           >
                             Book Nows
