@@ -263,6 +263,17 @@ const RaynaDetailsPage = () => {
     fetchData();
   }, [param]);
 
+  const transferTitles = discoverOptions
+    ? discoverOptions.reduce((acc, option) => {
+        option.transferIdData.forEach((transfer) => {
+          if (!acc.includes(transfer.transferTitle)) {
+            acc.push(transfer.transferTitle);
+          }
+        });
+        return acc;
+      }, [])
+    : [];
+
   // Function to handle checkbox click
   const handleCheckboxClick = (option) => {
     if (showCalendar) {
@@ -915,70 +926,29 @@ const RaynaDetailsPage = () => {
                                           </Form>
                                           <div className="transfers-list">
                                             <ul>
-                                              <li>
-                                                <div className="icons">
-                                                  <SvgIcon
-                                                    name="map"
-                                                    viewbox="0 0 8.358 12.537"
-                                                  />
-                                                </div>
-                                                Business Bay
-                                              </li>
-                                              <li>
-                                                <div className="icons">
-                                                  <SvgIcon
-                                                    name="map"
-                                                    viewbox="0 0 8.358 12.537"
-                                                  />
-                                                </div>
-                                                Al Karama
-                                              </li>
-                                              <li>
-                                                <div className="icons">
-                                                  <SvgIcon
-                                                    name="map"
-                                                    viewbox="0 0 8.358 12.537"
-                                                  />
-                                                </div>
-                                                Marina
-                                              </li>
-                                              <li>
-                                                <div className="icons">
-                                                  <SvgIcon
-                                                    name="map"
-                                                    viewbox="0 0 8.358 12.537"
-                                                  />
-                                                </div>
-                                                Financial Center
-                                              </li>
+                                              {transferTitles.map(
+                                                (title, index) => (
+                                                  <li key={index}>
+                                                    <div className="icons">
+                                                      <SvgIcon
+                                                        name="map"
+                                                        viewbox="0 0 8.358 12.537"
+                                                      />
+                                                    </div>
+                                                    {title}
+                                                  </li>
+                                                )
+                                              )}
                                             </ul>
                                           </div>
                                         </>
                                       )}
-                                      options={[
-                                        {
-                                          value: "option1",
-                                          label: (
-                                            <Checkbox>
-                                              Without Transfer
-                                            </Checkbox>
-                                          ),
-                                        },
-                                        {
-                                          value: "option2",
-                                          label: (
-                                            <Checkbox>Shared Transfer</Checkbox>
-                                          ),
-                                        },
-                                        {
-                                          value: "option3",
-                                          label: (
-                                            <Checkbox>
-                                              Private Transfer
-                                            </Checkbox>
-                                          ),
-                                        },
-                                      ]}
+                                      options={transferTitles.map(
+                                        (title, index) => ({
+                                          value: `option${index + 1}`,
+                                          label: <Checkbox>{title}</Checkbox>,
+                                        })
+                                      )}
                                     />
                                   </Form.Item>
                                 </Col>
