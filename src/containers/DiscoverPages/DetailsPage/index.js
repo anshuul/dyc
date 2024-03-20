@@ -493,8 +493,11 @@ const DetailsPage = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-
+  // Define state variables for availability data and disabled dates
+  const [availabilityData, setAvailabilityData] = useState([]);
+  const [disabledDates, setDisabledDates] = useState([]);
   const [discoverOptions, setDiscoverOptions] = useState(null);
+  const [availabilityTimes, setAvailabilityTimes] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -513,7 +516,7 @@ const DetailsPage = () => {
         const pTicketTypeID =
           response.data?.DATA[0]?.pTicketType[0]?.pTicketTypeID;
 
-          console.log("pTicketTypeID data sa das: ", pTicketTypeID)
+        console.log("pTicketTypeID data sa das: ", pTicketTypeID);
 
         if (pTicketTypeID) {
           // Fetch productAvailability using pTicketTypeID
@@ -521,13 +524,28 @@ const DetailsPage = () => {
             "/globaltix/productAvailability",
             {
               pTicketTypeID: pTicketTypeID,
-              dateForm: currentDate,
+              dateFrom: currentDate,
               dateTo: endDateOfMonth,
             }
           );
+          // Set the availability data to state
+          setAvailabilityData(availabilityResponse.data.DATA);
 
+          const availabilityTimes = availabilityResponse.data.DATA.map(
+            (item) => {
+              const timeParts = item.time.split("T"); // Splitting the string at 'T'
+              return timeParts[1]; // Extracting the time part
+            }
+          );
+          setAvailabilityTimes(availabilityTimes); // Update the availabilityTimes state
+
+          // Extract disabled dates
+          const disabled = availabilityResponse.data.DATA.map(
+            (item) => new Date(item.time)
+          );
+          setDisabledDates(disabled);
           // Handle the productAvailability response
-          console.log("productAvailability: ", availabilityResponse);
+          console.log("productAvailability: ", availabilityResponse.data.DATA);
         } else {
           console.error(
             "Error: pTicketTypeID not found in productOptions response."
@@ -540,6 +558,16 @@ const DetailsPage = () => {
 
     fetchData();
   }, [productId]);
+
+  // Function to check if a date is disabled
+  const isDateDisabled = (date) => {
+    // Check if the date exists in disabledDates array
+    return (
+      disabledDates.findIndex(
+        (d) => format(d, "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
+      ) === -1
+    );
+  };
 
   const productOPtionId =
     discoverOptions && discoverOptions.length > 0
@@ -750,6 +778,69 @@ const DetailsPage = () => {
   const handleDateChange = (date, dateString) => {
     console.log("Selected Date:", dateString);
   };
+
+  const [activeStartDate, setActiveStartDate] = useState(new Date());
+  const [prevMonthStart, setPrevMonthStart] = useState(null);
+  const [prevMonthEnd, setPrevMonthEnd] = useState(null);
+
+  const handleMonthChange = async ({ activeStartDate }) => {
+    try {
+      console.log("Month changed to:", activeStartDate);
+  
+      const startDate = format(startOfMonth(activeStartDate), "yyyy-MM-dd");
+      const endDate = format(endOfMonth(activeStartDate), "yyyy-MM-dd");
+  
+      setActiveStartDate(activeStartDate);
+  
+      let fetchStartDate = startDate;
+      let fetchEndDate = endDate;
+  
+      // Check if the user has moved back to the current month
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1; // Month is zero-indexed
+  
+      const activeYear = activeStartDate.getFullYear();
+      const activeMonth = activeStartDate.getMonth() + 1; // Month is zero-indexed
+  
+      if (activeYear === currentYear && activeMonth === currentMonth) {
+        // If the user has moved back to the current month, use the current date and end date
+        fetchStartDate = format(today, "yyyy-MM-dd");
+        fetchEndDate = format(endOfMonth(today), "yyyy-MM-dd");
+      }
+  
+      const availabilityResponse = await apiClient.post(
+        "/globaltix/productAvailability",
+        {
+          pTicketTypeID: "11968",
+          dateFrom: fetchStartDate,
+          dateTo: fetchEndDate,
+        }
+      );
+  
+      setAvailabilityData(availabilityResponse.data.DATA);
+  
+      const disabled = availabilityResponse.data.DATA.map(
+        (item) => new Date(item.time)
+      );
+      setDisabledDates(disabled);
+  
+      console.log("productAvailability:", availabilityResponse.data.DATA);
+  
+      // Extract available times from the response and set them in state
+      const availableTimes = availabilityResponse.data.DATA.map(
+        (item) => item.time.split("T")[1]
+      );
+      setAvailabilityTimes(availableTimes);
+  
+      // Update previous month's start and end dates
+      setPrevMonthStart(activeStartDate);
+      setPrevMonthEnd(activeStartDate);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
 
   return (
     <div className="twl-details-wrapper">
@@ -1134,10 +1225,10 @@ const DetailsPage = () => {
                               <Calendar
                                 onChange={handleCalendarChange}
                                 value={selectedDate}
-                                // Disabled date logic
-                                // tileDisabled={({ date }) =>
-                                //   isDateDisabled(date)
-                                // }
+                                onActiveStartDateChange={handleMonthChange}
+                                tileDisabled={({ date }) =>
+                                  isDateDisabled(date)
+                                }
                               />
                             </div>
                           )}
@@ -1161,12 +1252,7 @@ const DetailsPage = () => {
                             <Col>
                               <Form.Item name="time" label="TIME">
                                 <Select
-                                  value={
-                                    selectedTimeSlot ||
-                                    bookingData?.tourPriceTransfertimeDetails
-                                      ?.timeslot?.[0]?.timeSlotId ||
-                                    null
-                                  }
+                                  value={selectedTimeSlot || null}
                                   onChange={(value) =>
                                     setSelectedTimeSlot(value)
                                   }
@@ -1187,18 +1273,12 @@ const DetailsPage = () => {
                                     </>
                                   )}
                                   options={
-                                    (
-                                      bookingData?.tourPriceTransfertimeDetails
-                                        ?.timeslot || []
-                                    ).map((slot, index) => ({
-                                      value: slot.timeSlotId,
+                                    availabilityTimes.map((time, index) => ({
+                                      value: time,
                                       label: (
                                         <div className="time-row" key={index}>
                                           <div className="time-left">
-                                            {slot.timeSlot}
-                                          </div>
-                                          <div className="right-price">
-                                            {slot.adultPrice}
+                                            {time}
                                           </div>
                                         </div>
                                       ),
