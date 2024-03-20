@@ -46,6 +46,7 @@ import apiClient from "../../../apiConfig";
 import Apis from "../../../utility/apis";
 import { useSelector } from "react-redux";
 import Calendar from "react-calendar";
+import { format, startOfMonth, endOfMonth } from "date-fns";
 
 const imagesArray = [
   {
@@ -494,6 +495,7 @@ const DetailsPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [discoverOptions, setDiscoverOptions] = useState(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -504,6 +506,33 @@ const DetailsPage = () => {
         // Set the fetched tour details to the state
         setDiscoverOptions(response.data?.DATA || null);
         console.log("response tourDetails: ", response);
+
+        // Get the current date and format it as "yyyy-MM-dd"
+        const currentDate = format(new Date(), "yyyy-MM-dd");
+        const endDateOfMonth = format(endOfMonth(new Date()), "yyyy-MM-dd");
+        const pTicketTypeID =
+          response.data?.DATA[0]?.pTicketType[0]?.pTicketTypeID;
+
+          console.log("pTicketTypeID data sa das: ", pTicketTypeID)
+
+        if (pTicketTypeID) {
+          // Fetch productAvailability using pTicketTypeID
+          const availabilityResponse = await apiClient.post(
+            "/globaltix/productAvailability",
+            {
+              pTicketTypeID: pTicketTypeID,
+              dateForm: currentDate,
+              dateTo: endDateOfMonth,
+            }
+          );
+
+          // Handle the productAvailability response
+          console.log("productAvailability: ", availabilityResponse);
+        } else {
+          console.error(
+            "Error: pTicketTypeID not found in productOptions response."
+          );
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -583,57 +612,59 @@ const DetailsPage = () => {
     setShowCalendar(false);
   };
 
-  const pTicketTypeID =
-    bookingData && bookingData.pTicketType && bookingData.pTicketType.length > 0
-      ? bookingData.pTicketType[0].id
-      : null;
+  // const pTicketTypeID =
+  //   bookingData && bookingData.pTicketType && bookingData.pTicketType.length > 0
+  //     ? bookingData.pTicketType[0].id
+  //     : null;
 
-  console.log("bookingData pTicketTypeID: ", pTicketTypeID);
+  // console.log("bookingData pTicketTypeID: ", pTicketTypeID);
 
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleBookNow = async () => {
     if (!bookingData) return;
-    const requestBody = {
-      // productId: productId,
-      // productOPtionId: productOPtionId,
-      pTicketTypeID: pTicketTypeID,
-      dateForm: "2024-03-21",
-      dateTo: "2024-03-31",
-      // adult: counts.adult,
-      // child: counts.child,
-      // infant: counts.infant,
-    };
 
-    try {
-      const response = await apiClient.post(
-        "/globaltix/productAvailability",
-        requestBody
-      );
+    // Get the current date and format it as "yyyy-MM-dd"
+    // const currentDate = format(new Date(), "yyyy-MM-dd");
 
-      if (
-        response.data &&
-        response.data.DATA?.status === 1
-        // response.data.message === "success"
-      ) {
-        // Redirect to checkout page if status is 1
-        const countsParams = `&adult=${counts.adult}&child=${counts.child}&infant=${counts.infant}`;
-        const promoCodeParam = encodeURIComponent(promoCodeValue);
-        window.location.href = `/discover/checkout?tourId=${productId}&productOPtionId=${productOPtionId}&person=${countsParams}&tPromoCode=${promoCodeParam}&timeSlotId=${selectedTimeSlot}`;
-      } else {
-        if (response.data?.status === 0) {
-          // window.location.href = "/discover/booking-failed";
-        } else {
-          setErrorMessage(
-            response.data?.MESSAGE ||
-              "You cannot book this tour on selected date due to cutoff time."
-          );
-          console.error("Booking unsuccessful:", response.data?.MESSAGE);
-        }
-      }
-    } catch (error) {
-      console.error("Error booking:", error);
-    }
+    // // Get the end date of the current month and format it as "yyyy-MM-dd"
+    // const endDateOfMonth = format(endOfMonth(new Date()), "yyyy-MM-dd");
+
+    // const requestBody = {
+    //   pTicketTypeID: pTicketTypeID,
+    //   dateForm: currentDate,
+    //   dateTo: endDateOfMonth,
+    // };
+
+    // try {
+    //   const response = await apiClient.post(
+    //     "/globaltix/productAvailability",
+    //     requestBody
+    //   );
+
+    //   if (
+    //     response.data &&
+    //     response.data.DATA?.status === 1
+    //     // response.data.message === "success"
+    //   ) {
+    //     // Redirect to checkout page if status is 1
+    //     const countsParams = `&adult=${counts.adult}&child=${counts.child}&infant=${counts.infant}`;
+    //     const promoCodeParam = encodeURIComponent(promoCodeValue);
+    //     window.location.href = `/discover/checkout?tourId=${productId}&productOPtionId=${productOPtionId}&person=${countsParams}&tPromoCode=${promoCodeParam}&timeSlotId=${selectedTimeSlot}`;
+    //   } else {
+    //     if (response.data?.status === 0) {
+    //       // window.location.href = "/discover/booking-failed";
+    //     } else {
+    //       setErrorMessage(
+    //         response.data?.MESSAGE ||
+    //           "You cannot book this tour on selected date due to cutoff time."
+    //       );
+    //       console.error("Booking unsuccessful:", response.data?.MESSAGE);
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.error("Error booking:", error);
+    // }
   };
 
   const toggleDescription = () => {

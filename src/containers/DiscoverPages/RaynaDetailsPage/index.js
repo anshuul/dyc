@@ -872,7 +872,7 @@ const RaynaDetailsPage = () => {
                                   name="transferOptions"
                                   label="TRANSFER OPTIONS"
                                 >
-                                  {/* <Select
+                                  <Select
                                     defaultValue="option1"
                                     popupClassName="transferoptions-select"
                                     suffixIcon={
@@ -964,8 +964,8 @@ const RaynaDetailsPage = () => {
                                         ),
                                       },
                                     ]}
-                                  /> */}
-                                  <Select
+                                  />
+                                  {/* <Select
                                     defaultValue="option1"
                                     popupClassName="transferoptions-select"
                                     suffixIcon={
@@ -1023,7 +1023,7 @@ const RaynaDetailsPage = () => {
                                           })
                                         )
                                     )}
-                                  />
+                                  /> */}
                                 </Form.Item>
                               </Col>
                             </Row>
