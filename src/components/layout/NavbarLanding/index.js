@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Dropdown, Select, Input } from "antd";
 import { Container, SvgIcon, DownloadAppModal } from "../../common";
@@ -18,6 +18,8 @@ import { setSelectedCity } from "../../../slice/citySearchSlice";
 import DeleteAccountModal from "../../../containers/ProfileSetting/DeleteAccountModal";
 import CurrenciesDropDown from "../../common/CurrenciesDropDown";
 import { setSelectedCurrency } from "../../../slice/currencySlice";
+import Apis from "../../../utility/apis";
+import { debounce } from "lodash";
 
 const getAppItems = [
   {
@@ -234,14 +236,7 @@ const NavbarLanding = () => {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedCurrency) {
-  //     localStorage.setItem('selectedCurrency', JSON.stringify(
-  //       currencyList.find(currency => currency.uCurrencyID === selectedCurrency)
-  //     ));
-  //   }
-  // }, [selectedCurrency]);
-
+  const [tourSearchResults, setTourSearchResults] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -303,8 +298,59 @@ const NavbarLanding = () => {
     dispatch(setSelectedCurrency(null)); // Reset the selected currency
   };
 
-  const handleSearch = (inputValue) => {
+  const handleSearch = async (inputValue) => {
+    console.log("inputValue: ", inputValue);
     setSearchInput(inputValue);
+    try {
+      const matchingCity = countryCityList
+        .flatMap((country) => country.cityList)
+        .find(
+          (city) => city.vCityName.toLowerCase() === inputValue.toLowerCase()
+        );
+
+      if (matchingCity) {
+        // Perform the tourSearch API call with the extracted properties
+        const response = await apiClient.post(
+          Apis(
+            "tourSearch",
+            matchingCity.vCountryName,
+            userData ? "loggedIn" : "guest"
+          ),
+          {
+            sType: "All",
+            iCountryID: matchingCity.iCountryID,
+            Language: "en",
+            dCurrentLat: matchingCity.vCityLatitude,
+            dCurrentLong: matchingCity.vCityLatitude,
+            searchKey: inputValue.toLowerCase(),
+          }
+        );
+        setTourSearchResults(response.data?.DATA || []);
+        console.log("response tourDetails: ", response);
+      } else {
+        console.log("No matching city found.");
+      }
+    } catch (error) {
+      console.error("Error searching for tours:", error);
+    }
+  };
+
+  console.log("countryCityList DATA: ", countryCityList);
+
+  const debouncedHandleSearch = useCallback(
+    debounce((inputValue) => {
+      if (inputValue.trim() !== "") {
+        handleSearch(inputValue);
+      }
+    }, 3000),
+    console.log("searching"),
+    []
+  );
+
+  const handleSearchInput = (inputValue) => {
+    console.log("Input value:", inputValue);
+    setSearchInput(inputValue);
+    debouncedHandleSearch(inputValue);
   };
 
   const handleSelectChange = (value, option) => {
@@ -367,32 +413,54 @@ const NavbarLanding = () => {
                     <SvgIcon name="search" viewbox="0 0 12.901 12.905" />
                   }
                   dropdownRender={(menu) => (
-                    <>
+                    <div
+                      className="menu-container"
+                      // style={{ maxHeight: "300px", overflowY: "auto" }}
+                    >
                       <div className="drop-title">Recent Search</div>
                       <Input
                         placeholder="Search..."
                         className="ant-select-search__field"
                         value={searchInput}
-                        onChange={(e) => handleSearch(e.target.value)}
+                        onChange={(e) => handleSearchInput(e.target.value)}
                       />
                       {menu}
-                    </>
+                    </div>
                   )}
-                  options={filteredCityList.map((city) => ({
-                    value: city.iCityID,
-                    label: (
-                      <div className="drop-item">
-                        <div className="city-icon">
-                          <SvgIcon name="map-marker" viewbox="0 0 34 48" />
-                        </div>{" "}
-                        {`${city.vCityName}, ${city.vCountryName}`}
-                      </div>
-                    ),
-                    data: {
-                      vCityName: city.vCityName,
-                      vCountryName: city.vCountryName,
-                    },
-                  }))}
+                  options={[
+                    ...filteredCityList.map((city) => ({
+                      value: city.iCityID,
+                      label: (
+                        <div className="drop-item">
+                          <div className="city-icon">
+                            <SvgIcon name="map-marker" viewbox="0 0 34 48" />
+                          </div>{" "}
+                          {`${city.vCityName}, ${city.vCountryName}`}
+                        </div>
+                      ),
+                      data: {
+                        vCityName: city.vCityName,
+                        vCountryName: city.vCountryName,
+                      },
+                    })),
+                    ...tourSearchResults.map((tour) => ({
+                      value: tour.tourOptionId, // Assuming tourOptionId is unique
+                      label: (
+                        <div className="drop-item">
+                          <div className="city-icon">
+                            <img src={tour.rTourImage} alt="Tour Image" />{" "}
+                            {/* Use tour image here */}
+                          </div>{" "}
+                          {tour.tourName} {/* Use tour name here */}
+                        </div>
+                      ),
+                      data: {
+                        // Include any other data you need
+                        tourId: tour.tourId,
+                        tourName: tour.tourName,
+                      },
+                    })),
+                  ]}
                   onChange={handleSelectChange}
                 />
               </div>

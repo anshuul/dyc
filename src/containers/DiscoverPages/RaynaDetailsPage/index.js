@@ -502,7 +502,7 @@ const RaynaDetailsPage = () => {
       ),
     },
   ];
-  
+
   const detailSlider = {
     dots: false,
     infinite: false,
@@ -514,6 +514,8 @@ const RaynaDetailsPage = () => {
   const handleDateChange = (date, dateString) => {
     console.log("Selected Date:", dateString);
   };
+
+  console.log(bookingData, "tourPriceTransfertimeDetails");
 
   return (
     <div className="twl-details-wrapper">
@@ -962,9 +964,14 @@ const RaynaDetailsPage = () => {
                                 <Form.Item name="time" label="TIME">
                                   <Select
                                     value={
-                                      selectedTimeSlot ||
-                                      bookingData?.tourPriceTransfertimeDetails
-                                        ?.timeslot[0]?.timeSlotId
+                                      bookingData &&
+                                      bookingData.tourPriceTransfertimeDetails &&
+                                      bookingData.tourPriceTransfertimeDetails
+                                        .timeslot &&
+                                      bookingData.tourPriceTransfertimeDetails
+                                        .timeslot[0] &&
+                                      bookingData.tourPriceTransfertimeDetails
+                                        .timeslot[0].timeSlotId
                                     }
                                     onChange={(value) =>
                                       setSelectedTimeSlot(value)
@@ -986,24 +993,23 @@ const RaynaDetailsPage = () => {
                                       </>
                                     )}
                                     options={
-                                      bookingData?.tourPriceTransfertimeDetails?.timeslot.map(
-                                        (slot, index) => ({
-                                          value: slot.timeSlotId,
-                                          label: (
-                                            <div
-                                              className="time-row"
-                                              key={index}
-                                            >
-                                              <div className="time-left">
-                                                {slot.timeSlot}
-                                              </div>
-                                              <div className="right-price">
-                                                {slot.adultPrice}
-                                              </div>
+                                      (
+                                        bookingData
+                                          ?.tourPriceTransfertimeDetails
+                                          ?.timeslot || []
+                                      ).map((slot, index) => ({
+                                        value: slot.timeSlotId,
+                                        label: (
+                                          <div className="time-row" key={index}>
+                                            <div className="time-left">
+                                              {slot.timeSlot}
                                             </div>
-                                          ),
-                                        })
-                                      ) || []
+                                            <div className="right-price">
+                                              {slot.adultPrice}
+                                            </div>
+                                          </div>
+                                        ),
+                                      })) || []
                                     }
                                   />
                                 </Form.Item>
