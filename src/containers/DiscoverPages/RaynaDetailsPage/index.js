@@ -934,31 +934,42 @@ const RaynaDetailsPage = () => {
                                           </Form>
                                           <div className="transfers-list">
                                             <ul>
-                                              {transferTitles.map(
-                                                (title, index) => (
-                                                  <li key={index}>
-                                                    <div className="icons">
-                                                      <SvgIcon
-                                                        name="map"
-                                                        viewbox="0 0 8.358 12.537"
-                                                      />
-                                                    </div>
-                                                    <Checkbox
-                                                      checked={
-                                                        selectedCheckbox ===
-                                                        title
-                                                      }
-                                                      onChange={() =>
-                                                        handleCheckboxChange(
-                                                          title
-                                                        )
-                                                      }
-                                                    >
-                                                      {title}
-                                                    </Checkbox>
-                                                  </li>
-                                                )
-                                              )}
+                                              <li>
+                                                <div className="icons">
+                                                  <SvgIcon
+                                                    name="map"
+                                                    viewbox="0 0 8.358 12.537"
+                                                  />
+                                                </div>
+                                                Business Bay
+                                              </li>
+                                              <li>
+                                                <div className="icons">
+                                                  <SvgIcon
+                                                    name="map"
+                                                    viewbox="0 0 8.358 12.537"
+                                                  />
+                                                </div>
+                                                Al Karama
+                                              </li>
+                                              <li>
+                                                <div className="icons">
+                                                  <SvgIcon
+                                                    name="map"
+                                                    viewbox="0 0 8.358 12.537"
+                                                  />
+                                                </div>
+                                                Marina
+                                              </li>
+                                              <li>
+                                                <div className="icons">
+                                                  <SvgIcon
+                                                    name="map"
+                                                    viewbox="0 0 8.358 12.537"
+                                                  />
+                                                </div>
+                                                Financial Center
+                                              </li>
                                             </ul>
                                           </div>
                                         </>
