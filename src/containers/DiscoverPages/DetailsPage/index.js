@@ -598,7 +598,7 @@ const DetailsPage = () => {
       // productId: productId,
       // productOPtionId: productOPtionId,
       pTicketTypeID: pTicketTypeID,
-      dateForm: "2024-03-19",
+      dateForm: "2024-03-21",
       dateTo: "2024-03-31",
       // adult: counts.adult,
       // child: counts.child,
