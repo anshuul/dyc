@@ -208,6 +208,9 @@ const RaynaDetailsPage = () => {
   const param = searchParams.get("tourId");
   console.log("param: ", param);
 
+  const [visible, setVisible] = useState(false);
+  const [selectedCheckbox, setSelectedCheckbox] = useState(null);
+
   const userData = localStorage.getItem("userData");
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
   useEffect(() => {
@@ -273,6 +276,11 @@ const RaynaDetailsPage = () => {
         return acc;
       }, [])
     : [];
+
+  const handleCheckboxChange = (value) => {
+    setSelectedCheckbox(value);
+    setVisible(false); // Close the dropdown after selection
+  };
 
   // Function to handle checkbox click
   const handleCheckboxClick = (option) => {
@@ -935,7 +943,19 @@ const RaynaDetailsPage = () => {
                                                         viewbox="0 0 8.358 12.537"
                                                       />
                                                     </div>
-                                                    {title}
+                                                    <Checkbox
+                                                      checked={
+                                                        selectedCheckbox ===
+                                                        title
+                                                      }
+                                                      onChange={() =>
+                                                        handleCheckboxChange(
+                                                          title
+                                                        )
+                                                      }
+                                                    >
+                                                      {title}
+                                                    </Checkbox>
                                                   </li>
                                                 )
                                               )}
@@ -945,10 +965,23 @@ const RaynaDetailsPage = () => {
                                       )}
                                       options={transferTitles.map(
                                         (title, index) => ({
-                                          value: `option${index + 1}`,
-                                          label: <Checkbox>{title}</Checkbox>,
+                                          value: title,
+                                          label: (
+                                            <Checkbox
+                                              checked={
+                                                selectedCheckbox === title
+                                              }
+                                              onChange={() =>
+                                                handleCheckboxChange(title)
+                                              }
+                                            >
+                                              {title}
+                                            </Checkbox>
+                                          ),
                                         })
                                       )}
+                                      visible={visible}
+                                      onVisibleChange={setVisible}
                                     />
                                   </Form.Item>
                                 </Col>
