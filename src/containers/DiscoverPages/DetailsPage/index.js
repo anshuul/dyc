@@ -1133,7 +1133,8 @@ const DetailsPage = () => {
                                   value={
                                     selectedTimeSlot ||
                                     bookingData?.tourPriceTransfertimeDetails
-                                      ?.timeslot[0]?.timeSlotId
+                                      ?.timeslot?.[0]?.timeSlotId ||
+                                    null
                                   }
                                   onChange={(value) =>
                                     setSelectedTimeSlot(value)
@@ -1155,21 +1156,22 @@ const DetailsPage = () => {
                                     </>
                                   )}
                                   options={
-                                    bookingData?.tourPriceTransfertimeDetails?.timeslot.map(
-                                      (slot, index) => ({
-                                        value: slot.timeSlotId,
-                                        label: (
-                                          <div className="time-row" key={index}>
-                                            <div className="time-left">
-                                              {slot.timeSlot}
-                                            </div>
-                                            <div className="right-price">
-                                              {slot.adultPrice}
-                                            </div>
+                                    (
+                                      bookingData?.tourPriceTransfertimeDetails
+                                        ?.timeslot || []
+                                    ).map((slot, index) => ({
+                                      value: slot.timeSlotId,
+                                      label: (
+                                        <div className="time-row" key={index}>
+                                          <div className="time-left">
+                                            {slot.timeSlot}
                                           </div>
-                                        ),
-                                      })
-                                    ) || []
+                                          <div className="right-price">
+                                            {slot.adultPrice}
+                                          </div>
+                                        </div>
+                                      ),
+                                    })) || []
                                   }
                                 />
                               </Form.Item>

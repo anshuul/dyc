@@ -514,8 +514,29 @@ const RaynaDetailsPage = () => {
   const handleDateChange = (date, dateString) => {
     console.log("Selected Date:", dateString);
   };
-
-  console.log(bookingData, "tourPriceTransfertimeDetails");
+  // Check if bookingData exists and has the DATA property
+  if (bookingData && bookingData.DATA) {
+    // Iterate over each item in the DATA array
+    bookingData.DATA.forEach((item) => {
+      // Check if item has transferIdData array
+      if (item.transferIdData) {
+        // Iterate over each transferIdData entry
+        item.transferIdData.forEach((transfer) => {
+          // Check if transfer has transferTitle property
+          if (transfer.transferTitle) {
+            // Log transferTitle
+            console.log(transfer.transferTitle);
+          } else {
+            console.log("transferTitle is undefined for:", transfer);
+          }
+        });
+      } else {
+        console.log("transferIdData is undefined for:", item);
+      }
+    });
+  } else {
+    console.log("bookingData or bookingData.DATA is undefined");
+  }
 
   return (
     <div className="twl-details-wrapper">
@@ -851,7 +872,7 @@ const RaynaDetailsPage = () => {
                                   name="transferOptions"
                                   label="TRANSFER OPTIONS"
                                 >
-                                  <Select
+                                  {/* <Select
                                     defaultValue="option1"
                                     popupClassName="transferoptions-select"
                                     suffixIcon={
@@ -943,6 +964,65 @@ const RaynaDetailsPage = () => {
                                         ),
                                       },
                                     ]}
+                                  /> */}
+                                  <Select
+                                    defaultValue="option1"
+                                    popupClassName="transferoptions-select"
+                                    suffixIcon={
+                                      <SvgIcon
+                                        name="down-arrow"
+                                        viewbox="0 0 18 9"
+                                      />
+                                    }
+                                    dropdownRender={(menu) => (
+                                      <>
+                                        <h3 className="title">
+                                          Transfer Options
+                                        </h3>
+                                        {menu}
+                                        <Form
+                                          name="search"
+                                          autoComplete="off"
+                                          layout="vertical"
+                                        >
+                                          <Form.Item
+                                            name="pul"
+                                            label="PICK UP LOCATION"
+                                          >
+                                            <Input
+                                              value=""
+                                              placeholder="Business bay"
+                                            />
+                                          </Form.Item>
+                                        </Form>
+                                        <div className="transfers-list">
+                                          <ul>
+                                            {bookingData?.DATA?.map(
+                                              (option) => (
+                                                <li key={option.tourOptionId}>
+                                                  <div className="icons">
+                                                    <SvgIcon
+                                                      name="map"
+                                                      viewbox="0 0 8.358 12.537"
+                                                    />
+                                                  </div>
+                                                  {option.optionName}
+                                                </li>
+                                              )
+                                            )}
+                                          </ul>
+                                        </div>
+                                      </>
+                                    )}
+                                    options={bookingData?.DATA?.flatMap(
+                                      (option) =>
+                                        option.transferIdData.map(
+                                          (transfer) => ({
+                                            value: transfer.transferId,
+                                            label: transfer.transferTitle,
+                                          })
+                                        )
+                                    )}
                                   />
                                 </Form.Item>
                               </Col>
