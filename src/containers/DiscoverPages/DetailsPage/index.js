@@ -414,7 +414,7 @@ const DetailsPage = () => {
   const [counts, setCounts] = useState({
     adult: 1,
     child: 0,
-    infant: 0,
+    perPax: 0,
   });
 
   const handleIncrement = (type) => {
@@ -691,53 +691,44 @@ const DetailsPage = () => {
 
   const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
     counts.child
-  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
-    counts.infant > 1 ? "s" : ""
+  } Child${counts.child > 1 ? "ren" : ""}, ${counts.perPax} perPax${
+    counts.perPax > 1 ? "s" : ""
   }`;
 
-  const items = [
-    {
-      key: "1",
-      label: (
-        <div className="participants-select">
-          <h3>Participants</h3>
-          <div className="participants-row">
-            <div className="left-col">
-              <h4>Adults</h4>
-              <label>Age 13+</label>
-            </div>
-            <div className="plusminus">
-              <Button onClick={() => handleDecrement("adult")}>-</Button>
-              <div className="counts">{counts.adult}</div>
-              <Button onClick={() => handleIncrement("adult")}>+</Button>
-            </div>
+  const ticketTypes = discoverOptions
+    ? discoverOptions.reduce((types, option) => {
+        const optionTicketTypes = option.pTicketType.map(
+          (ticketType) => ticketType.ticketTypename
+        );
+        return types.concat(optionTicketTypes);
+      }, [])
+    : [];
+
+  const items = ticketTypes.map((ticketType, index) => ({
+    key: index.toString(),
+    label: (
+      <div className="participants-select">
+        <h3>Participants</h3>
+        <div className="participants-row">
+          <div className="left-col">
+            <h4>{ticketType}</h4>
+            <label>
+              {ticketType === "Per Pax"
+                ? "Under 2"
+                : ticketType === "Adult"
+                ? "Age 13+"
+                : "Ages 2-12"}
+            </label>
           </div>
-          <div className="participants-row">
-            <div className="left-col">
-              <h4>Children</h4>
-              <label>Ages 2-12</label>
-            </div>
-            <div className="plusminus">
-              <Button onClick={() => handleDecrement("child")}>-</Button>
-              <div className="counts">{counts.child}</div>
-              <Button onClick={() => handleIncrement("child")}>+</Button>
-            </div>
-          </div>
-          <div className="participants-row">
-            <div className="left-col">
-              <h4>Infants</h4>
-              <label>Under 2</label>
-            </div>
-            <div className="plusminus">
-              <Button onClick={() => handleDecrement("infant")}>-</Button>
-              <div className="counts">{counts.infant}</div>
-              <Button onClick={() => handleIncrement("infant")}>+</Button>
-            </div>
+          <div className="plusminus">
+            <Button onClick={() => handleDecrement(ticketType)}> - </Button>
+            <div className="counts">{counts[ticketType]}</div>
+            <Button onClick={() => handleIncrement(ticketType)}> + </Button>
           </div>
         </div>
-      ),
-    },
-  ];
+      </div>
+    ),
+  }));
 
   const detailSlider = {
     dots: false,
@@ -1178,7 +1169,10 @@ const DetailsPage = () => {
                                       <span className="off-price">
                                         {option.price}
                                       </span>
-                                      ${option.pTicketType[0]?.nettPrice || 'Price not available'}<span>/ Person</span>
+                                      $
+                                      {option.pTicketType[0]?.nettPrice ||
+                                        "Price not available"}
+                                      <span>/ Person</span>
                                     </div>
                                   </li>
                                 ))}
