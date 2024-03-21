@@ -36,6 +36,8 @@ const CheckoutDiscover = () => {
   const travelDate = searchParams.get("travelDate");
   const transferId = searchParams.get("transferId");
   const timeSlotId = searchParams.get("timeSlotId");
+  const grandTotal = searchParams.get("grandTotal");
+  const transferType = decodeURIComponent(searchParams.get("transferType"));
 
   const userData = localStorage.getItem("userData");
   const userDataObj = JSON.parse(userData);
@@ -142,6 +144,13 @@ const CheckoutDiscover = () => {
     fetchData(); // Call fetchData function
   };
 
+  // Function to format time or default to 12pm
+  const formatTime = (time) => {
+    if (!time) return "12pm";
+    // Add formatting logic if needed
+    return time;
+  };
+
   return (
     <div className="checkout-discover-wrapper">
       <div className="checkoutdiscover-inner">
@@ -167,7 +176,7 @@ const CheckoutDiscover = () => {
                           <h3>Details</h3>
                           <div className="dtl-row">
                             <div className="dtl-left">
-                              <p>23rd Mar 2023</p>
+                              <p>{travelDate}</p>
                               <label>Date</label>
                             </div>
                             <div className="dtl-right">
@@ -185,7 +194,11 @@ const CheckoutDiscover = () => {
                           </div>
                           <div className="dtl-row">
                             <div className="dtl-left">
-                              <p>3</p>
+                              <p>
+                                {parseInt(adult) +
+                                  parseInt(child) +
+                                  parseInt(infant)}
+                              </p>
                               <label>Participants</label>
                             </div>
                             <div className="dtl-right">
@@ -194,7 +207,7 @@ const CheckoutDiscover = () => {
                           </div>
                           <div className="dtl-row">
                             <div className="dtl-left">
-                              <p>Private Transfer</p>
+                              <p>{transferType}</p>
                               <label>Transfer Type</label>
                             </div>
                             <div className="dtl-right">
@@ -423,7 +436,7 @@ const CheckoutDiscover = () => {
                           <Row className="willpay-row">
                             <Col>Grand Total</Col>
                             <Col className="text-right">
-                              AED <b>101</b>
+                              AED <b>{grandTotal}</b>
                             </Col>
                           </Row>
                         </div>

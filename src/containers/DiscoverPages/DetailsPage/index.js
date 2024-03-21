@@ -431,12 +431,6 @@ const DetailsPage = () => {
     }));
   };
 
-  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
-    counts.child
-  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
-    counts.infant > 1 ? "s" : ""
-  }`;
-
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
   const [tourDetails, setTourDetails] = useState(null);
@@ -650,7 +644,7 @@ const DetailsPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleBookNow = () => {
-    window.location.href = `/discover/checkout?productOPtionId=${productOPtionId}&productId=${productId}`;
+    window.location.href = `/discover/checkout?productOPtionId=${productOPtionId}&productId=${productId}&grandTotal=${grandTotal}`;
   };
 
   const toggleDescription = () => {
@@ -667,26 +661,55 @@ const DetailsPage = () => {
     setShowAllImages(false);
   };
 
+  const calculateTotalPrice = (adultCount, childCount, productOptions) => {
+    if (
+      !productOptions ||
+      !Array.isArray(productOptions) ||
+      productOptions.length === 0
+    ) {
+      return 0;
+    }
+
+    const adultPrice =
+      parseFloat(productOptions[0]?.pTicketType[0]?.nettPrice) || 0;
+    const childPrice = adultPrice; // Assuming child price is the same as adult price, modify this if needed
+
+    const totalAdultPrice = adultCount * adultPrice;
+    const totalChildPrice = childCount * childPrice;
+
+    const grandTotal = totalAdultPrice + totalChildPrice;
+
+    return grandTotal;
+  };
+
+  const grandTotal = calculateTotalPrice(
+    counts.adult,
+    counts.child,
+    discoverOptions
+  );
+  console.log("Grand Total:", grandTotal);
+
+  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
+    counts.child
+  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
+    counts.infant > 1 ? "s" : ""
+  }`;
+
   const items = [
     {
       key: "1",
       label: (
         <div className="participants-select">
           <h3>Participants</h3>
-          {/* Your other components */}
           <div className="participants-row">
             <div className="left-col">
               <h4>Adults</h4>
               <label>Age 13+</label>
             </div>
             <div className="plusminus">
-              <Button onClick={() => handleDecrement("adult")}>
-                <SvgIcon name="minus" viewbox="0 0 16.638 2.405" />
-              </Button>
+              <Button onClick={() => handleDecrement("adult")}>-</Button>
               <div className="counts">{counts.adult}</div>
-              <Button onClick={() => handleIncrement("adult")}>
-                <SvgIcon name="plus" viewbox="0 0 16.638 17.53" />
-              </Button>
+              <Button onClick={() => handleIncrement("adult")}>+</Button>
             </div>
           </div>
           <div className="participants-row">
@@ -695,13 +718,9 @@ const DetailsPage = () => {
               <label>Ages 2-12</label>
             </div>
             <div className="plusminus">
-              <Button onClick={() => handleDecrement("child")}>
-                <SvgIcon name="minus" viewbox="0 0 16.638 2.405" />
-              </Button>
+              <Button onClick={() => handleDecrement("child")}>-</Button>
               <div className="counts">{counts.child}</div>
-              <Button onClick={() => handleIncrement("child")}>
-                <SvgIcon name="plus" viewbox="0 0 16.638 17.53" />
-              </Button>
+              <Button onClick={() => handleIncrement("child")}>+</Button>
             </div>
           </div>
           <div className="participants-row">
@@ -710,13 +729,9 @@ const DetailsPage = () => {
               <label>Under 2</label>
             </div>
             <div className="plusminus">
-              <Button onClick={() => handleDecrement("infant")}>
-                <SvgIcon name="minus" viewbox="0 0 16.638 2.405" />
-              </Button>
+              <Button onClick={() => handleDecrement("infant")}>-</Button>
               <div className="counts">{counts.infant}</div>
-              <Button onClick={() => handleIncrement("infant")}>
-                <SvgIcon name="plus" viewbox="0 0 16.638 17.53" />
-              </Button>
+              <Button onClick={() => handleIncrement("infant")}>+</Button>
             </div>
           </div>
         </div>
@@ -1163,7 +1178,7 @@ const DetailsPage = () => {
                                       <span className="off-price">
                                         {option.price}
                                       </span>
-                                      $50 <span>/ Person</span>
+                                      ${option.pTicketType[0]?.nettPrice || 'Price not available'}<span>/ Person</span>
                                     </div>
                                   </li>
                                 ))}
@@ -1289,10 +1304,22 @@ const DetailsPage = () => {
                             <Col className="price-left">Tax</Col>
                             <Col className="price-right">AED 78</Col>
                           </Row>
+                          {/* <Row className="total-row">
+                                <Col className="price-left">Grand Total</Col>
+                                <Col className="price-right">
+                                  AED{" "}
+                                  <b>
+                                    {calculateTotalPrice(
+                                      selectedCheckbox,
+                                      counts
+                                    )}
+                                  </b>
+                                </Col>
+                              </Row> */}
                           <Row className="total-row">
                             <Col className="price-left">Grand Total</Col>
                             <Col className="price-right">
-                              AED <b>101</b>
+                              AED <b>{grandTotal}</b>
                             </Col>
                           </Row>
                         </div>

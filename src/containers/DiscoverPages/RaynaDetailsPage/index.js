@@ -400,6 +400,7 @@ const RaynaDetailsPage = () => {
     const { tourOptionId, contractId } = bookingData;
     const travelDate = selectedDate.toISOString().slice(0, 10);
     const transferId = selectedOption.transferIdData[0]?.transferId;
+    const grandTotal = calculateTotalPrice(selectedCheckbox, counts); 
     const requestBody = {
       tourId: param,
       tourOptionId,
@@ -425,7 +426,7 @@ const RaynaDetailsPage = () => {
         // Redirect to checkout page if status is 1
         const countsParams = `&adult=${counts.adult}&child=${counts.child}&infant=${counts.infant}`;
         const promoCodeParam = encodeURIComponent(promoCodeValue);
-        window.location.href = `/discover/checkout?tourId=${param}&person=${countsParams}&tPromoCode=${promoCodeParam}&tourOptionId=${tourOptionId}&travelDate=${travelDate}&transferId=${transferId}&timeSlotId=${selectedTimeSlot}`;
+        window.location.href = `/discover/checkout?tourId=${param}&person=${countsParams}&tPromoCode=${promoCodeParam}&tourOptionId=${tourOptionId}&travelDate=${travelDate}&transferId=${transferId}&timeSlotId=${selectedTimeSlot}&grandTotal=${grandTotal}&transferType=${selectedCheckbox}`;
       } else {
         if (response.data?.status === 0) {
           // window.location.href = "/discover/booking-failed";
