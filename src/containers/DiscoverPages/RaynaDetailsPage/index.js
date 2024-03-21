@@ -189,13 +189,13 @@ const RaynaDetailsPage = () => {
     }));
   };
 
-  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
-    counts.child
-  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
-    counts.infant > 1 ? "s" : ""
-  }`;
+  // const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
+  //   counts.child
+  // } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
+  //   counts.infant > 1 ? "s" : ""
+  // }`;
 
-  console.log("Selected Data:", selectedData);
+  // console.log("Selected Data:", selectedData);
 
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
@@ -281,6 +281,8 @@ const RaynaDetailsPage = () => {
     setSelectedCheckbox(value);
     setVisible(false); // Close the dropdown after selection
   };
+
+  console.log("selectedCheckbox data: ", selectedCheckbox);
 
   // Function to handle checkbox click
   const handleCheckboxClick = (option) => {
@@ -465,13 +467,105 @@ const RaynaDetailsPage = () => {
     setShowAllImages(false);
   };
 
+  const detailSlider = {
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
+  const handleDateChange = (date, dateString) => {
+    console.log("Selected Date:", dateString);
+  };
+  // Check if bookingData exists and has the DATA property
+  if (bookingData && bookingData.DATA) {
+    // Iterate over each item in the DATA array
+    bookingData.DATA.forEach((item) => {
+      // Check if item has transferIdData array
+      if (item.transferIdData) {
+        // Iterate over each transferIdData entry
+        item.transferIdData.forEach((transfer) => {
+          // Check if transfer has transferTitle property
+          if (transfer.transferTitle) {
+            // Log transferTitle
+            console.log(transfer.transferTitle);
+          } else {
+            console.log("transferTitle is undefined for:", transfer);
+          }
+        });
+      } else {
+        console.log("transferIdData is undefined for:", item);
+      }
+    });
+  } else {
+    console.log("bookingData or bookingData.DATA is undefined");
+  }
+
+  const calculateTotalPrice = (selectedTransfer, counts) => {
+    console.log("Selected Checkbox:", selectedTransfer);
+    console.log("Counts:", counts);
+
+    if (!discoverOptions || !selectedTransfer) {
+      console.log(
+        "Returning 0: Discover options or selected transfer not available"
+      );
+      return 0;
+    }
+
+    const transferOption = discoverOptions.find((option) =>
+      option.transferIdData.some(
+        (transfer) => transfer.transferTitle === selectedTransfer
+      )
+    );
+
+    if (!transferOption) {
+      console.log("Returning 0: Transfer option not found");
+      return 0;
+    }
+
+    const transfer = transferOption.transferIdData.find(
+      (transfer) => transfer.transferTitle === selectedTransfer
+    );
+
+    console.log("Transfer:", transfer);
+
+    if (!transfer) {
+      console.log("Returning 0: Transfer not found");
+      return 0;
+    }
+
+    console.log("Transfer Price: ", transfer.adultPrice);
+
+    const { adultPrice, childPrice } = transfer;
+
+    if (!adultPrice || !childPrice) {
+      console.log("Returning 0: Prices not available");
+      return 0;
+    }
+
+    const totalAdultPrice = counts.adult * parseFloat(adultPrice);
+    const totalChildPrice = counts.child * parseFloat(childPrice);
+
+    const grandTotal = totalAdultPrice + totalChildPrice;
+
+    console.log("Grand Total:", grandTotal);
+
+    return grandTotal;
+  };
+
+  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
+    counts.child
+  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
+    counts.infant > 1 ? "s" : ""
+  }`;
+
   const items = [
     {
       key: "1",
       label: (
         <div className="participants-select">
           <h3>Participants</h3>
-          {/* Your other components */}
           <div className="participants-row">
             <div className="left-col">
               <h4>Adults</h4>
@@ -521,41 +615,6 @@ const RaynaDetailsPage = () => {
       ),
     },
   ];
-
-  const detailSlider = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
-
-  const handleDateChange = (date, dateString) => {
-    console.log("Selected Date:", dateString);
-  };
-  // Check if bookingData exists and has the DATA property
-  if (bookingData && bookingData.DATA) {
-    // Iterate over each item in the DATA array
-    bookingData.DATA.forEach((item) => {
-      // Check if item has transferIdData array
-      if (item.transferIdData) {
-        // Iterate over each transferIdData entry
-        item.transferIdData.forEach((transfer) => {
-          // Check if transfer has transferTitle property
-          if (transfer.transferTitle) {
-            // Log transferTitle
-            console.log(transfer.transferTitle);
-          } else {
-            console.log("transferTitle is undefined for:", transfer);
-          }
-        });
-      } else {
-        console.log("transferIdData is undefined for:", item);
-      }
-    });
-  } else {
-    console.log("bookingData or bookingData.DATA is undefined");
-  }
 
   return (
     <div className="twl-details-wrapper">
@@ -903,7 +962,7 @@ const RaynaDetailsPage = () => {
                                     label="TRANSFER OPTIONS"
                                   >
                                     <Select
-                                      defaultValue="option1"
+                                      defaultValue="Transfer Options"
                                       popupClassName="transferoptions-select"
                                       suffixIcon={
                                         <SvgIcon
@@ -917,61 +976,66 @@ const RaynaDetailsPage = () => {
                                             Transfer Options
                                           </h3>
                                           {menu}
-                                          <Form
-                                            name="search"
-                                            autoComplete="off"
-                                            layout="vertical"
-                                          >
-                                            <Form.Item
-                                              name="pul"
-                                              label="PICK UP LOCATION"
-                                            >
-                                              <Input
-                                                value=""
-                                                placeholder="Business bay"
-                                              />
-                                            </Form.Item>
-                                          </Form>
-                                          <div className="transfers-list">
-                                            <ul>
-                                              <li>
-                                                <div className="icons">
-                                                  <SvgIcon
-                                                    name="map"
-                                                    viewbox="0 0 8.358 12.537"
+                                          {selectedCheckbox !==
+                                            "Private Transfer" && (
+                                            <>
+                                              <Form
+                                                name="search"
+                                                autoComplete="off"
+                                                layout="vertical"
+                                              >
+                                                <Form.Item
+                                                  name="pul"
+                                                  label="PICK UP LOCATION"
+                                                >
+                                                  <Input
+                                                    value=""
+                                                    placeholder="Business bay"
                                                   />
-                                                </div>
-                                                Business Bay
-                                              </li>
-                                              <li>
-                                                <div className="icons">
-                                                  <SvgIcon
-                                                    name="map"
-                                                    viewbox="0 0 8.358 12.537"
-                                                  />
-                                                </div>
-                                                Al Karama
-                                              </li>
-                                              <li>
-                                                <div className="icons">
-                                                  <SvgIcon
-                                                    name="map"
-                                                    viewbox="0 0 8.358 12.537"
-                                                  />
-                                                </div>
-                                                Marina
-                                              </li>
-                                              <li>
-                                                <div className="icons">
-                                                  <SvgIcon
-                                                    name="map"
-                                                    viewbox="0 0 8.358 12.537"
-                                                  />
-                                                </div>
-                                                Financial Center
-                                              </li>
-                                            </ul>
-                                          </div>
+                                                </Form.Item>
+                                              </Form>
+                                              <div className="transfers-list">
+                                                <ul>
+                                                  <li>
+                                                    <div className="icons">
+                                                      <SvgIcon
+                                                        name="map"
+                                                        viewbox="0 0 8.358 12.537"
+                                                      />
+                                                    </div>
+                                                    Business Bay
+                                                  </li>
+                                                  <li>
+                                                    <div className="icons">
+                                                      <SvgIcon
+                                                        name="map"
+                                                        viewbox="0 0 8.358 12.537"
+                                                      />
+                                                    </div>
+                                                    Al Karama
+                                                  </li>
+                                                  <li>
+                                                    <div className="icons">
+                                                      <SvgIcon
+                                                        name="map"
+                                                        viewbox="0 0 8.358 12.537"
+                                                      />
+                                                    </div>
+                                                    Marina
+                                                  </li>
+                                                  <li>
+                                                    <div className="icons">
+                                                      <SvgIcon
+                                                        name="map"
+                                                        viewbox="0 0 8.358 12.537"
+                                                      />
+                                                    </div>
+                                                    Financial Center
+                                                  </li>
+                                                </ul>
+                                              </div>
+                                            </>
+                                          )}
                                         </>
                                       )}
                                       options={transferTitles.map(
@@ -1119,7 +1183,13 @@ const RaynaDetailsPage = () => {
                               <Row className="total-row">
                                 <Col className="price-left">Grand Total</Col>
                                 <Col className="price-right">
-                                  AED <b>101</b>
+                                  AED{" "}
+                                  <b>
+                                    {calculateTotalPrice(
+                                      selectedCheckbox,
+                                      counts
+                                    )}
+                                  </b>
                                 </Col>
                               </Row>
                             </div>
