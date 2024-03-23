@@ -203,14 +203,15 @@ const NavbarLanding = () => {
   const [countryCityList, setCountryCityList] = useState([]);
   const [filteredCityList, setFilteredCityList] = useState([]);
 
+  console.log("countryCityList: ", countryCityList)
+  console.log("filteredCityList: ", filteredCityList)
+
   const selectedCurrency = useSelector(
     (state) => state.currency.selectedCurrency
   );
   const [visibleDropDown, setVisibleDropDown] = useState(false);
   const [currencyList, setCurrencyList] = useState([]);
-
-  console.log("selectedCurrency : ", selectedCurrency);
-
+  console.log("selectedCity : ", selectedCity);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -227,7 +228,15 @@ const NavbarLanding = () => {
           response = await apiClient.get("/deal/currencyList");
         }
         const fetchedCurrencyList = response.data?.DATA || [];
+        console.log("fetchedCurrencyList: ", fetchedCurrencyList);
         setCurrencyList(fetchedCurrencyList);
+
+        // Set the selected currency to the first one in the list
+        if (fetchedCurrencyList.length > 0) {
+          if (!selectedCurrency) {
+            dispatch(setSelectedCurrency(fetchedCurrencyList[0]));
+          }
+        }
       } catch (error) {
         console.log(error);
       }
@@ -289,7 +298,6 @@ const NavbarLanding = () => {
       (currency) => currency.uCurrencyID === currencyId
     );
     if (selectedCurrency) {
-      console.log("Selected Currency:", selectedCurrency);
       dispatch(setSelectedCurrency(selectedCurrency));
     }
   };
@@ -375,7 +383,7 @@ const NavbarLanding = () => {
   // const defaultOptionValue = selectedCity || "UAE";
   const defaultOptionValue =
     selectedCity?.iCityID ||
-    (filteredCityList.length > 0 ? filteredCityList[0].iCityID : "Dubai, UAE");
+    (filteredCityList.length > 0 ? filteredCityList[0].iCityID : "");
 
   return (
     <header
@@ -531,11 +539,6 @@ const NavbarLanding = () => {
             >
               <div className="currency-col" onClick={(e) => e.preventDefault()}>
                 <span className="falg-img" />
-                {/* {
-                  currencyList.find(
-                    (currency) => currency.uCurrencyID === selectedCurrency
-                  )?.uCurrency || ""
-                } */}
                 {selectedCurrency ? selectedCurrency.uCurrency : ""}
               </div>
             </Dropdown>

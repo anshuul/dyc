@@ -2,9 +2,29 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const loadSelectedCityFromLocalStorage = () => {
   try {
-    const serializedCity = localStorage.getItem("selectedCity");
-    if (serializedCity === null) {
-      return null; // Return null if no city is found in local storage
+    let serializedCity = localStorage.getItem("selectedCity");
+    if (serializedCity === null || serializedCity === "") {
+      // If no city is found in local storage, set a default city object
+      const defaultCity = {
+        iCityID: "8",
+        rCityID: "13668",
+        vCityName: "Dubai",
+        city_banner:
+          "https://travellerpassapp.com/images/citybanner/citybanner16784526811083874723.webp",
+        iCountryID: "10",
+        gCityID: "89",
+        vCityLatitude: "25.204849",
+        vCityLongitude: "55.270782",
+        isExperiences: "Yes",
+        isLifestyle: "Yes",
+        isDiscover: "Yes",
+        isGlobaltix: "No",
+        vCountryName: "UAE",
+      };
+      // Serialize and store the default city object
+      serializedCity = JSON.stringify(defaultCity);
+      localStorage.setItem("selectedCity", serializedCity);
+      return defaultCity;
     }
     return JSON.parse(serializedCity);
   } catch (err) {

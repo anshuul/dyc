@@ -5,6 +5,7 @@ const guestDiscoverApis = {
   tourDetails: "/deal/discoverDetail",
   categoryList: "/deal/categoryListDiscover",
   tourSearch: "/deal/discoverKeySearch",
+  listByGroup: "/deal/discoverListByGroup",
 };
 const guestGlobalApis = {
   featuredOfferList: "/deal/productFeaturedOfferList",
@@ -13,6 +14,7 @@ const guestGlobalApis = {
   tourDetails: "/deal/productDetails",
   categoryList: "/deal/categoryListProduct",
   tourSearch: "/deal/productKeySearch",
+  listByGroup: "/deal/productListByGroup",
 };
 
 const loggedInDiscoverApis = {

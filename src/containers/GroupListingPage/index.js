@@ -183,8 +183,8 @@ const GroupListingPage = () => {
 
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
-  const param = searchParams.get("rgroupId");
-  console.log("param: ", param)
+  const rgroupId = searchParams.get("rgroupId");
+  const productId = searchParams.get("productId");
 
   const userData = localStorage.getItem("userData");
   const [groupData, setGroupData] = useState([]);
@@ -197,14 +197,18 @@ const GroupListingPage = () => {
       try {
         const response = await apiClient.post(
           // Fetch data from API
-          Apis("listByGroup", selectedCity.vCountryName, userData ? "loggedIn" : "guest"),
+          Apis(
+            "listByGroup",
+            selectedCity.vCountryName,
+            userData ? "loggedIn" : "guest"
+          ),
           {
             iCountryID: selectedCity.iCountryID,
             dCurrentLat: selectedCity.vCityLatitude,
             dCurrentLong: selectedCity.vCityLongitude,
             iCityID: selectedCity.iCityID,
             Language: "en",
-            rgroup_id: param,
+            rgroup_id: rgroupId,
           },
           {
             headers: {
@@ -336,7 +340,19 @@ const GroupListingPage = () => {
                           <SvgIcon name="heart" viewbox="0 0 10.238 9.131" />
                         </Button>
                       }
-                      onClick={() => window.open("/details", "_self")}
+                      onClick={() => {
+                        if (item.tourId) {
+                          window.open(
+                            `/rayna-details?tourId=${item.tourId}`,
+                            "_self"
+                          );
+                        } else {
+                          window.open(
+                            `/details?tourId=${productId}`,
+                            "_self"
+                          );
+                        }
+                      }}
                     >
                       <div className="bottom-row">
                         <div className="left-col">
