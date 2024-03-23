@@ -203,15 +203,15 @@ const NavbarLanding = () => {
   const [countryCityList, setCountryCityList] = useState([]);
   const [filteredCityList, setFilteredCityList] = useState([]);
 
-  console.log("countryCityList: ", countryCityList)
-  console.log("filteredCityList: ", filteredCityList)
+  console.log("countryCityList: ", countryCityList);
+  console.log("filteredCityList: ", filteredCityList);
 
   const selectedCurrency = useSelector(
     (state) => state.currency.selectedCurrency
   );
   const [visibleDropDown, setVisibleDropDown] = useState(false);
   const [currencyList, setCurrencyList] = useState([]);
-  console.log("selectedCity : ", selectedCity);
+  console.log("selectedCurrency : ", selectedCurrency);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -231,11 +231,14 @@ const NavbarLanding = () => {
         console.log("fetchedCurrencyList: ", fetchedCurrencyList);
         setCurrencyList(fetchedCurrencyList);
 
-        // Set the selected currency to the first one in the list
+        // Set the selected currency to the first one in the list if not already set
         if (fetchedCurrencyList.length > 0) {
-          if (!selectedCurrency) {
-            dispatch(setSelectedCurrency(fetchedCurrencyList[0]));
-          }
+          const firstCurrency = fetchedCurrencyList[0];
+          localStorage.setItem(
+            "selectedCurrency",
+            JSON.stringify(firstCurrency)
+          );
+          dispatch(setSelectedCurrency(firstCurrency));
         }
       } catch (error) {
         console.log(error);
