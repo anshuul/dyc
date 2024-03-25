@@ -50,7 +50,7 @@ import tourImg4 from "../../assets/images/tour4.jpg";
 import howitworkImg from "../../assets/images/howitwork.png";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
-import { setFeatureOfferList2 } from "../../slice/featuredOfferList2";
+import { setFeatureOfferList2, toggleFav } from "../../slice/featuredOfferList2";
 import { setFeaturedOfferList } from "../../slice/featuredOfferList";
 import {
   resetCheckedItems,
@@ -63,6 +63,7 @@ import {
   selectSelectedPriceRange,
   setSelectedPriceRange,
 } from "../../slice/priceRangeSlice";
+import CustomLoader from "../../components/common/Loader/CustomLoader";
 
 function NextArrow(props) {
   const { className, onClick } = props;
@@ -101,6 +102,7 @@ function PrevArrowClients(props) {
 }
 const LandingPage = () => {
   const history = useHistory();
+  const [showLoader, setshowLoader] = useState(false)
   const userData = localStorage.getItem("userData");
   const dispatch = useDispatch();
   const featuredOfferList = useSelector(
@@ -114,8 +116,28 @@ const LandingPage = () => {
   console.log("featuredOfferList2: ", featuredOfferList2);
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
 
+  
+  const handleFavToggle = (index, innerIndex, value,tourId) => {
+    dispatch(toggleFav({index, innerIndex, value }));
+    apiClient
+    .post(
+      Apis(
+        "toggleFavTour",
+        selectedCity.vCountryName,
+        userData ? "loggedIn" : "guest"
+      ),
+      {
+        tourId,
+        productId:tourId,
+        favourite:value
+      }
+    )
+    
+  }
+
   useEffect(() => {
     if (selectedCity) {
+      setshowLoader(true)
       apiClient
         .post(
           Apis(
@@ -160,9 +182,10 @@ const LandingPage = () => {
           let result = res.data.DATA;
           dispatch(setFeatureOfferList2(result));
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err))
+        .finally(() => setshowLoader(false))
     }
-    return () => {};
+    return () => { };
   }, [selectedCity]);
 
   useEffect(() => {
@@ -491,6 +514,7 @@ const LandingPage = () => {
 
   return (
     <div className="twl-landing-wrapper">
+      {showLoader && <CustomLoader />}
       <section className="landing-banner">
         <div
           className="background-image"
@@ -811,9 +835,8 @@ const LandingPage = () => {
                 </Col>
                 <Col className="text-right">
                   <Link
-                    to={`/listing-page?gCategoryID=${
-                      e.rCategoryID || e.gCategoryID
-                    }`}
+                    to={`/listing-page?gCategoryID=${e.rCategoryID || e.gCategoryID
+                      }`}
                   >
                     <Button className="more-btn" size="small">
                       More
@@ -825,51 +848,76 @@ const LandingPage = () => {
                 <Col>
                   <Sliders className="tour-slider" {...settingsTourSlider}>
                     {e.topTenDeals.map((item, key) => (
-                      <div key={key}>
-                        <Card
-                          className="tp-item-card"
-                          cover={
-                            <img
-                              alt="TP List"
-                              src={item.rTourImage || item.gProductImage}
-                            />
-                          }
-                          extra={
-                            <Button>
-                              <SvgIcon
-                                name="heart"
-                                viewbox="0 0 10.238 9.131"
-                              />
-                            </Button>
-                          }
-                          onClick={() => {
-                            if (item.tourId) {
-                              window.open(
-                                `/rayna-details?tourId=${item.tourId}`,
-                                "_self"
-                              );
-                            } else {
-                              window.open(
-                                `/details?productId=${item.productId}`,
-                                "_self"
-                              );
-                            }
+                      <div key={key} >
+                        <div style={{ position: 'relative' }}>
+                          <Button style={{
+                            width: "30px",
+                            height: "30px",
+                            borderRadius: "30px",
+                            padding: "0",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            position: "absolute",
+                            top: "15px",
+                            right: "15px",
+                            zIndex: "1",
                           }}
-                        >
-                          <div className="bottom-row">
-                            <div className="left-col">
-                              <h3>{item.tourName}</h3>
-                              <div className="price-col">
-                                From{" "}
-                                <span className="bottomprice">
-                                  AED {item.adultPrice}
-                                </span>{" "}
-                                / person{" "}
-                                <span className="off-price">AED 523</span>
+                            onClick={() => {
+                              handleFavToggle(i, key, item.isFavouriteOffer === 0 ? 1 : 0, item.tourId)
+                            }}
+                          >
+                            <SvgIcon
+                              name="heart"
+                              viewbox="0 0 10.238 9.131"
+                              fill={item.isFavouriteOffer === 0 ? "#000" : "#FF5D5D"}
+                            />
+                          </Button>
+                          <Card
+                            className="tp-item-card"
+                            cover={
+                              <img
+                                alt="TP List"
+                                src={item.rTourImage || item.gProductImage}
+                              />
+                            }
+                            // extra={
+                            //   <Button>
+                            //     <SvgIcon
+                            //       name="heart"
+                            //       viewbox="0 0 10.238 9.131"
+                            //     />
+                            //   </Button>
+                            // }
+                            onClick={() => {
+                              if (item.tourId) {
+                                window.open(
+                                  `/rayna-details?tourId=${item.tourId}`,
+                                  "_self"
+                                );
+                              } else {
+                                window.open(
+                                  `/details?productId=${item.productId}`,
+                                  "_self"
+                                );
+                              }
+                            }}
+                          >
+                            <div className="bottom-row">
+                              <div className="left-col">
+                                <h3>{item.tourName}</h3>
+                                <div className="price-col">
+                                  From{" "}
+                                  <span className="bottomprice">
+                                    AED {item.adultPrice}
+                                  </span>{" "}
+                                  / person{" "}
+                                  <span className="off-price">AED 523</span>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </Card>
+                          </Card>
+                        </div>
                       </div>
                     ))}
                   </Sliders>

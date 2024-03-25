@@ -8,7 +8,6 @@ import ScrollToTop from './ScrollToTop';
 import "antd/dist/reset.css";
 import 'aos/dist/aos.css';
 import { Provider } from 'react-redux'
-
 //Svg Sprite
 import svgFile from "./assets/images/svg/svg-sprite.svg";
 import store from "./store";

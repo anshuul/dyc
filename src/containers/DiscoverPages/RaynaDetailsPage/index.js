@@ -43,6 +43,7 @@ import ReviewImg6 from "../../../assets/images/top-creator7.png";
 import DetailsImg6 from "../../../assets/images/privelanding-banner.jpg";
 import apiClient from "../../../apiConfig";
 import Apis from "../../../utility/apis";
+import CustomLoader from "../../../components/common/Loader/CustomLoader";
 
 const imagesArray = [
   {
@@ -202,7 +203,7 @@ const RaynaDetailsPage = () => {
   const [tourDetails, setTourDetails] = useState(null);
   const [showAllImages, setShowAllImages] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
-
+  const [showLoader, setshowLoader] = useState(false)
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
   const param = searchParams.get("tourId");
@@ -216,6 +217,7 @@ const RaynaDetailsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setshowLoader(true)
         const response = await apiClient.post(
           // Fetch data from API
           Apis(
@@ -238,6 +240,7 @@ const RaynaDetailsPage = () => {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
+      setshowLoader(false)
     };
 
     fetchData();
@@ -619,6 +622,7 @@ const RaynaDetailsPage = () => {
 
   return (
     <div className="twl-details-wrapper">
+            {showLoader && <CustomLoader />}
       {tourDetails && (
         <>
           <MediaQuery maxWidth={767}>
