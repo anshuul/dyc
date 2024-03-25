@@ -12,10 +12,24 @@ import VideoOne from "../../assets/video/bg_auth.mp4";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
 import currenciesData from "../../data/currenciesData.json";
-
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import { GoogleAuthProvider } from 'firebase/auth';
+import { FacebookAuthProvider } from 'firebase/auth';
 const { Option } = Select;
 
 const Signup = () => {
+  const firebaseConfig = {
+    apiKey: "AIzaSyC8OG3HH3zqvLLTzQhJXk6Yn9uiyvJ3h8Q",
+    authDomain: "dyc-test-44274.firebaseapp.com",
+    projectId: "dyc-test-44274",
+    storageBucket: "dyc-test-44274.appspot.com",
+    messagingSenderId: "451000592924",
+    appId: "1:451000592924:web:e050c5fdcb3a31eda24dd9",
+    measurementId: "G-0KB2PJEQXE"
+  };
+  firebase.initializeApp(firebaseConfig);
+  console.log(firebase,"appppp");
   const history = useHistory();
 
   const [formData, setFormData] = useState({
@@ -84,6 +98,35 @@ const Signup = () => {
       }
     } catch (error) {
       console.error("Error checking email:", error);
+    }
+  };
+
+  const authUser = async (email, token) => {
+    let user = await apiClient.post('/admin/doLoginWithIdToken',{
+      vEmail:email,
+      idToken:token
+    })
+    console.log(user);
+  }
+
+  
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await firebase.auth().signInWithPopup(provider);
+      console.log('Google Sign-In Successful:', result);
+      authUser(result.user.email,result.credential.idToken)
+    } catch (error) {
+      console.error('Google Sign-In Error:', error);
+    }
+  };
+  const handleFacebookSignIn = async () => {
+    const provider = new FacebookAuthProvider();
+    try {
+      const result = await firebase.auth().signInWithPopup(provider);
+      console.log('Facebook Sign-In Successful:', result.user);
+    } catch (error) {
+      console.error('Facebook Sign-In Error:', error);
     }
   };
 
@@ -220,12 +263,12 @@ const Signup = () => {
                 </Button>
               </li>
               <li>
-                <Button>
+                <Button onClick={handleGoogleSignIn}>
                   <SvgIcon name="google" viewbox="0 0 28.688 29.243" />
                 </Button>
               </li>
               <li>
-                <Button>
+                <Button onClick={handleFacebookSignIn}>
                   <SvgIcon name="facebook" viewbox="0 0 8.106 17.344" />
                 </Button>
               </li>

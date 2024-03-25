@@ -28,6 +28,7 @@ import { useSelector } from "react-redux";
 import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
+import CustomLoader from "../../components/common/Loader/CustomLoader";
 
 const GroupListingPage = () => {
   const ListData = [
@@ -191,10 +192,12 @@ const GroupListingPage = () => {
   const [groupTitle, setGroupTitle] = useState("");
   const [groupImage, setGroupImage] = useState("");
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
+  const [showLoader, setshowLoader] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setshowLoader(true)
         const response = await apiClient.post(
           // Fetch data from API
           Apis(
@@ -216,6 +219,8 @@ const GroupListingPage = () => {
             },
           }
         );
+        setshowLoader(false)
+
 
         // Extracting rgroup_title and rgroup_image2023 from response
         const { rgroup_title, rgroup_image2023, DATA } = response.data;
@@ -235,8 +240,34 @@ const GroupListingPage = () => {
     fetchData();
   }, [selectedCity]);
 
+  const handleFavToggle = (index,value,tourId ) => {
+    setGroupData(prevGroupData => {
+      return prevGroupData.map((item, i) => {
+        if (i === index) {
+          return { ...item, isFavouriteOffer: value };
+        }
+        return item; 
+      });
+    });
+
+    apiClient
+    .post(
+      Apis(
+        "toggleFavTour",
+        selectedCity.vCountryName,
+        userData ? "loggedIn" : "guest"
+      ),
+      {
+        tourId,
+        productId:tourId,
+        favourite:value
+      }
+    )
+
+  }
   return (
     <div className="twl-listing-wrapper">
+      {showLoader && <CustomLoader />}
       <section className="listing-bottom">
         <div className="upperfilters-row">
           <Dropdown
@@ -330,48 +361,75 @@ const GroupListingPage = () => {
             <Col>
               <div className="listing-row">
                 {groupData &&
-                  groupData.map((item) => (
-                    <Card
-                      key={item.tourId} // Assuming tourId is unique
-                      className="tp-item-card"
-                      cover={<img alt="TP List" src={item.rTourImage} />} // Use rTourImage from item
-                      extra={
-                        <Button>
-                          <SvgIcon name="heart" viewbox="0 0 10.238 9.131" />
+                  groupData.map((item,index) => (
+                    <div key={index}>
+                      <div style={{ position: 'relative' }}>
+                        <Button style={{
+                          width: "30px",
+                          height: "30px",
+                          borderRadius: "30px",
+                          padding: "0",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          position: "absolute",
+                          top: "15px",
+                          right: "15px",
+                          zIndex: "1",
+                        }}
+                          onClick={() => {
+                            handleFavToggle(index, item.isFavouriteOffer === 0 ? 1 : 0, item.tourId)
+                          }}
+                        >
+                          <SvgIcon
+                            name="heart"
+                            viewbox="0 0 10.238 9.131"
+                            fill={item.isFavouriteOffer === 0 ? "#000" : "#FF5D5D"}
+                          />
                         </Button>
-                      }
-                      onClick={() => {
-                        if (item.tourId) {
-                          window.open(
-                            `/rayna-details?tourId=${item.tourId}`,
-                            "_self"
-                          );
-                        } else {
-                          window.open(
-                            `/details?tourId=${productId}`,
-                            "_self"
-                          );
-                        }
-                      }}
-                    >
-                      <div className="bottom-row">
-                        <div className="left-col">
-                          <h3>{item.tourName}</h3>{" "}
-                          {/* Use tourName from item */}
-                          <div className="price-col">
-                            From{" "}
-                            <span className="bottomprice">
-                              AED {item.adultPrice}
-                            </span>{" "}
-                            / person {/* Use adultPrice from item */}
-                            <span className="off-price">
-                              AED {item.orginalPrice}
-                            </span>{" "}
-                            {/* Use orginalPrice from item */}
+                        <Card
+                          key={item.tourId} // Assuming tourId is unique
+                          className="tp-item-card"
+                          cover={<img alt="TP List" src={item.rTourImage} />} // Use rTourImage from item
+                          // extra={
+                          //   <Button>
+                          //     <SvgIcon name="heart" viewbox="0 0 10.238 9.131" />
+                          //   </Button>
+                          // }
+                          onClick={() => {
+                            if (item.tourId) {
+                              window.open(
+                                `/rayna-details?tourId=${item.tourId}`,
+                                "_self"
+                              );
+                            } else {
+                              window.open(
+                                `/details?tourId=${productId}`,
+                                "_self"
+                              );
+                            }
+                          }}
+                        >
+                          <div className="bottom-row">
+                            <div className="left-col">
+                              <h3>{item.tourName}</h3>{" "}
+                              {/* Use tourName from item */}
+                              <div className="price-col">
+                                From{" "}{item.isFavouriteOffer}
+                                <span className="bottomprice">
+                                  AED {item.adultPrice}
+                                </span>{" "}
+                                / person {/* Use adultPrice from item */}
+                                <span className="off-price">
+                                  AED {item.orginalPrice}
+                                </span>{" "}
+                                {/* Use orginalPrice from item */}
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        </Card>
                       </div>
-                    </Card>
+                    </div>
                   ))}
               </div>
             </Col>

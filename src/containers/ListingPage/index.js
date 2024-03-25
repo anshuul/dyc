@@ -38,6 +38,7 @@ import {
   selectSelectedPriceRange,
   setSelectedPriceRange,
 } from "../../slice/priceRangeSlice";
+import CustomLoader from "../../components/common/Loader/CustomLoader";
 
 const ListingPage = () => {
   const history = useHistory();
@@ -183,11 +184,13 @@ const ListingPage = () => {
   const [visibleDate, setVisibleDate] = useState(false);
 
   const handleShowDateClick = () => {
-    setVisibleDate(false);
+    // setVisibleDate(false);
     console.log("Selected Date:", selectedDate);
   };
 
+  console.log('ccc',selectedDate);
   const handleDateChange = (date) => {
+    console.log(date,"ccc");
     const formattedDate = {
       day: date.toLocaleDateString("en", { weekday: "short" }),
       date: date.getDate(),
@@ -195,7 +198,7 @@ const ListingPage = () => {
       year: date.getFullYear(),
     };
     dispatch(setSelectedDate(formattedDate));
-    setVisibleDate(false);
+    // setVisibleDate(false);
   };
 
   console.log("selectedDate: ", selectedDate);
@@ -209,7 +212,7 @@ const ListingPage = () => {
           <div className="planning-time">
             <Calendar
               onChange={handleDateChange}
-              value={selectedDate} // Set the value prop to the selectedDate
+              value={selectedDate?.day ? new Date(`${selectedDate?.day} ${selectedDate?.month} ${selectedDate?.date} ${selectedDate?.year}`) : ""} // Set the value prop to the selectedDate
               onClickDay={handleShowDateClick} // If needed, toggle visibility on day click
               showWeekNumbers
               showNeighboringMonth={false}
@@ -226,7 +229,7 @@ const ListingPage = () => {
   const [visiblePrice, setVisiblePrice] = useState(false);
 
   const handleShowPriceClick = () => {
-    setVisiblePrice(false);
+    // setVisiblePrice(false);
   };
 
   const marks = {
@@ -295,10 +298,10 @@ const ListingPage = () => {
 
     // Check if categories are selected
     if (checkedItems.length > 0) {
-      const checkedCategoryNames = checkedItems.map(
-        (item) => item.rCategoryName
+      const checkedCategoryIds = checkedItems.map(
+        (item) => item.rCategoryID
       );
-      queryParams.push(`categories=${checkedCategoryNames.join(",")}`);
+      queryParams.push(`categories=${checkedCategoryIds.join(",")}`);
     }
 
     // Check if date is selected
@@ -320,6 +323,8 @@ const ListingPage = () => {
     // Redirect to listing-page with query parameters
     history.push(`/listing-page${queryString ? `?${queryString}` : ""}`);
     setVisible(false);
+    setVisibleDate(false);
+    visiblePrice(false);
   };
 
   const { search } = useLocation();
@@ -334,10 +339,12 @@ const ListingPage = () => {
   const limitParam = searchParams.get("limit");
 
   const [listData, setListData] = useState([]);
+  const [showLoader, setshowLoader] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setshowLoader(true)
         const response = await apiClient.post(
           // Fetch data from API
           Apis(
@@ -369,14 +376,44 @@ const ListingPage = () => {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
+      setshowLoader(false)
+
     };
 
     // Call fetchData function
     fetchData();
-  }, [param]);
+  }, [categoriesParam]);
+  console.log(categoriesParam,'asasd',selectedDateParam);
+
+  const handleFavToggle = (index,value,tourId ) => {
+    setListData(prevListData => {
+      return prevListData.map((item, i) => {
+        if (i === index) {
+          return { ...item, isFavouriteOffer: value };
+        }
+        return item; 
+      });
+    });
+
+    apiClient
+    .post(
+      Apis(
+        "toggleFavTour",
+        selectedCity.vCountryName,
+        userData ? "loggedIn" : "guest"
+      ),
+      {
+        tourId,
+        productId:tourId,
+        favourite:value
+      }
+    )
+
+  }
 
   return (
     <div className="twl-listing-wrapper">
+      {showLoader && <CustomLoader />}
       <section className="listing-bottom">
         <div className="upperfilters-row">
           <Dropdown
@@ -481,16 +518,40 @@ const ListingPage = () => {
           <Row>
             <Col>
               <div className="listing-row">
-                {listData.map((item) => (
+                {listData.map((item, index) => (
+                   <div style={{ position: 'relative' }}>
+                   <Button style={{
+                     width: "30px",
+                     height: "30px",
+                     borderRadius: "30px",
+                     padding: "0",
+                     display: "flex",
+                     alignItems: "center",
+                     justifyContent: "center",
+                     position: "absolute",
+                     top: "15px",
+                     right: "15px",
+                     zIndex: "1",
+                   }}
+                     onClick={() => {
+                       handleFavToggle(index, item.isFavouriteOffer === 0 ? 1 : 0, item.tourId)
+                     }}
+                   >
+                     <SvgIcon
+                       name="heart"
+                       viewbox="0 0 10.238 9.131"
+                       fill={item.isFavouriteOffer === 0 ? "#000" : "#FF5D5D"}
+                     />
+                   </Button>
                   <Card
                     className="tp-item-card"
                     key={item.productId}
                     cover={<img alt="TP List" src={item.rTourImage} />}
-                    extra={
-                      <Button>
-                        <SvgIcon name="heart" viewbox="0 0 10.238 9.131" />
-                      </Button>
-                    }
+                    // extra={
+                    //   <Button>
+                    //     <SvgIcon name="heart" viewbox="0 0 10.238 9.131" />
+                    //   </Button>
+                    // }
                     onClick={() =>
                       window.open(
                         `${
@@ -528,6 +589,8 @@ const ListingPage = () => {
                       </div>
                     </div>
                   </Card>
+                  </div>
+
                 ))}
                 {/* {ListData.map(item =>
                                     <Card

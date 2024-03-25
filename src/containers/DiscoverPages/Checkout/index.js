@@ -21,6 +21,8 @@ import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import apiClient from "../../../apiConfig";
 import Apis from "../../../utility/apis";
 import { useSelector } from "react-redux";
+// import { loadStripe } from '@stripe/stripe-js';
+import PaymentComponent from "./PaymentComponent";
 
 const CheckoutDiscover = () => {
   const history = useHistory();
@@ -85,7 +87,7 @@ const CheckoutDiscover = () => {
     bookingData?.tourPriceTransfertimeDetails?.startTime
   );
   const startTime = bookingData?.tourPriceTransfertimeDetails?.startTime;
-
+const [stripeData, setStripeData] = useState({})
   const fetchData = async () => {
     try {
       const response = await apiClient.post(
@@ -127,11 +129,14 @@ const CheckoutDiscover = () => {
 
       console.log(
         "transactionPrepare response status : ",
-        response?.data?.status
+        response?.data?.DATA.stripeData
       );
+      setStripeData(
+        response?.data?.DATA.stripeData
+      )
 
       if (response.data?.status === 1) {
-        history.push("/discover/successfully");
+        // history.push("/discover/successfully");
       } else {
         history.push("/discover/booking-failed");
       }
@@ -153,6 +158,7 @@ const CheckoutDiscover = () => {
 
   return (
     <div className="checkout-discover-wrapper">
+      <PaymentComponent stripeData={stripeData} />
       <div className="checkoutdiscover-inner">
         <Container>
           <Row>

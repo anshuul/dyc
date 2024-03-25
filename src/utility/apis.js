@@ -25,6 +25,7 @@ const loggedInDiscoverApis = {
   tourDetails: "/discover/discoverDetail",
   transactionPrepare: "/discover/discoverTransactionPrepare",
   tourSearch: "/discover/discoverKeySearch",
+  toggleFavTour: "/discover/favouriteTour"
 };
 
 const loggedInGlobalApis = {
@@ -35,10 +36,11 @@ const loggedInGlobalApis = {
   tourDetails: "/globaltix/productDetails",
   categoryList: "/globaltix/categoryList",
   tourSearch: "/deal/productKeySearch",
+  toggleFavTour: "/globaltix/favouriteProduct"
 };
 
 const Apis = (api, type, userType) => {
-  console.log(api, "apiss");
+  console.log(api, type,userType,"apiss");
   if (type === "UAE" && userType === "guest") {
     return guestDiscoverApis[api];
   }
