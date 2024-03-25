@@ -210,7 +210,7 @@ const RaynaDetailsPage = () => {
   console.log("param: ", param);
 
   const [visible, setVisible] = useState(false);
-  const [selectedCheckbox, setSelectedCheckbox] = useState(null);
+
 
   const userData = localStorage.getItem("userData");
   const selectedCity = useSelector((state) => state.citySearch.selectedCity);
@@ -246,6 +246,7 @@ const RaynaDetailsPage = () => {
     fetchData();
   }, []);
 
+  const [selectedCheckbox, setSelectedCheckbox] = useState(null);
   const [discoverOptions, setDiscoverOptions] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -271,18 +272,26 @@ const RaynaDetailsPage = () => {
 
   const transferTitles = discoverOptions
     ? discoverOptions.reduce((acc, option) => {
-        option.transferIdData.forEach((transfer) => {
-          if (!acc.includes(transfer.transferTitle)) {
-            acc.push(transfer.transferTitle);
-          }
-        });
-        return acc;
-      }, [])
+      option.transferIdData.forEach((transfer) => {
+        if (!acc.includes(transfer.transferTitle)) {
+          acc.push(transfer.transferTitle);
+        }
+      });
+      return acc;
+    }, [])
     : [];
 
-  const handleCheckboxChange = (value) => {
-    setSelectedCheckbox(value);
-    setVisible(false); // Close the dropdown after selection
+  // const handleCheckboxChange = (value) => {
+  //   setSelectedCheckbox(value);
+  //   setVisible(false); // Close the dropdown after selection
+  // };
+
+  const handleCheckboxChange = (option) => {
+    if (selectedDate) {
+      setSelectedCheckbox(option);
+    } else {
+      handleCheckboxClick(option);
+    }
   };
 
   console.log("selectedCheckbox data: ", selectedCheckbox);
@@ -352,7 +361,8 @@ const RaynaDetailsPage = () => {
   };
 
   // Function to handle calendar change
-  const handleCalendarChange = (date) => {
+  const handleCalendarChange = async (date, option) => {
+    console.log("Hello calendar")
     setSelectedDate(date);
     setShowCalendar(false);
 
@@ -365,21 +375,12 @@ const RaynaDetailsPage = () => {
     // Format the date as "YYYY-MM-DD"
     const formattedDate = localDate.toISOString().slice(0, 10);
 
-    // if (selectedOption) {
-    //   const dayOfWeek = date.getDay();
-    //   if (!selectedOption.specialdates) {
-    //     if (!selectedOption.operationdays[dayOfWeek]) {
-    //       return;
-    //     }
-    //   }
-
-    //   fetchBookingData(selectedOption.tourOptionId, formattedDate);
-    // }
-    // Fetch booking data based on the selected date and available days
-
     // Fetch booking data if the date is enabled
     if (selectedOption && isDateEnabled(date)) {
-      fetchBookingData(selectedOption.tourOptionId, formattedDate);
+      await fetchBookingData(selectedOption.tourOptionId, formattedDate);
+
+      // After fetching data, set the selected checkbox
+      // setSelectedCheckbox(option);
     }
   };
 
@@ -403,7 +404,7 @@ const RaynaDetailsPage = () => {
     const { tourOptionId, contractId } = bookingData;
     const travelDate = selectedDate.toISOString().slice(0, 10);
     const transferId = selectedOption.transferIdData[0]?.transferId;
-    const grandTotal = calculateTotalPrice(selectedCheckbox, counts); 
+    const grandTotal = calculateTotalPrice(selectedCheckbox, counts);
     const requestBody = {
       tourId: param,
       tourOptionId,
@@ -436,7 +437,7 @@ const RaynaDetailsPage = () => {
         } else {
           setErrorMessage(
             response.data?.MESSAGE ||
-              "You cannot book this tour on selected date due to cutoff time."
+            "You cannot book this tour on selected date due to cutoff time."
           );
           console.error("Booking unsuccessful:", response.data?.MESSAGE);
         }
@@ -558,11 +559,9 @@ const RaynaDetailsPage = () => {
     return grandTotal;
   };
 
-  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${
-    counts.child
-  } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${
-    counts.infant > 1 ? "s" : ""
-  }`;
+  const selectedData = `${counts.adult} Adult${counts.adult > 1 ? "s" : ""}, ${counts.child
+    } Child${counts.child > 1 ? "ren" : ""}, ${counts.infant} Infant${counts.infant > 1 ? "s" : ""
+    }`;
 
   const items = [
     {
@@ -622,7 +621,7 @@ const RaynaDetailsPage = () => {
 
   return (
     <div className="twl-details-wrapper">
-            {showLoader && <CustomLoader />}
+      {showLoader && <CustomLoader />}
       {tourDetails && (
         <>
           <MediaQuery maxWidth={767}>
@@ -724,21 +723,21 @@ const RaynaDetailsPage = () => {
                       <div className="right-image">
                         {showAllImages
                           ? tourDetails.rTourImageList.map((image, index) => (
+                            <img
+                              key={index}
+                              src={image}
+                              alt={`Tour Image ${index + 1}`}
+                            />
+                          ))
+                          : tourDetails.rTourImageList
+                            .slice(1, 6)
+                            .map((image, index) => (
                               <img
                                 key={index}
                                 src={image}
-                                alt={`Tour Image ${index + 1}`}
+                                alt={`Tour Image ${index + 2}`}
                               />
-                            ))
-                          : tourDetails.rTourImageList
-                              .slice(1, 6)
-                              .map((image, index) => (
-                                <img
-                                  key={index}
-                                  src={image}
-                                  alt={`Tour Image ${index + 2}`}
-                                />
-                              ))}
+                            ))}
                       </div>
                     </div>
                   </MediaQuery>
@@ -848,9 +847,9 @@ const RaynaDetailsPage = () => {
                           __html: showFullDescription
                             ? tourDetails.tourShortDescription
                             : `${tourDetails.tourShortDescription.substring(
-                                0,
-                                424
-                              )}...`,
+                              0,
+                              424
+                            )}...`,
                         }}
                       />
                       {!showFullDescription && (
@@ -895,66 +894,81 @@ const RaynaDetailsPage = () => {
                             <span>$50 </span>/ Person
                           </h3>
                         </div>
+
                         {discoverOptions && (
-                          <div className="options-colum">
+                          <div className="options-column">
                             <h4>Options</h4>
-                            <Checkbox.Group
-                              onChange={(checkedValues) => {
-                                const option = discoverOptions.find(
-                                  (option) =>
-                                    option.optionName === checkedValues[0]
-                                );
-                                option
-                                  ? handleCheckboxClick(option)
-                                  : handleCheckboxUncheck();
-                              }}
-                            >
-                              <ul>
-                                {discoverOptions.map((option, index) => (
-                                  <li key={index}>
-                                    <Checkbox value={option.optionName}>
-                                      {option.optionName}
-                                    </Checkbox>
-                                    <div className="right-col">
-                                      <span className="off-price">
-                                        {option.price}
-                                      </span>
-                                      {/* Display the adultPrice from transferIdData */}
-                                      {option.transferIdData &&
-                                        option.transferIdData.length > 0 && (
-                                          <>
-                                            $
-                                            {
-                                              option.transferIdData[0]
-                                                .adultPrice
-                                            }{" "}
-                                            <span>/ Person</span>
-                                          </>
-                                        )}
-                                    </div>
-                                  </li>
-                                ))}
-                              </ul>
-                            </Checkbox.Group>
+                            <ul style={{ listStyleType: 'none', padding: 0 }}>
+                              {discoverOptions.map((option, index) => (
+                                <li key={index} style={{ position: 'relative' }}>
+                                  <Checkbox
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        handleCheckboxClick(option);
+                                      } else {
+                                        handleCheckboxUncheck();
+                                      }
+                                    }}
+                                    checked={selectedOption === option && selectedDate !== null}
+                                  >
+                                    {option.optionName}
+                                  </Checkbox>
+                                  <div className="right-col">
+                                    <span className="off-price">{option.price}</span>
+                                    {/* Display the adultPrice from transferIdData */}
+                                    {option.transferIdData &&
+                                      option.transferIdData.length > 0 && (
+                                        <>
+                                          ${option.transferIdData[0].adultPrice} <span>/ Person</span>
+                                        </>
+                                      )}
+                                  </div>
+
+                                </li>
+                              ))}
+                              {/* Render the calendar overlapping the selected option */}
+                              <OutsideClickHandler onOutsideClick={handleOutsideClick}>
+                                {showCalendar && (
+                                  <div
+                                    className="calendar-container"
+                                    style={{
+                                      position: 'absolute',
+                                      top: '-240px', // Adjust the negative value as needed
+                                      left: '0',
+                                      zIndex: 50,
+                                    }}
+                                  >
+                                    <Calendar
+                                      onChange={handleCalendarChange}
+                                      value={selectedDate}
+                                      // Your calendar props
+                                      tileDisabled={({ date }) => isDateDisabled(date)}
+                                    />
+                                  </div>
+                                )}
+                              </OutsideClickHandler>
+                            </ul>
                           </div>
                         )}
+
+
+
                         {/* Render the Calendar component conditionally */}
-                        <OutsideClickHandler
-                          onOutsideClick={handleOutsideClick}
-                        >
+                        {/* <OutsideClickHandler onOutsideClick={handleOutsideClick}>
                           {showCalendar && (
-                            <div className="calendar-container">
+                            <div
+                              className="calendar-container"
+                              style={{ position: 'absolute', zIndex: 1, top: '-200px', left: '0' }}
+                            >
                               <Calendar
                                 onChange={handleCalendarChange}
                                 value={selectedDate}
                                 // Disabled date logic
-                                tileDisabled={({ date }) =>
-                                  isDateDisabled(date)
-                                }
+                                tileDisabled={({ date }) => isDateDisabled(date)}
                               />
                             </div>
                           )}
-                        </OutsideClickHandler>
+                        </OutsideClickHandler> */}
 
                         {bookingData && (
                           <>
@@ -982,65 +996,65 @@ const RaynaDetailsPage = () => {
                                           </h3>
                                           {menu}
                                           {selectedCheckbox !==
-                                            "Private Transfer" && (
-                                            <>
-                                              <Form
-                                                name="search"
-                                                autoComplete="off"
-                                                layout="vertical"
-                                              >
-                                                <Form.Item
-                                                  name="pul"
-                                                  label="PICK UP LOCATION"
+                                            "Without Transfer" && (
+                                              <>
+                                                <Form
+                                                  name="search"
+                                                  autoComplete="off"
+                                                  layout="vertical"
                                                 >
-                                                  <Input
-                                                    value=""
-                                                    placeholder="Business bay"
-                                                  />
-                                                </Form.Item>
-                                              </Form>
-                                              <div className="transfers-list">
-                                                <ul>
-                                                  <li>
-                                                    <div className="icons">
-                                                      <SvgIcon
-                                                        name="map"
-                                                        viewbox="0 0 8.358 12.537"
-                                                      />
-                                                    </div>
-                                                    Business Bay
-                                                  </li>
-                                                  <li>
-                                                    <div className="icons">
-                                                      <SvgIcon
-                                                        name="map"
-                                                        viewbox="0 0 8.358 12.537"
-                                                      />
-                                                    </div>
-                                                    Al Karama
-                                                  </li>
-                                                  <li>
-                                                    <div className="icons">
-                                                      <SvgIcon
-                                                        name="map"
-                                                        viewbox="0 0 8.358 12.537"
-                                                      />
-                                                    </div>
-                                                    Marina
-                                                  </li>
-                                                  <li>
-                                                    <div className="icons">
-                                                      <SvgIcon
-                                                        name="map"
-                                                        viewbox="0 0 8.358 12.537"
-                                                      />
-                                                    </div>
-                                                    Financial Center
-                                                  </li>
-                                                </ul>
-                                              </div>
-                                            </>
-                                          )}
+                                                  <Form.Item
+                                                    name="pul"
+                                                    label="PICK UP LOCATION"
+                                                  >
+                                                    <Input
+                                                      value=""
+                                                      placeholder="Business bay"
+                                                    />
+                                                  </Form.Item>
+                                                </Form>
+                                                <div className="transfers-list">
+                                                  <ul>
+                                                    <li>
+                                                      <div className="icons">
+                                                        <SvgIcon
+                                                          name="map"
+                                                          viewbox="0 0 8.358 12.537"
+                                                        />
+                                                      </div>
+                                                      Business Bay
+                                                    </li>
+                                                    <li>
+                                                      <div className="icons">
+                                                        <SvgIcon
+                                                          name="map"
+                                                          viewbox="0 0 8.358 12.537"
+                                                        />
+                                                      </div>
+                                                      Al Karama
+                                                    </li>
+                                                    <li>
+                                                      <div className="icons">
+                                                        <SvgIcon
+                                                          name="map"
+                                                          viewbox="0 0 8.358 12.537"
+                                                        />
+                                                      </div>
+                                                      Marina
+                                                    </li>
+                                                    <li>
+                                                      <div className="icons">
+                                                        <SvgIcon
+                                                          name="map"
+                                                          viewbox="0 0 8.358 12.537"
+                                                        />
+                                                      </div>
+                                                      Financial Center
+                                                    </li>
+                                                  </ul>
+                                                </div>
+                                              </>
+                                            )}
                                         </>
                                       )}
                                       options={transferTitles.map(
@@ -1315,21 +1329,21 @@ const RaynaDetailsPage = () => {
                     <div className="right-image">
                       {showAllImages
                         ? tourDetails.rTourImageList.map((image, index) => (
+                          <img
+                            key={index}
+                            src={image}
+                            alt={`Tour Image ${index + 1}`}
+                          />
+                        ))
+                        : tourDetails.rTourImageList
+                          .slice(1, 6)
+                          .map((image, index) => (
                             <img
                               key={index}
                               src={image}
-                              alt={`Tour Image ${index + 1}`}
+                              alt={`Tour Image ${index + 2}`}
                             />
-                          ))
-                        : tourDetails.rTourImageList
-                            .slice(1, 6)
-                            .map((image, index) => (
-                              <img
-                                key={index}
-                                src={image}
-                                alt={`Tour Image ${index + 2}`}
-                              />
-                            ))}
+                          ))}
                     </div>
                   </div>
                   {/* <MediaQuery maxWidth={767}>
@@ -1500,11 +1514,11 @@ const RaynaDetailsPage = () => {
                           {[
                             ...Array(
                               5 -
-                                Math.round(
-                                  parseFloat(
-                                    tourDetails.tourRating.averageRating
-                                  )
+                              Math.round(
+                                parseFloat(
+                                  tourDetails.tourRating.averageRating
                                 )
+                              )
                             ),
                           ].map((_, index) => (
                             <SvgIcon
