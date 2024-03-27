@@ -366,7 +366,7 @@ const LandingPage = () => {
   const [visibleDate, setVisibleDate] = useState(false);
 
   const handleShowDateClick = () => {
-    setVisibleDate(false);
+    // setVisibleDate(false);
     console.log("Selected Date:", selectedDate);
   };
 
@@ -378,7 +378,7 @@ const LandingPage = () => {
       year: date.getFullYear(),
     };
     dispatch(setSelectedDate(formattedDate));
-    setVisibleDate(false);
+    // setVisibleDate(false);
   };
 
   console.log("selectedDate: ", selectedDate);
@@ -392,7 +392,7 @@ const LandingPage = () => {
           <div className="planning-time">
             <Calendar
               onChange={handleDateChange}
-              value={selectedDate} // Set the value prop to the selectedDate
+              value={selectedDate?.day ? new Date(`${selectedDate?.day} ${selectedDate?.month} ${selectedDate?.date} ${selectedDate?.year}`) : ""} // Set the value prop to the selectedDate
               onClickDay={handleShowDateClick} // If needed, toggle visibility on day click
               showWeekNumbers
               showNeighboringMonth={false}
@@ -485,7 +485,7 @@ const LandingPage = () => {
       selectedDate.month &&
       selectedDate.date
     ) {
-      const dateString = `${selectedDate.year}-${selectedDate.month}-${selectedDate.date}`;
+      const dateString = `${selectedDate.day} ${selectedDate.month} ${selectedDate.date} ${selectedDate.year}`;
       queryParams.push(`selectedDate=${encodeURIComponent(dateString)}`);
     }
 

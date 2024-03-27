@@ -11,6 +11,7 @@ import './index.scss'
 import MapDiningimg1 from '../../assets/images/tour1.jpg';
 import MapDiningimg2 from '../../assets/images/tour2.jpg';
 import MapDiningimg3 from '../../assets/images/tour3.jpg';
+import HeaderFilter from '../LandingPage/HeaderFilter';
 
 function NextArrow(props) {
     const { className, onClick } = props;
@@ -146,62 +147,7 @@ const ListingPageMap = () => {
     return (
         <div className='twl-listing-wrapper'>
             <section className='map-section'>
-                <div className='upperfilters-row'>
-                    <Dropdown
-                        menu={{ items }}
-                        overlayClassName="filter-drop"
-                        trigger={['click']}
-                        dropdownRender={(menu) => (
-                            <div>
-                                {menu}
-                                <div className='drop-footer'>
-                                    <Button type='text'>Reset all</Button>
-                                    <Button type='primary'>Show results</Button>
-                                </div>
-                            </div>
-                        )}
-                    >
-                        <button onClick={(e) => e.preventDefault()}>
-                            Category <SvgIcon name='chevron-bottom' viewbox="0 0 13 8" />
-                        </button>
-                    </Dropdown>
-                    <Dropdown
-                        menu={{ items: dateItems }}
-                        overlayClassName="filter-drop"
-                        trigger={['click']}
-                        dropdownRender={(menu) => (
-                            <div>
-                                {menu}
-                                <div className='drop-footer'>
-                                    <Button type='text'>Reset all</Button>
-                                    <Button type='primary'>Show results</Button>
-                                </div>
-                            </div>
-                        )}
-                    >
-                        <button onClick={(e) => e.preventDefault()}>
-                            Date <SvgIcon name='chevron-bottom' viewbox="0 0 13 8" />
-                        </button>
-                    </Dropdown>
-                    <Dropdown
-                        menu={{ items: priceRangeItems }}
-                        overlayClassName="filter-drop"
-                        trigger={['click']}
-                        dropdownRender={(menu) => (
-                            <div>
-                                {menu}
-                                <div className='drop-footer'>
-                                    <Button type='text'>Reset all</Button>
-                                    <Button type='primary'>Show results</Button>
-                                </div>
-                            </div>
-                        )}
-                    >
-                        <button onClick={(e) => e.preventDefault()}>
-                            Price Range <SvgIcon name='chevron-bottom' viewbox="0 0 13 8" />
-                        </button>
-                    </Dropdown>
-                </div>
+            <HeaderFilter />
                 <div className='map-row'>
                     {/* <img className='map-img' src={MapImg} alt="map" /> */}
                     <div className='map-area'><iframe title='map' frameBorder="0" marginHeight="0" marginWidth="0" src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=Dubai+(My%20Business%20Name)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe></div>

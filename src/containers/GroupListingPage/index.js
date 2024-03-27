@@ -29,6 +29,7 @@ import apiClient from "../../apiConfig";
 import Apis from "../../utility/apis";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import CustomLoader from "../../components/common/Loader/CustomLoader";
+import HeaderFilter from "../LandingPage/HeaderFilter";
 
 const GroupListingPage = () => {
   const ListData = [
@@ -269,62 +270,7 @@ const GroupListingPage = () => {
     <div className="twl-listing-wrapper">
       {showLoader && <CustomLoader />}
       <section className="listing-bottom">
-        <div className="upperfilters-row">
-          <Dropdown
-            menu={{ items }}
-            overlayClassName="filter-drop"
-            trigger={["click"]}
-            dropdownRender={(menu) => (
-              <div>
-                {menu}
-                <div className="drop-footer">
-                  <Button type="text">Reset all</Button>
-                  <Button type="primary">Show results</Button>
-                </div>
-              </div>
-            )}
-          >
-            <button onClick={(e) => e.preventDefault()}>
-              Category <SvgIcon name="chevron-bottom" viewbox="0 0 13 8" />
-            </button>
-          </Dropdown>
-          <Dropdown
-            menu={{ items: dateItems }}
-            overlayClassName="filter-drop"
-            trigger={["click"]}
-            dropdownRender={(menu) => (
-              <div>
-                {menu}
-                <div className="drop-footer">
-                  <Button type="text">Reset all</Button>
-                  <Button type="primary">Show results</Button>
-                </div>
-              </div>
-            )}
-          >
-            <button onClick={(e) => e.preventDefault()}>
-              Date <SvgIcon name="chevron-bottom" viewbox="0 0 13 8" />
-            </button>
-          </Dropdown>
-          <Dropdown
-            menu={{ items: priceRangeItems }}
-            overlayClassName="filter-drop"
-            trigger={["click"]}
-            dropdownRender={(menu) => (
-              <div>
-                {menu}
-                <div className="drop-footer">
-                  <Button type="text">Reset all</Button>
-                  <Button type="primary">Show results</Button>
-                </div>
-              </div>
-            )}
-          >
-            <button onClick={(e) => e.preventDefault()}>
-              Price Range <SvgIcon name="chevron-bottom" viewbox="0 0 13 8" />
-            </button>
-          </Dropdown>
-        </div>
+     <HeaderFilter />
         <Container className="listing-container">
           <Row>
             <Col>
