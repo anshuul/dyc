@@ -158,7 +158,7 @@ const [stripeData, setStripeData] = useState({})
 
   return (
     <div className="checkout-discover-wrapper">
-      <PaymentComponent stripeData={stripeData} />
+      {/* <PaymentComponent stripeData={stripeData} /> */}
       <div className="checkoutdiscover-inner">
         <Container>
           <Row>

@@ -33,12 +33,14 @@ import {
   selectCheckedItems,
   setCheckedItems,
 } from "../../slice/checkedItemsSlice";
-import { selectSelectedDate, setSelectedDate } from "../../slice/dateSlice";
+import { resetSelectedDate, selectSelectedDate, setSelectedDate } from "../../slice/dateSlice";
 import {
+  resetSelectedPriceRange,
   selectSelectedPriceRange,
   setSelectedPriceRange,
 } from "../../slice/priceRangeSlice";
 import CustomLoader from "../../components/common/Loader/CustomLoader";
+import { parse, format } from 'date-fns';
 
 const ListingPage = () => {
   const history = useHistory();
@@ -162,8 +164,20 @@ const ListingPage = () => {
     dispatch(setCheckedItems(updatedCheckedItems));
   };
 
-  const handleResetClick = () => {
-    dispatch(resetCheckedItems());
+  const handleResetClick = (name) => {
+    if(name === "categories"){
+      dispatch(resetCheckedItems());
+      handleReset(name)
+    }
+    if(name === "selectedDate"){
+      dispatch(resetSelectedDate());
+      handleReset(name)
+    }
+    if(name === "price"){
+      dispatch(resetSelectedPriceRange());
+      handleReset("start")
+      handleReset("limit")
+    }
   };
 
   // const handleShowResultsClick = () => {
@@ -182,6 +196,8 @@ const ListingPage = () => {
 
   const selectedDate = useSelector(selectSelectedDate);
   const [visibleDate, setVisibleDate] = useState(false);
+  console.log("selectedDateeeeee", selectedDate);
+
 
   const handleShowDateClick = () => {
     // setVisibleDate(false);
@@ -276,7 +292,7 @@ const ListingPage = () => {
             <Slider
               range
               marks={marks}
-              defaultValue={[
+              value={[
                 selectedPriceRange.start,
                 selectedPriceRange.limit,
               ]}
@@ -324,7 +340,7 @@ const ListingPage = () => {
     history.push(`/listing-page${queryString ? `?${queryString}` : ""}`);
     setVisible(false);
     setVisibleDate(false);
-    visiblePrice(false);
+    setVisiblePrice(false);
   };
 
   const { search } = useLocation();
@@ -337,10 +353,23 @@ const ListingPage = () => {
   console.log("selectedDateParam: ", selectedDateParam)
   const startParam = searchParams.get("start");
   const limitParam = searchParams.get("limit");
+  console.log(startParam,limitParam,"price");
 
   const [listData, setListData] = useState([]);
   const [showLoader, setshowLoader] = useState(false)
 
+  useEffect(() => {
+    
+    const filterByAdultPrice = () => {
+      return 
+    };
+    filterByAdultPrice()
+  
+    return () => {
+      
+    }
+  }, [startParam,limitParam])
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -360,7 +389,7 @@ const ListingPage = () => {
             vCityName: selectedCity.vCityName,
             iCityID: selectedCity.iCityID,
             rCategoryID: categoriesParam,
-            bookingDate: selectedDateParam,
+            bookingDate: selectedDateParam ? format(parse(selectedDateParam, 'EEE MMM dd yyyy', new Date()), 'yyyy-MM-dd') : ""  ,
             Language: "en",
           },
           {
@@ -369,10 +398,20 @@ const ListingPage = () => {
             },
           }
         );
-
-        console.log("response,response: ", response);
+        let filteredData = response.data?.DATA
+        if( (startParam || limitParam) && (startParam !== "0" || limitParam !== "0")  ){
+          filteredData =  response.data?.DATA.filter((item) => {
+           // Assuming the adult price is stored in a property called 'adultPrice'
+           if(Number(item.adultPrice) >= Number(startParam) && Number(item.adultPrice) <= Number(limitParam)){
+             console.log(startParam,limitParam, "filteredData kiya",  Boolean(startParam || limitParam));
+             return item;
+           }
+         });
+        }
+        console.log("filteredData: ", filteredData, startParam, limitParam !== "0");
         // Update ListData state with the received data
-        setListData(response.data?.DATA || []);
+    
+        setListData(filteredData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -382,8 +421,31 @@ const ListingPage = () => {
 
     // Call fetchData function
     fetchData();
-  }, [categoriesParam]);
+  }, [categoriesParam,selectedDateParam,startParam, limitParam]);
   console.log(categoriesParam,'asasd',selectedDateParam);
+  
+  useEffect(() => {
+    if(selectedDateParam){
+      handleDateChange(parse(selectedDateParam, 'EEE MMM dd yyyy', new Date()))
+    }
+  
+    return () => {
+      
+    }
+  }, [selectedDateParam])
+
+  useEffect(() => {
+    if(startParam && limitParam){
+      dispatch(
+        setSelectedPriceRange({ start: startParam, limit: limitParam })
+      )
+    }
+  
+    return () => {
+      
+    }
+  }, [])
+  
 
   const handleFavToggle = (index,value,tourId ) => {
     setListData(prevListData => {
@@ -409,6 +471,15 @@ const ListingPage = () => {
       }
     )
 
+  }
+
+  const handleReset = (paramName, value) => {
+    const searchParams = new URLSearchParams(history.location.search);
+    searchParams.delete(paramName);
+    history.push({ search: searchParams.toString() });
+    setVisible(false);
+    setVisibleDate(false);
+    setVisiblePrice(false);
   }
 
   return (
@@ -455,7 +526,7 @@ const ListingPage = () => {
               <div>
                 {menu}
                 <div className="drop-footer">
-                  <Button type="text" onClick={handleResetClick}>
+                  <Button type="text" onClick={() => handleResetClick("categories")}>
                     Reset all
                   </Button>
                   <Button type="primary" onClick={handleShowResultsClick}>
@@ -479,7 +550,7 @@ const ListingPage = () => {
               <div>
                 {menu}
                 <div className="drop-footer">
-                  <Button type="text">Reset all</Button>
+                  <Button type="text" onClick={() => handleResetClick("selectedDate")}>Reset all</Button>
                   <Button type="primary" onClick={handleShowResultsClick}>
                     Show results
                   </Button>
@@ -501,7 +572,7 @@ const ListingPage = () => {
               <div>
                 {menu}
                 <div className="drop-footer">
-                  <Button type="text">Reset all</Button>
+                  <Button type="text" onClick={() => handleResetClick("price")}>Reset all</Button>
                   <Button type="primary" onClick={handleShowResultsClick}>
                     Show results
                   </Button>
