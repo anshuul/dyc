@@ -7,7 +7,7 @@ const uCurrency = userData?.DATA.tCurrency;
 const iUserId = userData?.DATA.iUserID;
 
 const apiClient = axios.create({
-  baseURL: "/wsDiscover1.2Test",
+  baseURL: "https://discover-city.com/wsDiscover1.2Test",
   headers: {
     "Content-Type": "application/json",
     "X-API-KEY": xApiKey || "7t9f798b765gge89f45e5ef9150fa073f8a61b78",
@@ -16,7 +16,6 @@ const apiClient = axios.create({
     uCurrency: uCurrency || "AED",
     Cookie: "ci_session=nsv47btvehm8iegkhccaappu0e663trp",
   },
-  withCredentials: true,
 });
 
 export default apiClient;
