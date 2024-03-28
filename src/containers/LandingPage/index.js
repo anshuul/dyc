@@ -211,6 +211,7 @@ const LandingPage = () => {
       }
     };
 
+    // fetch("https://discover-city.com/wsDiscover1.2Test/key",{method:"POST",headers:{"X-API-KEY":"7t9f798b765gge89f45e5ef9150fa073f8a61b78"}}).then(r => r.json()).then(e => console.log(e,"eerrrrr"))
     fetchData();
   }, []);
 
